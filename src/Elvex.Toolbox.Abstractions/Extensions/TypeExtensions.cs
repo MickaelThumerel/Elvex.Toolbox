@@ -1,6 +1,6 @@
-﻿// Copyright (c) Nexai.
-// The Democrite licenses this file to you under the MIT license.
-// Produce by nexai & community (cf. docs/Teams.md)
+﻿// Copyright (c) Elvexoft.
+// The Elvexoft licenses this file to you under the MIT license.
+// Produce by Elvexoft & community
 
 namespace System
 {
@@ -281,7 +281,7 @@ namespace System
             this.IsCSharpScalarType = CSharpTypeInfo.ScalarTypes.Contains(this.Trait);
 
             this.Default = trait.IsValueType && !trait.IsAbstract && !trait.IsByRefLike && trait != typeof(void)
-                                ? Activator.CreateInstance(trait) 
+                                ? Activator.CreateInstance(trait)
                                 : null;
             this.FullShortName = TypeInfoExtensionBuilder.FullShortName(this.Trait);
 

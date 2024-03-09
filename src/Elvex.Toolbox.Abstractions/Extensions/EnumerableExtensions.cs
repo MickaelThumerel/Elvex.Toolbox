@@ -1,6 +1,6 @@
-﻿// Copyright (c) Nexai.
-// The Democrite licenses this file to you under the MIT license.
-// Produce by nexai & community (cf. docs/Teams.md)
+﻿// Copyright (c) Elvexoft.
+// The Elvexoft licenses this file to you under the MIT license.
+// Produce by Elvexoft & community
 
 namespace System.Collections.Generic
 {
@@ -135,7 +135,7 @@ namespace System.Collections.Generic
         /// <summary>
         /// Aggregates the strings.
         /// </summary>
-        public static string AggregateStrings(this IEnumerable<string> strings) 
+        public static string AggregateStrings(this IEnumerable<string> strings)
         {
             return string.Join(Environment.NewLine, strings);
         }

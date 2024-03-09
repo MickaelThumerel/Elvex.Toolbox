@@ -1,6 +1,6 @@
-﻿// Copyright (c) Nexai.
-// The Democrite licenses this file to you under the MIT license.
-// Produce by nexai & community (cf. docs/Teams.md)
+﻿// Copyright (c) Elvexoft.
+// The Elvexoft licenses this file to you under the MIT license.
+// Produce by Elvexoft & community
 
 namespace Elvex.Toolbox.WPF.Attributes
 {
@@ -9,7 +9,7 @@ namespace Elvex.Toolbox.WPF.Attributes
     /// <summary>
     /// Define the required argument on navigation
     /// </summary>
-    [AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]    
+    [AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]
     public sealed class NavigationRequiredArgumentAttribute<TAttr> : Attribute
     {
         #region Ctor

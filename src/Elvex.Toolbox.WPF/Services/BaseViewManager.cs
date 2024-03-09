@@ -1,14 +1,14 @@
-﻿// Copyright (c) Nexai.
-// The Democrite licenses this file to you under the MIT license.
-// Produce by nexai & community (cf. docs/Teams.md)
+﻿// Copyright (c) Elvexoft.
+// The Elvexoft licenses this file to you under the MIT license.
+// Produce by Elvexoft & community
 
 namespace Elvex.Toolbox.WPF.Services
 {
     using Elvex.Toolbox.Abstractions.Proxies;
-    using Elvex.Toolbox.Helpers;
     using Elvex.Toolbox.WPF.Abstractions;
     using Elvex.Toolbox.WPF.Abstractions.Navigations;
     using Elvex.Toolbox.WPF.Abstractions.Views;
+
     using Microsoft.Extensions.DependencyInjection;
 
     using System.Collections.Generic;

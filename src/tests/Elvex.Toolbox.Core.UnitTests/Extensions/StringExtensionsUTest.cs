@@ -1,16 +1,12 @@
-﻿// Copyright (c) Nexai.
-// The Democrite licenses this file to you under the MIT license.
-// Produce by nexai & community (cf. docs/Teams.md)
+﻿// Copyright (c) Elvexoft.
+// The Elvexoft licenses this file to you under the MIT license.
+// Produce by Elvexoft & community
 
 namespace Elvex.Toolbox.UnitTests.Extensions
 {
     using NFluent;
 
     using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
-    using System.Threading.Tasks;
 
     /// <summary>
     /// Test for <see cref="StringExtensions"/>
@@ -28,10 +24,10 @@ namespace Elvex.Toolbox.UnitTests.Extensions
                     new[] { "<<", ">>", ",", " " },
                     "List`3", "<<", "int", ",", "double", ",", "List", "<<", "string", ",", "double", ",", "float", ">>", ">>")]
 
-        [InlineData("    List`3<<int, double, List<< <string, double, float>>   >>", 
-                    true, 
-                    StringSplitOptions.TrimEntries, 
-                    new[] { "<<", ">>", ",", " ", "<" }, 
+        [InlineData("    List`3<<int, double, List<< <string, double, float>>   >>",
+                    true,
+                    StringSplitOptions.TrimEntries,
+                    new[] { "<<", ">>", ",", " ", "<" },
                     "List`3", "<<", "int", ",", "double", ",", "List", "<<", "<", "string", ",", "double", ",", "float", ">>", ">>")]
 
         [InlineData("    List`3<<int, double, List<< <string, double, float>>   >>",
@@ -39,7 +35,7 @@ namespace Elvex.Toolbox.UnitTests.Extensions
                     StringSplitOptions.TrimEntries,
                     new[] { "<<", ">>", ",", " ", "<" },
                     "List`3", "int", "double", "List", "string", "double", "float")]
-        public void SplitByMultipleSeparators(string source, bool includeSeparator, StringSplitOptions options, string[] separators, params string[] expectedResults) 
+        public void SplitByMultipleSeparators(string source, bool includeSeparator, StringSplitOptions options, string[] separators, params string[] expectedResults)
         {
             var args = source.OptiSplit(includeSeparator, StringComparison.Ordinal, options, separators);
 

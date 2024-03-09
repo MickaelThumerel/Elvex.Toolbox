@@ -1,6 +1,6 @@
-﻿// Copyright (c) Nexai.
-// The Democrite licenses this file to you under the MIT license.
-// Produce by nexai & community (cf. docs/Teams.md)
+﻿// Copyright (c) Elvexoft.
+// The Elvexoft licenses this file to you under the MIT license.
+// Produce by Elvexoft & community
 
 namespace Elvex.Toolbox.WPF.UI.Exceptions
 {
@@ -21,7 +21,7 @@ namespace Elvex.Toolbox.WPF.UI.Exceptions
         public TemplatePartMissingException(Type partType, string partName, Control control)
             : base(ExceptionSR.TemplatePartMissingException.WithArguments(partName, partType, control))
         {
-            
+
         }
     }
 }

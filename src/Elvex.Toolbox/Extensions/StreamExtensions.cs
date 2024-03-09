@@ -1,6 +1,6 @@
-﻿// Copyright (c) Nexai.
-// The Democrite licenses this file to you under the MIT license.
-// Produce by nexai & community (cf. docs/Teams.md)
+﻿// Copyright (c) Elvexoft.
+// The Elvexoft licenses this file to you under the MIT license.
+// Produce by Elvexoft & community
 
 namespace Elvex.Toolbox.Extensions
 {
@@ -25,7 +25,7 @@ namespace Elvex.Toolbox.Extensions
 
             while (readed < stream.Length)
             {
-                var remain = stream.Length - readed;    
+                var remain = stream.Length - readed;
                 int readLength = Math.Min((int)remain, ReadBatchSize);
                 var readCount = stream.Read(bytes, readed, readLength);
 

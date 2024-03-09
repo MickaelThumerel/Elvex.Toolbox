@@ -1,10 +1,9 @@
-﻿// Copyright (c) Nexai.
-// The Democrite licenses this file to you under the MIT license.
-// Produce by nexai & community (cf. docs/Teams.md)
+﻿// Copyright (c) Elvexoft.
+// The Elvexoft licenses this file to you under the MIT license.
+// Produce by Elvexoft & community
 
 namespace Elvex.Toolbox.WPF.UI.Controls
 {
-    using System;
     using System.Windows;
     using System.Windows.Controls;
 
@@ -23,7 +22,7 @@ namespace Elvex.Toolbox.WPF.UI.Controls
         {
             DefaultStyleKeyProperty.OverrideMetadata(typeof(WaitingOverlay), new FrameworkPropertyMetadata(typeof(WaitingOverlay)));
         }
- 
+
         #endregion
     }
 }

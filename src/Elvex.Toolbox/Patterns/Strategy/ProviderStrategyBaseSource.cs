@@ -1,22 +1,16 @@
-﻿// Copyright (c) Nexai.
-// The Democrite licenses this file to you under the MIT license.
-// Produce by nexai & community (cf. docs/Teams.md)
+﻿// Copyright (c) Elvexoft.
+// The Elvexoft licenses this file to you under the MIT license.
+// Produce by Elvexoft & community
 
 namespace Elvex.Toolbox.Patterns.Strategy
 {
     using Elvex.Toolbox.Abstractions.Patterns.Strategy;
-    using Elvex.Toolbox.Abstractions.Supports;
-    using Elvex.Toolbox.Disposables;
-    using Elvex.Toolbox.Extensions;
-    using Elvex.Toolbox.Helpers;
     using Elvex.Toolbox.Supports;
 
     using System;
-    using System.Collections;
     using System.Collections.Generic;
     using System.Linq;
     using System.Linq.Expressions;
-    using System.Runtime.CompilerServices;
     using System.Threading;
     using System.Threading.Tasks;
 
@@ -46,7 +40,7 @@ namespace Elvex.Toolbox.Patterns.Strategy
         /// <summary>
         /// Initializes a new instance of the <see cref="ProviderStrategyBaseSource{TValue, TKey}"/> class.
         /// </summary>
-        protected ProviderStrategyBaseSource(IServiceProvider serviceProvider, 
+        protected ProviderStrategyBaseSource(IServiceProvider serviceProvider,
                                              IEnumerable<(TKey key, TValue value)>? initValues = null)
         {
             this._serviceProvider = serviceProvider;
@@ -199,7 +193,7 @@ namespace Elvex.Toolbox.Patterns.Strategy
         }
 
         /// <inheritdoc />
-        protected sealed override async ValueTask OnInitializingAsync(IServiceProvider? serviceProvider, CancellationToken token) 
+        protected sealed override async ValueTask OnInitializingAsync(IServiceProvider? serviceProvider, CancellationToken token)
         {
             await OnProviderInitializedAsync(serviceProvider, token);
             await ForceUpdateAfterInitAsync(token);

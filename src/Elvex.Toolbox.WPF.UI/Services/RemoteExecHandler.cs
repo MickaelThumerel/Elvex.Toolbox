@@ -1,12 +1,11 @@
-﻿// Copyright (c) Nexai.
-// The Democrite licenses this file to you under the MIT license.
-// Produce by nexai & community (cf. docs/Teams.md)
+﻿// Copyright (c) Elvexoft.
+// The Elvexoft licenses this file to you under the MIT license.
+// Produce by Elvexoft & community
 
 namespace Elvex.Toolbox.WPF.UI.Services
 {
     using Elvex.Toolbox.Abstractions.Services;
     using Elvex.Toolbox.Extensions;
-    using Elvex.Toolbox.Helpers;
     using Elvex.Toolbox.WPF.Abstractions.Models;
     using Elvex.Toolbox.WPF.Abstractions.Services;
 

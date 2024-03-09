@@ -1,19 +1,18 @@
-﻿// Copyright (c) Nexai.
-// The Democrite licenses this file to you under the MIT license.
-// Produce by nexai & community (cf. docs/Teams.md)
+﻿// Copyright (c) Elvexoft.
+// The Elvexoft licenses this file to you under the MIT license.
+// Produce by Elvexoft & community
 
 namespace Elvex.Toolbox.UnitTests.Extensions
 {
     using AutoFixture;
     using AutoFixture.Kernel;
 
-    using Elvex.Toolbox.UnitTests.Xunits;
-
     using Elvex.Toolbox.Abstractions.Conditions;
     using Elvex.Toolbox.Abstractions.Enums;
     using Elvex.Toolbox.Abstractions.Expressions;
     using Elvex.Toolbox.Models;
     using Elvex.Toolbox.UnitTests.ToolKit.Helpers;
+    using Elvex.Toolbox.UnitTests.Xunits;
 
     using Newtonsoft.Json;
 
@@ -134,7 +133,7 @@ namespace Elvex.Toolbox.UnitTests.Extensions
             var func = expression.Compile();
 
             var results = Enumerable.Range(0, 1000)
-                                    .GroupBy(i => func(i))   
+                                    .GroupBy(i => func(i))
                                     .ToDictionary(k => k.Key, v => v.ToList());
 
             Check.That(results).CountIs(2);

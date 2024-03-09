@@ -1,6 +1,6 @@
-﻿// Copyright (c) Nexai.
-// The Democrite licenses this file to you under the MIT license.
-// Produce by nexai & community (cf. docs/Teams.md)
+﻿// Copyright (c) Elvexoft.
+// The Elvexoft licenses this file to you under the MIT license.
+// Produce by Elvexoft & community
 
 namespace Elvex.Toolbox.Abstractions.Expressions
 {
@@ -23,10 +23,10 @@ namespace Elvex.Toolbox.Abstractions.Expressions
         public MemberInputCallChainBindingDefinition(bool isCtorParameter,
                                                      string memberName,
                                                      string callchain,
-                                                     int parameterIndex) 
+                                                     int parameterIndex)
             : base(isCtorParameter, memberName)
         {
-            this.CallChain = callchain; 
+            this.CallChain = callchain;
             this.ParameterIndex = parameterIndex;
         }
 
@@ -43,7 +43,7 @@ namespace Elvex.Toolbox.Abstractions.Expressions
         /// <summary>
         /// Gets the index of the argument.
         /// </summary>
-        [DataMember] 
+        [DataMember]
         public int ParameterIndex { get; }
 
         #endregion

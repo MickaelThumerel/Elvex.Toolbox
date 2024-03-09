@@ -1,19 +1,15 @@
-﻿// Copyright (c) Nexai.
-// The Democrite licenses this file to you under the MIT license.
-// Produce by nexai & community (cf. docs/Teams.md)
+﻿// Copyright (c) Elvexoft.
+// The Elvexoft licenses this file to you under the MIT license.
+// Produce by Elvexoft & community
 
 namespace Elvex.Toolbox.WPF.UI.Converters
 {
     using Elvex.Toolbox.Abstractions.Enums;
 
-    using Newtonsoft.Json.Linq;
-
     using System;
     using System.Collections;
     using System.Collections.Generic;
     using System.Globalization;
-    using System.Reflection.Metadata;
-    using System.Text.RegularExpressions;
     using System.Windows.Data;
 
     [ValueConversion(typeof(IEnumerable<bool>), typeof(bool))]

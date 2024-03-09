@@ -1,6 +1,6 @@
-﻿// Copyright (c) Nexai.
-// The Democrite licenses this file to you under the MIT license.
-// Produce by nexai & community (cf. docs/Teams.md)
+﻿// Copyright (c) Elvexoft.
+// The Elvexoft licenses this file to you under the MIT license.
+// Produce by Elvexoft & community
 
 namespace Elvex.Toolbox.Abstractions.Expressions
 {
@@ -23,7 +23,7 @@ namespace Elvex.Toolbox.Abstractions.Expressions
     [KnownType(typeof(MemberInputCallChainBindingDefinition))]
     [KnownType(typeof(MemberInputNestedInitBindingDefinition))]
     [KnownType(typeof(MemberInputAccessBindingDefinition))]
-    
+
     public abstract class MemberBindingDefinition : IEquatable<MemberBindingDefinition>, ISupportDebugDisplayName
     {
         #region Ctor

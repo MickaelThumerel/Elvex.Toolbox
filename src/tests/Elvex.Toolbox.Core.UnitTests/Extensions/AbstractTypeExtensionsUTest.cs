@@ -1,6 +1,6 @@
-﻿// Copyright (c) Nexai.
-// The Democrite licenses this file to you under the MIT license.
-// Produce by nexai & community (cf. docs/Teams.md)
+﻿// Copyright (c) Elvexoft.
+// The Elvexoft licenses this file to you under the MIT license.
+// Produce by Elvexoft & community
 
 namespace Elvex.Toolbox.UnitTests.Extensions
 {
@@ -77,12 +77,12 @@ namespace Elvex.Toolbox.UnitTests.Extensions
         /// Test simple method of string
         /// </summary>
         [Theory]
-        [GetMethodsData(types: new Type[] 
+        [GetMethodsData(types: new Type[]
         {
-            typeof(string), 
-            typeof(IConvertible), 
-            typeof(ICollection<double>), 
-            typeof(List<double>), 
+            typeof(string),
+            typeof(IConvertible),
+            typeof(ICollection<double>),
+            typeof(List<double>),
         })]
         public void AbstractType_All_Method_Of_Type(MethodInfo method)
         {
