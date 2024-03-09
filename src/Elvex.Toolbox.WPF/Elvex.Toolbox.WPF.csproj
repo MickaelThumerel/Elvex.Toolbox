@@ -1,0 +1,10 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+	<Import Project="..\..\SharedFrameworkAssemblyInfo.props" />
+
+	<ItemGroup>
+	  <ProjectReference Include="..\Elvex.Toolbox.WPF.Abstractions\Elvex.Toolbox.WPF.Abstractions.csproj" />
+	  <ProjectReference Include="..\Elvex.Toolbox\Elvex.Toolbox.csproj" />
+	</ItemGroup>
+
+</Project>

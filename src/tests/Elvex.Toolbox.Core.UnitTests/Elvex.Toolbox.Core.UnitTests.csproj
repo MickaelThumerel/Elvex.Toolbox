@@ -1,0 +1,32 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<Import Project="..\..\..\SharedFrameworkAssemblyInfo.props" />
+
+	<PropertyGroup>
+		<IsPackable>false</IsPackable>
+		<IsTestProject>true</IsTestProject>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="AutoFixture.Xunit2" />
+		<PackageReference Include="AutoFixture.AutoNSubstitute" />
+		<PackageReference Include="Microsoft.NET.Test.Sdk" />
+		<PackageReference Include="NFluent" />
+		<PackageReference Include="xunit" />
+		<PackageReference Include="NSubstitute" />
+		<PackageReference Include="xunit.runner.visualstudio">
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+			<PrivateAssets>all</PrivateAssets>
+		</PackageReference>
+		<PackageReference Include="coverlet.collector">
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+			<PrivateAssets>all</PrivateAssets>
+		</PackageReference>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\..\Elvex.Toolbox\Elvex.Toolbox.csproj" />
+	  <ProjectReference Include="..\Elvex.Toolbox.UnitTests.ToolKit\Elvex.Toolbox.UnitTests.ToolKit.csproj" />
+	</ItemGroup>
+
+</Project>

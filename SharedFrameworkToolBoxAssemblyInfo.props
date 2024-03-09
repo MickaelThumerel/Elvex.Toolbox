@@ -1,0 +1,11 @@
+﻿<Project>
+
+	<PropertyGroup>
+
+		<Product>Democrite.Toolbox</Product>
+
+		<PackageTags>Democrite;Orleans;Tool</PackageTags>
+
+	</PropertyGroup>
+	
+</Project>
