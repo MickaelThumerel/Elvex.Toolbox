@@ -1,6 +1,6 @@
-﻿// Copyright (c) Nexai.
-// The Democrite licenses this file to you under the MIT license.
-// Produce by nexai & community (cf. docs/Teams.md)
+﻿// Copyright (c) Elvexoft.
+// The Elvexoft licenses this file to you under the MIT license.
+// Produce by Elvexoft & community
 
 namespace Elvex.Toolbox.Helpers
 {
@@ -196,7 +196,7 @@ namespace Elvex.Toolbox.Helpers
             if (containRoot)
             {
                 if (dotIndexOf > -1)
-                    return GetValueFrom(inst, tail, containRoot:false, throwIfNotFounded);
+                    return GetValueFrom(inst, tail, containRoot: false, throwIfNotFounded);
 
                 return inst;
             }

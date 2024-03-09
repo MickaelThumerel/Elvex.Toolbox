@@ -1,6 +1,6 @@
-﻿// Copyright (c) Nexai.
-// The Democrite licenses this file to you under the MIT license.
-// Produce by nexai & community (cf. docs/Teams.md)
+﻿// Copyright (c) Elvexoft.
+// The Elvexoft licenses this file to you under the MIT license.
+// Produce by Elvexoft & community
 
 namespace Elvex.Toolbox.Abstractions.Expressions
 {
@@ -58,7 +58,7 @@ namespace Elvex.Toolbox.Abstractions.Expressions
         /// </summary>
         public MemberInputConstantBindingDefinition(bool isCtorParameter,
                                                     string memberName,
-                                                    TValue value) 
+                                                    TValue value)
             : base(isCtorParameter, memberName)
         {
             this.Value = value;

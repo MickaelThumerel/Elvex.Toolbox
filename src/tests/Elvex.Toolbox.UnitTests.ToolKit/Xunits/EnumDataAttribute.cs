@@ -1,6 +1,6 @@
-﻿// Copyright (c) Nexai.
-// The Democrite licenses this file to you under the MIT license.
-// Produce by nexai & community (cf. docs/Teams.md)
+﻿// Copyright (c) Elvexoft.
+// The Elvexoft licenses this file to you under the MIT license.
+// Produce by Elvexoft & community
 
 namespace Elvex.Toolbox.UnitTests.Xunits
 {
@@ -19,9 +19,9 @@ namespace Elvex.Toolbox.UnitTests.Xunits
         where TEnum : struct, System.Enum
     {
         #region Fields
-        
+
         private readonly IReadOnlyCollection<object[]> _values;
-        
+
         #endregion
 
         #region Ctor
@@ -44,7 +44,7 @@ namespace Elvex.Toolbox.UnitTests.Xunits
         /// <inheritdoc />
         public override IEnumerable<object[]> GetData(MethodInfo testMethod)
         {
-            return _values;
+            return this._values;
         }
 
         #endregion

@@ -1,12 +1,11 @@
-﻿// Copyright (c) Nexai.
-// The Democrite licenses this file to you under the MIT license.
-// Produce by nexai & community (cf. docs/Teams.md)
+﻿// Copyright (c) Elvexoft.
+// The Elvexoft licenses this file to you under the MIT license.
+// Produce by Elvexoft & community
 
 namespace Elvex.Toolbox.Patterns.Strategy
 {
     using Elvex.Toolbox.Abstractions.Patterns.Strategy;
     using Elvex.Toolbox.Extensions;
-    using Elvex.Toolbox.Helpers;
 
     using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Logging.Abstractions;

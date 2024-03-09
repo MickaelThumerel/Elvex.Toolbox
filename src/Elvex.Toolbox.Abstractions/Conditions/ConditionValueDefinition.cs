@@ -1,6 +1,6 @@
-﻿// Copyright (c) Nexai.
-// The Democrite licenses this file to you under the MIT license.
-// Produce by nexai & community (cf. docs/Teams.md)
+﻿// Copyright (c) Elvexoft.
+// The Elvexoft licenses this file to you under the MIT license.
+// Produce by Elvexoft & community
 
 namespace Elvex.Toolbox.Abstractions.Conditions
 {
@@ -114,7 +114,7 @@ namespace Elvex.Toolbox.Abstractions.Conditions
                                                                  .GetProperty(nameof(EqualityComparer<int>.Default), BindingFlags.Public | BindingFlags.Static)!
                                                                  .GetValue(null))!;
         }
-        
+
         #endregion
     }
 }

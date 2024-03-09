@@ -1,6 +1,6 @@
-﻿// Copyright (c) Nexai.
-// The Democrite licenses this file to you under the MIT license.
-// Produce by nexai & community (cf. docs/Teams.md)
+﻿// Copyright (c) Elvexoft.
+// The Elvexoft licenses this file to you under the MIT license.
+// Produce by Elvexoft & community
 
 namespace Elvex.Toolbox.WPF.Builders
 {
@@ -15,9 +15,9 @@ namespace Elvex.Toolbox.WPF.Builders
     internal sealed class ServiceViewBuilder : IViewBuilder
     {
         #region Fields
-        
+
         private readonly IServiceCollection _serviceCollection;
-        
+
         #endregion
 
         #region Ctor

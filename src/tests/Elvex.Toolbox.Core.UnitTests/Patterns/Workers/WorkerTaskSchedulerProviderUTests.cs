@@ -1,6 +1,6 @@
-﻿// Copyright (c) Nexai.
-// The Democrite licenses this file to you under the MIT license.
-// Produce by nexai & community (cf. docs/Teams.md)
+﻿// Copyright (c) Elvexoft.
+// The Elvexoft licenses this file to you under the MIT license.
+// Produce by Elvexoft & community
 
 namespace Elvex.Toolbox.UnitTests.Patterns.Workers
 {
@@ -81,7 +81,7 @@ namespace Elvex.Toolbox.UnitTests.Patterns.Workers
             using (var provider = new WorkerTaskSchedulerProvider())
             {
                 var scheduler = provider.GetWorkerScheduler(workerId, 42);
-                
+
                 Check.That(scheduler).IsNotNull();
                 Check.That(scheduler.SchedulerUId).IsEqualTo(workerId);
                 Check.That(scheduler.MaximumConcurrencyLevel).IsEqualTo(42);

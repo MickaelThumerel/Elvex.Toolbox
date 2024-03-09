@@ -1,6 +1,6 @@
-﻿// Copyright (c) Nexai.
-// The Democrite licenses this file to you under the MIT license.
-// Produce by nexai & community (cf. docs/Teams.md)
+﻿// Copyright (c) Elvexoft.
+// The Elvexoft licenses this file to you under the MIT license.
+// Produce by Elvexoft & community
 
 namespace Elvex.Toolbox.WPF.Patterns.Tree
 {
@@ -18,9 +18,9 @@ namespace Elvex.Toolbox.WPF.Patterns.Tree
     public class NotifyTreeNode<TEntity> : TreeNode<TEntity>, INotifyCollectionChanged
     {
         #region Fields
-        
+
         private readonly IDispatcherProxy _dispatcherProxy;
-        
+
         #endregion
 
         #region Ctor
@@ -28,7 +28,7 @@ namespace Elvex.Toolbox.WPF.Patterns.Tree
         /// <summary>
         /// Initializes a new instance of the <see cref="NotifyTreeNode{TEntity}"/> class.
         /// </summary>
-        public NotifyTreeNode(IDispatcherProxy dispatcherProxy, TEntity entity, TreeNode<TEntity>? parent = null) 
+        public NotifyTreeNode(IDispatcherProxy dispatcherProxy, TEntity entity, TreeNode<TEntity>? parent = null)
             : base(entity, parent)
         {
             this._dispatcherProxy = dispatcherProxy;
@@ -50,7 +50,7 @@ namespace Elvex.Toolbox.WPF.Patterns.Tree
         {
             this._dispatcherProxy.Send(() =>
             {
-                this.CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, child));
+                CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, child));
             });
             base.OnChildAdded(child);
         }
@@ -60,7 +60,7 @@ namespace Elvex.Toolbox.WPF.Patterns.Tree
         {
             this._dispatcherProxy.Send(() =>
             {
-                this.CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, child));
+                CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, child));
             });
 
             base.OnChildRemoved(child);

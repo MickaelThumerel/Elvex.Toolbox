@@ -1,6 +1,6 @@
-﻿// Copyright (c) Nexai.
-// The Democrite licenses this file to you under the MIT license.
-// Produce by nexai & community (cf. docs/Teams.md)
+﻿// Copyright (c) Elvexoft.
+// The Elvexoft licenses this file to you under the MIT license.
+// Produce by Elvexoft & community
 
 namespace Elvex.Toolbox.WPF
 {
@@ -10,7 +10,6 @@ namespace Elvex.Toolbox.WPF
     using Elvex.Toolbox.Memories;
 
     using System.ComponentModel;
-    using System.Diagnostics;
     using System.Runtime.CompilerServices;
     using System.Runtime.Serialization;
 
@@ -218,7 +217,7 @@ namespace Elvex.Toolbox.WPF
         /// </remarks>
         protected IDisposable StartWorking()
         {
-            Interlocked.Increment(ref _workingCount);
+            Interlocked.Increment(ref this._workingCount);
             RefreshCommandStatus();
 
             OnPropertyChanged(nameof(this.IsWorking));
@@ -233,7 +232,7 @@ namespace Elvex.Toolbox.WPF
                 foreach (var link in linkStartWorking)
                     link.Dispose();
 
-                var result = Interlocked.Decrement(ref _workingCount);
+                var result = Interlocked.Decrement(ref this._workingCount);
                 OnPropertyChanged(nameof(this.IsWorking));
                 OnPropertyChanged(nameof(this.IsNotWorking));
 

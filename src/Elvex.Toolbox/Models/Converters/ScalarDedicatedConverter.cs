@@ -1,6 +1,6 @@
-﻿// Copyright (c) Nexai.
-// The Democrite licenses this file to you under the MIT license.
-// Produce by nexai & community (cf. docs/Teams.md)
+﻿// Copyright (c) Elvexoft.
+// The Elvexoft licenses this file to you under the MIT license.
+// Produce by Elvexoft & community
 
 namespace Elvex.Toolbox.Models.Converters
 {
@@ -17,7 +17,7 @@ namespace Elvex.Toolbox.Models.Converters
     public sealed class ScalarDedicatedConverter : IDedicatedObjectConverter
     {
         #region Fields
-        
+
         // KEY => Tuple<Type, Type> == <INPUT, EXPECTED>
         private static readonly IReadOnlyDictionary<Tuple<Type, Type>, MethodInfo> s_convertMethod;
         private static readonly IReadOnlySet<Type> s_managedSourceTypes;
@@ -57,7 +57,7 @@ namespace Elvex.Toolbox.Models.Converters
         /// <inheritdoc/>
         public bool TryConvert(object obj, Type targetType, out object? result)
         {
-            result = null;  
+            result = null;
             var objType = obj?.GetType();
             try
             {

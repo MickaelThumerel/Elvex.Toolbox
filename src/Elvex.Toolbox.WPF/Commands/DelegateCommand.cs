@@ -1,4 +1,8 @@
-﻿namespace Elvex.Toolbox.WPF.Commands
+﻿// Copyright (c) Elvexoft.
+// The Elvexoft licenses this file to you under the MIT license.
+// Produce by Elvexoft & community
+
+namespace Elvex.Toolbox.WPF.Commands
 {
     using Elvex.Toolbox.Abstractions.Commands;
 
@@ -116,7 +120,7 @@
         /// Initializes a new instance of the <see cref="DelegateCommand{TState}"/> class.
         /// </summary>
         public DelegateCommand(Action<TState?> callback,
-                               Predicate<object?>? predicate = null) 
+                               Predicate<object?>? predicate = null)
             : base(() => throw new NotSupportedException(), predicate)
         {
             this._stateCallback = callback;

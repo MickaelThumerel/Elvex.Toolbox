@@ -1,6 +1,6 @@
-﻿// Copyright (c) Nexai.
-// The Democrite licenses this file to you under the MIT license.
-// Produce by nexai & community (cf. docs/Teams.md)
+﻿// Copyright (c) Elvexoft.
+// The Elvexoft licenses this file to you under the MIT license.
+// Produce by Elvexoft & community
 
 namespace Elvex.Toolbox.Abstractions.Expressions
 {
@@ -26,7 +26,7 @@ namespace Elvex.Toolbox.Abstractions.Expressions
         /// </summary>
         public MemberInputAccessBindingDefinition(bool isCtorParameter,
                                                   string memberName,
-                                                  AccessExpressionDefinition access) 
+                                                  AccessExpressionDefinition access)
             : base(isCtorParameter, memberName)
         {
             this.Access = access;
@@ -40,7 +40,7 @@ namespace Elvex.Toolbox.Abstractions.Expressions
         /// Gets the member access.
         /// </summary>
         [DataMember]
-        public AccessExpressionDefinition Access { get; } 
+        public AccessExpressionDefinition Access { get; }
 
         #endregion
 

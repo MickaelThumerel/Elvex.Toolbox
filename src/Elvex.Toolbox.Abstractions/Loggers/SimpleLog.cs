@@ -1,6 +1,6 @@
-﻿// Copyright (c) Nexai.
-// The Democrite licenses this file to you under the MIT license.
-// Produce by nexai & community (cf. docs/Teams.md)
+﻿// Copyright (c) Elvexoft.
+// The Elvexoft licenses this file to you under the MIT license.
+// Produce by Elvexoft & community
 
 namespace Elvex.Toolbox.Abstractions.Loggers
 {
@@ -49,7 +49,7 @@ namespace Elvex.Toolbox.Abstractions.Loggers
             if (other is null)
                 return false;
 
-            if (object.ReferenceEquals(this, other)) 
+            if (object.ReferenceEquals(this, other))
                 return true;
 
             return this.LogLevel == other.LogLevel &&

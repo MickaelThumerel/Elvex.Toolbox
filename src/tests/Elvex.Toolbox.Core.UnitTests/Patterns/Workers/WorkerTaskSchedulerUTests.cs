@@ -1,6 +1,6 @@
-﻿// Copyright (c) Nexai.
-// The Democrite licenses this file to you under the MIT license.
-// Produce by nexai & community (cf. docs/Teams.md)
+﻿// Copyright (c) Elvexoft.
+// The Elvexoft licenses this file to you under the MIT license.
+// Produce by Elvexoft & community
 
 namespace Elvex.Toolbox.UnitTests.Patterns.Workers
 {
@@ -299,7 +299,7 @@ namespace Elvex.Toolbox.UnitTests.Patterns.Workers
     }
 
     [Trait("Type", nameof(WorkerTaskScheduler))]
-    public sealed class WorkerTaskSchedulerUTestsSimplePushAvailable: WorkerTaskSchedulerUTests
+    public sealed class WorkerTaskSchedulerUTestsSimplePushAvailable : WorkerTaskSchedulerUTests
     {
         [Theory()]
         [InlineData(1, 1_000)]

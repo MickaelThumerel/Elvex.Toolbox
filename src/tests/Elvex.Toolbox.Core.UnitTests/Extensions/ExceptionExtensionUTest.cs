@@ -1,6 +1,6 @@
-﻿// Copyright (c) Nexai.
-// The Democrite licenses this file to you under the MIT license.
-// Produce by nexai & community (cf. docs/Teams.md)
+﻿// Copyright (c) Elvexoft.
+// The Elvexoft licenses this file to you under the MIT license.
+// Produce by Elvexoft & community
 
 namespace Elvex.Toolbox.UnitTests.Extensions
 {
@@ -41,11 +41,11 @@ namespace Elvex.Toolbox.UnitTests.Extensions
             };
 
             foreach (var kv in data)
-                ex.Data.Add(kv.Key, kv.Value);  
+                ex.Data.Add(kv.Key, kv.Value);
 
             // Get Full String without data
             var str = ExceptionExtensions.GetFullString(ex);
-            
+
             var expectedMessage = ex.GetType().Name + " : " + MESSAGE;
             Check.That(str).IsNotNull().And.IsEqualTo(expectedMessage);
 

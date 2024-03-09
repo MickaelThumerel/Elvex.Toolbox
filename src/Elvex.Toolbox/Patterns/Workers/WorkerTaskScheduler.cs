@@ -1,6 +1,6 @@
-﻿// Copyright (c) Nexai.
-// The Democrite licenses this file to you under the MIT license.
-// Produce by nexai & community (cf. docs/Teams.md)
+﻿// Copyright (c) Elvexoft.
+// The Elvexoft licenses this file to you under the MIT license.
+// Produce by Elvexoft & community
 
 namespace Elvex.Toolbox.Patterns.Workers
 {
@@ -84,7 +84,7 @@ namespace Elvex.Toolbox.Patterns.Workers
                 this._locker.Wait();
                 try
                 {
-                    return _maximumConcurrencyLevel;
+                    return this._maximumConcurrencyLevel;
                 }
                 finally
                 {

@@ -1,6 +1,6 @@
-﻿// Copyright (c) Nexai.
-// The Democrite licenses this file to you under the MIT license.
-// Produce by nexai & community (cf. docs/Teams.md)
+﻿// Copyright (c) Elvexoft.
+// The Elvexoft licenses this file to you under the MIT license.
+// Produce by Elvexoft & community
 
 namespace Elvex.Toolbox.WPF
 {
@@ -9,9 +9,6 @@ namespace Elvex.Toolbox.WPF
     using Elvex.Toolbox.Disposables;
 
     using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
     using System.Threading.Tasks;
 
     /// <summary>
@@ -72,7 +69,7 @@ namespace Elvex.Toolbox.WPF
         /// </summary>
         private async ValueTask DisposeAsync(bool fromFinalizer)
         {
-            if (Interlocked.Increment(ref _disposableCount) > 1)
+            if (Interlocked.Increment(ref this._disposableCount) > 1)
                 return;
 
             await DisposeBeginAsync();
