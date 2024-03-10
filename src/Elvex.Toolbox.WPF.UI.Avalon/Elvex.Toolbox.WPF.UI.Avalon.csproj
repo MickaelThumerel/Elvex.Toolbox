@@ -1,0 +1,19 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<Import Project="..\..\SharedFrameworkAssemblyInfo.props" />
+
+	<PropertyGroup>
+		<TargetFramework>net8.0-windows</TargetFramework>
+		<UseWPF>true</UseWPF>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Dirkster.AvalonDock" />
+		<PackageReference Include="Dirkster.AvalonDock.Themes.VS2013" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\Elvex.Toolbox.WPF\Elvex.Toolbox.WPF.csproj" />
+	</ItemGroup>
+
+</Project>

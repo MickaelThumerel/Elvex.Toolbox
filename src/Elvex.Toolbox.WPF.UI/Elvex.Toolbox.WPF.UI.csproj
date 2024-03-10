@@ -8,23 +8,23 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-	  <ProjectReference Include="..\Elvex.Toolbox.WPF.Abstractions\Elvex.Toolbox.WPF.Abstractions.csproj" />
-	  <ProjectReference Include="..\Elvex.Toolbox.WPF\Elvex.Toolbox.WPF.csproj" />
-	  <ProjectReference Include="..\Elvex.Toolbox\Elvex.Toolbox.csproj" />
+		<ProjectReference Include="..\Elvex.Toolbox.WPF.Abstractions\Elvex.Toolbox.WPF.Abstractions.csproj" />
+		<ProjectReference Include="..\Elvex.Toolbox.WPF\Elvex.Toolbox.WPF.csproj" />
+		<ProjectReference Include="..\Elvex.Toolbox\Elvex.Toolbox.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Compile Update="Resources\ExceptionSR.Designer.cs">
-	    <DesignTime>True</DesignTime>
-	    <AutoGen>True</AutoGen>
-	    <DependentUpon>ExceptionSR.resx</DependentUpon>
-	  </Compile>
+		<Compile Update="Resources\ExceptionSR.Designer.cs">
+			<DesignTime>True</DesignTime>
+			<AutoGen>True</AutoGen>
+			<DependentUpon>ExceptionSR.resx</DependentUpon>
+		</Compile>
 	</ItemGroup>
 
 	<ItemGroup>
-	  <EmbeddedResource Update="Resources\ExceptionSR.resx">
-	    <Generator>ResXFileCodeGenerator</Generator>
-	    <LastGenOutput>ExceptionSR.Designer.cs</LastGenOutput>
-	  </EmbeddedResource>
+		<EmbeddedResource Update="Resources\ExceptionSR.resx">
+			<Generator>ResXFileCodeGenerator</Generator>
+			<LastGenOutput>ExceptionSR.Designer.cs</LastGenOutput>
+		</EmbeddedResource>
 	</ItemGroup>
 </Project>
