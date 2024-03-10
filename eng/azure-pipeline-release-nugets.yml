@@ -10,7 +10,7 @@ pool:
   vmImage: 'windows-latest'
 
 variables:
-  - group: democrite-frameworks-variables
+  - group: ElvexToobox-frameworks-variables
   - group: azure-api
 
   - template: Templates/azure-pipeline-pkg-version.yml
@@ -24,13 +24,13 @@ variables:
   - ${{ if eq(variables['ReleasePublic'], true) }}:
 
     - name: NugetPackageFilter
-      value: "Democrite.Framework.*.nupkg"
+      value: "Elvex.Toolbox.*.nupkg"
 
 
   - ${{ if ne(variables['ReleasePublic'], true) }}:
 
     - name: NugetPackageFilter
-      value: "Democrite.Framework.*.symbols.nupkg"
+      value: "Elvex.Toolbox.*.symbols.nupkg"
 
 steps:
   - task: UseDotNet@2
@@ -50,7 +50,7 @@ steps:
 
   - task: NuGetAuthenticate@1
 
-  - script: dotnet pack ${{ variables.SolutionFolder }}/Democrite.sln -o "${{ variables.PublishNuget }}" -c $(BuildConfiguration) --include-symbols -p:PackageVersion=${{ variables.FinalPkgVersion }}
+  - script: dotnet pack ${{ variables.SolutionFolder }}/Elvex.Toolbox.sln -o "${{ variables.PublishNuget }}" -c $(BuildConfiguration) --include-symbols -p:PackageVersion=${{ variables.FinalPkgVersion }}
     displayName: dotnet pack
  
   # - task: PowerShell@2

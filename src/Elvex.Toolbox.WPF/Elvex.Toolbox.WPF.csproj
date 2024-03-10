@@ -2,6 +2,12 @@
 
 	<Import Project="..\..\SharedFrameworkAssemblyInfo.props" />
 
+	<PropertyGroup>
+		<IsPackable>true</IsPackable>
+		<Description>ToolBox that contains extention for WPF dev.</Description>
+		<PackageTags>toolbox;dotnet;helpers;configurations;WPF</PackageTags>
+	</PropertyGroup>
+	
 	<ItemGroup>
 	  <ProjectReference Include="..\Elvex.Toolbox.WPF.Abstractions\Elvex.Toolbox.WPF.Abstractions.csproj" />
 	  <ProjectReference Include="..\Elvex.Toolbox\Elvex.Toolbox.csproj" />

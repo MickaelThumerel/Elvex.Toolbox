@@ -10,7 +10,7 @@ parameters:
     - false
 
 variables:
-  - group: democrite-frameworks-variables
+  #- group: democrite-frameworks-variables
 
   - name: PkgVersionMajor
     value: $(PackageVersionMajor)

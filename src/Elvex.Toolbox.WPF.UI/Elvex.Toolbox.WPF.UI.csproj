@@ -5,6 +5,9 @@
 	<PropertyGroup>
 		<TargetFramework>net8.0-windows</TargetFramework>
 		<UseWPF>true</UseWPF>
+		<IsPackable>true</IsPackable>
+		<Description>ToolBox that contains extention for WPF dev. UI Part</Description>
+		<PackageTags>toolbox;dotnet;helpers;configurations;WPF</PackageTags>
 	</PropertyGroup>
 
 	<ItemGroup>
