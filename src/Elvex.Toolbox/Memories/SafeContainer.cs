@@ -187,7 +187,7 @@ namespace Elvex.Toolbox.Memories
                     items = this._items.ToArray();
                 }
 
-                foreach (var item in items.OfType<IDisposable>())
+                foreach (var item in items.Select(i => i.Value).OfType<IDisposable>())
                     item.Dispose();
             }
 
