@@ -12,7 +12,7 @@ namespace Elvex.Toolbox.Models
     /// <see cref="AbstractType"/> representing a collection
     /// </summary>
     /// <seealso cref="AbstractType" />
-    [DataObject]
+    [DataContract]
     [Serializable]
     [ImmutableObject(true)]
     public sealed class CollectionType : ConcretBaseType

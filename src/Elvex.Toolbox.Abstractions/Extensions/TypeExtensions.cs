@@ -8,6 +8,7 @@ namespace System
     using Elvex.Toolbox.Abstractions.Models;
 
     using System.Collections;
+    using System.Collections.Frozen;
     using System.Collections.Generic;
     using System.Collections.Immutable;
     using System.Linq;
@@ -256,7 +257,7 @@ namespace System
     {
         #region Fields
 
-        private readonly ImmutableDictionary<Type, ITypeInfoExtensionEnhancer> _enhancerCache;
+        private readonly IReadOnlyDictionary<Type, ITypeInfoExtensionEnhancer> _enhancerCache;
         private HashSet<Type>? _cachedCompatibleTypes;
 
         #endregion
@@ -304,7 +305,7 @@ namespace System
                 }
             }
 
-            this._enhancerCache = enhancerCache.ToImmutableDictionary();
+            this._enhancerCache = enhancerCache.ToFrozenDictionary();
         }
 
         #endregion

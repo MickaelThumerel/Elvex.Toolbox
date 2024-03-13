@@ -12,6 +12,7 @@ namespace System.Linq.Expressions
     using Elvex.Toolbox.Models;
 
     using System;
+    using System.Collections.Frozen;
     using System.Collections.Immutable;
     using System.Diagnostics;
     using System.Linq;
@@ -46,7 +47,7 @@ namespace System.Linq.Expressions
                 [LogicEnum.Or] = (left, right) => Expression.OrElse(left, right),
                 [LogicEnum.And] = (left, right) => Expression.AndAlso(left, right),
                 [LogicEnum.ExclusiveOr] = (left, right) => Expression.ExclusiveOr(left, right),
-            };
+            }.ToFrozenDictionary(kv => kv.Key, kv => kv.Value);
 
             s_operandExpressionBuild = new Dictionary<OperandEnum, Func<Expression?, Expression, Expression>>()
             {
@@ -58,7 +59,7 @@ namespace System.Linq.Expressions
                 [OperandEnum.NotEqual] = (left, right) => Expression.NotEqual(left!, right),
                 [OperandEnum.Different] = (left, right) => Expression.NotEqual(left!, right),
                 [OperandEnum.Not] = (_, right) => Expression.Not(right),
-            };
+            }.ToFrozenDictionary(kv => kv.Key, kv => kv.Value);
 
             s_mathOperatorExpressionBuild = new Dictionary<MathOperatorEnum, Func<Expression?, Expression, Expression>>()
             {
@@ -67,7 +68,7 @@ namespace System.Linq.Expressions
                 [MathOperatorEnum.Sum] = (left, right) => Expression.Add(left!, right),
                 [MathOperatorEnum.Sub] = (left, right) => Expression.Subtract(left!, right),
                 [MathOperatorEnum.Divide] = (left, right) => Expression.Divide(left!, right),
-            };
+            }.ToFrozenDictionary(kv => kv.Key, kv => kv.Value);
 
             var delegateType = typeof(Delegate);
 
@@ -76,12 +77,12 @@ namespace System.Linq.Expressions
                                                                        (t.Name.StartsWith(nameof(Action)) ||
                                                                         t.Name.StartsWith(nameof(Action) + "`")))
                                                            .GroupBy(t => t.GetGenericArguments().Length)
-                                                           .ToImmutableDictionary(k => k.Key, v => v.First());
+                                                           .ToFrozenDictionary(k => k.Key, v => v.First());
 
             s_functionTemplateTypes = typeof(Action).Assembly.GetTypes()
                                                              .Where(t => t.IsAssignableTo(delegateType) && t.Name.StartsWith(nameof(Func<int>) + "`"))
                                                              .GroupBy(t => t.GetGenericArguments().Length - 1)
-                                                             .ToImmutableDictionary(k => k.Key, v => v.First());
+                                                             .ToFrozenDictionary(k => k.Key, v => v.First());
         }
 
         #endregion

@@ -11,6 +11,7 @@ namespace Elvex.Toolbox.WPF.Services
 
     using Microsoft.Extensions.DependencyInjection;
 
+    using System.Collections.Frozen;
     using System.Collections.Generic;
     using System.Linq;
 
@@ -43,7 +44,7 @@ namespace Elvex.Toolbox.WPF.Services
             this._relations = relations?.ToArray() ?? EnumerableHelper<ViewRelation>.ReadOnlyArray;
 
             this._keyRelations = this._relations.GroupBy(r => r.Info.Key ?? string.Empty)
-                                                .ToDictionary(k => k.Key, grp => (IReadOnlyCollection<ViewRelation>)grp.ToArray(), StringComparer.OrdinalIgnoreCase);
+                                                .ToFrozenDictionary(k => k.Key, grp => (IReadOnlyCollection<ViewRelation>)grp.ToArray(), StringComparer.OrdinalIgnoreCase);
 
             this._persistantViewModel = new Dictionary<Type, object?>();
             this._dispatcherProxy = dispatcherProxy;

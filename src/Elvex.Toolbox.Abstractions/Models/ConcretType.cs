@@ -25,10 +25,10 @@ namespace Elvex.Toolbox.Models
         [System.Text.Json.Serialization.JsonConstructor]
         [Newtonsoft.Json.JsonConstructor]
         public ConcretType(string displayName,
-                            string? namespaceName,
-                            string assemblyQualifiedName,
-                            bool isInterface,
-                            IEnumerable<AbstractType> genericParameters)
+                           string? namespaceName,
+                           string assemblyQualifiedName,
+                           bool isInterface,
+                           IEnumerable<AbstractType> genericParameters)
             : base(displayName,
                    namespaceName,
                    assemblyQualifiedName,
