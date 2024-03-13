@@ -10,7 +10,7 @@ namespace Elvex.Toolbox.Models
     using System.Linq;
     using System.Runtime.Serialization;
 
-    [DataObject]
+    [DataContract]
     [Serializable]
     [ImmutableObject(true)]
     public sealed class GenericType : AbstractType
@@ -22,12 +22,12 @@ namespace Elvex.Toolbox.Models
         /// </summary>
         [System.Text.Json.Serialization.JsonConstructor]
         [Newtonsoft.Json.JsonConstructor]
-        internal GenericType(string displayName,
-                             IEnumerable<AbstractType> constraintTypes)
+        public GenericType(string displayName,
+                           IEnumerable<AbstractType> constraintTypes)
             : base(displayName, null, AbstractTypeCategoryEnum.Generic)
 
         {
-            this.ConstraintTypes = constraintTypes?.ToArray() ?? Array.Empty<AbstractType>();
+            this.ConstraintTypes = constraintTypes?.ToArray() ?? EnumerableHelper<AbstractType>.ReadOnlyArray;
         }
 
         #endregion
@@ -37,7 +37,7 @@ namespace Elvex.Toolbox.Models
         /// <summary>
         /// Gets the constraint types.
         /// </summary>
-        [DataMember(EmitDefaultValue = false)]
+        [DataMember()]
         public IReadOnlyCollection<AbstractType> ConstraintTypes { get; }
 
         #endregion

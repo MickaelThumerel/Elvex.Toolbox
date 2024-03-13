@@ -7,6 +7,7 @@ namespace Elvex.Toolbox.Models.Converters
     using Elvex.Toolbox.Abstractions.Models;
 
     using System;
+    using System.Collections.Frozen;
     using System.Collections.Generic;
     using System.Reflection;
 
@@ -39,7 +40,7 @@ namespace Elvex.Toolbox.Models.Converters
                                                            m.Name == "To" + m.ReturnType.Name &&
                                                            m.GetParameters().First().ParameterType != typeof(object))
                                                .GroupBy(m => (Param: m.GetParameters().First(), Return: m.ReturnType))
-                                               .ToDictionary(k => Tuple.Create(k.Key.Param.ParameterType, k.Key.Return), k => k.OrderByDescending(m => m.Name.Length).First());
+                                               .ToFrozenDictionary(k => Tuple.Create(k.Key.Param.ParameterType, k.Key.Return), k => k.OrderByDescending(m => m.Name.Length).First());
 
             s_convertMethod = convertMethod;
         }

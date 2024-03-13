@@ -6,8 +6,9 @@ namespace Elvex.Toolbox.Models
 {
     using System;
     using System.ComponentModel;
+    using System.Runtime.Serialization;
 
-    [DataObject]
+    [DataContract]
     [Serializable]
     [ImmutableObject(true)]
     public sealed class GenericRefType : AbstractType
@@ -17,7 +18,7 @@ namespace Elvex.Toolbox.Models
         /// <summary>
         /// Initializes a new instance of the <see cref="GenericType"/> class.
         /// </summary>
-        internal GenericRefType(string displayName)
+        public GenericRefType(string displayName)
             : base(displayName, null, AbstractTypeCategoryEnum.GenericRef)
 
         {

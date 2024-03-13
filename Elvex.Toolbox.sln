@@ -30,7 +30,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Elvex.Toolbox.WPF.UI", "src
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Elvex.Toolbox.Configuration.UnitTests", "src\tests\Elvex.Toolbox.Configuration.UnitTests\Elvex.Toolbox.Configuration.UnitTests.csproj", "{B126A88A-3095-4DFC-ABCA-C25FE509272B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Elvex.Toolbox.WPF.UI.Avalon", "src\Elvex.Toolbox.WPF.UI.Avalon\Elvex.Toolbox.WPF.UI.Avalon.csproj", "{9C521A61-B19F-486D-A2DD-FE40166AD882}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Elvex.Toolbox.WPF.UI.Avalon", "src\Elvex.Toolbox.WPF.UI.Avalon\Elvex.Toolbox.WPF.UI.Avalon.csproj", "{9C521A61-B19F-486D-A2DD-FE40166AD882}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Elvex.Toolbox.Abstractions.UnitTests", "src\tests\Elvex.Toolbox.Abstractions.UnitTests\Elvex.Toolbox.Abstractions.UnitTests.csproj", "{CD0128FE-CCCE-4AEE-A330-D12826C18C2B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -78,6 +80,10 @@ Global
 		{9C521A61-B19F-486D-A2DD-FE40166AD882}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9C521A61-B19F-486D-A2DD-FE40166AD882}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9C521A61-B19F-486D-A2DD-FE40166AD882}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CD0128FE-CCCE-4AEE-A330-D12826C18C2B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CD0128FE-CCCE-4AEE-A330-D12826C18C2B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CD0128FE-CCCE-4AEE-A330-D12826C18C2B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CD0128FE-CCCE-4AEE-A330-D12826C18C2B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -86,6 +92,7 @@ Global
 		{42BF6634-EC74-45DA-826E-5E194E054600} = {8BB90B28-5CC9-4BAE-BC32-9A724CD71EF1}
 		{293E5612-480B-4B39-B4BA-3215BE258C9B} = {8BB90B28-5CC9-4BAE-BC32-9A724CD71EF1}
 		{B126A88A-3095-4DFC-ABCA-C25FE509272B} = {8BB90B28-5CC9-4BAE-BC32-9A724CD71EF1}
+		{CD0128FE-CCCE-4AEE-A330-D12826C18C2B} = {8BB90B28-5CC9-4BAE-BC32-9A724CD71EF1}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {C4BF7339-CA28-415E-85F2-FC495C4B58F2}

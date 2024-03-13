@@ -8,6 +8,7 @@ namespace Elvex.Toolbox.Models
     using Elvex.Toolbox.Disposables;
 
     using System;
+    using System.Collections.Frozen;
     using System.Collections.Generic;
     using System.Collections.Immutable;
     using System.Linq;
@@ -42,7 +43,7 @@ namespace Elvex.Toolbox.Models
                                                            .Select(t => (Type: t, Converter: c)))
                                          .Distinct()
                                          .GroupBy(kv => kv.Type)
-                                         .ToImmutableDictionary(kv => kv.Key, kv => kv.Select(s => s.Converter).ToReadOnly());
+                                         .ToFrozenDictionary(kv => kv.Key, kv => kv.Select(s => s.Converter).ToReadOnly());
         }
 
         #endregion

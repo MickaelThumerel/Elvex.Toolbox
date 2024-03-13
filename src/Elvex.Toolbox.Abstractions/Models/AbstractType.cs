@@ -89,6 +89,15 @@ namespace Elvex.Toolbox.Models
             return AbstractTypeExtensions.IsEqualTo(this, other);
         }
 
+        /// <summary>
+        /// Equalses the specified child type
+        /// </summary>
+        public bool Equals<TAbstractType>(TAbstractType? other)
+            where TAbstractType : AbstractType
+        {
+            return ((IEquatable<AbstractType>)this).Equals(other);
+        }
+
         /// <inheritdoc />
         public bool Equals(AbstractType? other)
         {

@@ -95,10 +95,12 @@ namespace Elvex.Toolbox.UnitTests.ToolKit.Helpers
         public static bool IsSerializable<TType>(bool supportMutableValueType = false,
                                                  bool supportCyclingReference = false,
                                                  Func<Fixture, TType>? typeProvider = null,
-                                                 Func<TType, TType, bool>? overrideComparer = null)
+                                                 Func<TType, TType, bool>? overrideComparer = null,
+                                                 Fixture? manualFixture = null)
         {
             var shouldIndent = Debugger.IsAttached ? Formatting.Indented : Formatting.None;
-            var fixture = PrepareFixture(supportMutableValueType: supportMutableValueType,
+            var fixture = PrepareFixture(manualFixture,
+                                         supportMutableValueType: supportMutableValueType,
                                          supportCyclingReference: supportCyclingReference);
 
             TType data;
@@ -117,16 +119,44 @@ namespace Elvex.Toolbox.UnitTests.ToolKit.Helpers
 
             jsonSerializerSettings.Error += (source, args) => serializationErrors.Add(args.ErrorContext);
 
-            var jsonStr = JsonConvert.SerializeObject(data, jsonSerializerSettings);
+            Exception? serializationException = null;
+            string jsonStr = string.Empty;
+            try
+            {
+                jsonStr = JsonConvert.SerializeObject(data, jsonSerializerSettings);
+            }
+            catch (Exception ex)
+            {
+                serializationException = ex;
+            }
 
-            Check.WithCustomMessage("Serialization : \n" + string.Join("\n", serializationErrors))
+            var serializationErrorMsg = "Serialization : \n" + string.Join("\n", serializationErrors.Select(e => string.Format("Path: {0} -> Error {1}", e.Path, e.Error))) + "\n" + serializationException?.GetFullString();
+
+            Check.WithCustomMessage(serializationErrorMsg)
+                 .That(serializationException).IsNull();
+
+            Check.WithCustomMessage(serializationErrorMsg)
                  .That(serializationErrors.Count).IsEqualTo(0);
 
             Check.That(jsonStr).Not.IsNullOrEmpty();
 
-            var deserializedData = JsonConvert.DeserializeObject<TType>(jsonStr, jsonSerializerSettings);
+            Exception? deserializationException = null;
+            TType? deserializedData = default;
+            try
+            {
+                deserializedData = JsonConvert.DeserializeObject<TType>(jsonStr, jsonSerializerSettings);
+            }
+            catch (Exception ex)
+            {
+                deserializationException = ex;
+            }
 
-            Check.WithCustomMessage("Deserialization : \n" + string.Join("\n", serializationErrors))
+            var deserializationErrorMsg = "Deserialization : \n" + string.Join("\n", serializationErrors.Select(e => string.Format("Path: {0} -> Error {1}", e.Path, e.Error))) + "\n" + deserializationException?.GetFullString();
+
+            Check.WithCustomMessage(deserializationErrorMsg)
+                 .That(deserializationException).IsNull();
+
+            Check.WithCustomMessage(deserializationErrorMsg)
                  .That(serializationErrors.Count).IsEqualTo(0);
 
             Check.WithCustomMessage("Test type is not null or default").That(deserializedData).IsNotEqualTo(default);
