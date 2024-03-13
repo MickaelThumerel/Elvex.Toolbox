@@ -42,7 +42,7 @@ resources:
     - repository: tpl
       type: git
       name: Yaml-Templates
-#      ref: refs/heads/dev
+      ref: refs/heads/dev
 
 steps:
   - task: UseDotNet@2
@@ -53,9 +53,10 @@ steps:
 
   - task: NuGetAuthenticate@1
 
-  - template: Templates/dotnet/nuget-setps.yaml@tpl
+  - template: Templates/dotnet/nuget-steps.yaml@tpl
     parameters:
       package_version: $(FinalPkgVersion)
       include_symbols: ${{ parameters.prerelease }}
       nuget_depo: $(nuget_depo)
       secret_api_key: $(secret_api_key)
+      solution_file_name : $(solution_file_name)
