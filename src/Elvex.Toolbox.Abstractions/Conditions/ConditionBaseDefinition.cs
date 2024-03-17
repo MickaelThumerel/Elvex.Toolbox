@@ -15,6 +15,7 @@ namespace Elvex.Toolbox.Abstractions.Conditions
     /// <summary>
     /// Base of all condition part
     /// </summary>
+    [DataContract]
     [Serializable]
     [ImmutableObject(true)]
 
@@ -41,7 +42,7 @@ namespace Elvex.Toolbox.Abstractions.Conditions
 
     public abstract class ConditionBaseDefinition : IEquatable<ConditionBaseDefinition>
     {
-        #region Properties
+        #region Ctor
 
         /// Initializes a new instance of the <see cref="ConditionBaseDefinition"/> class.
         /// </summary>

@@ -67,6 +67,53 @@ namespace Elvex.Toolbox.UnitTests.Supports
         #region Methods
 
         /// <summary>
+        /// Ensure <see cref="SupportInitializationImplementation"/> allow only one initialization
+        /// </summary>
+        [Fact]
+        public async Task SupportInitializationImplementation_EnsureOnlyOneCall()
+        {
+            var initCounter = 0;
+            var completionSource = new TaskCompletionSource();
+
+            var inst = new SupportInitializationImplementation<int>((_, token) =>
+            {
+                Interlocked.Increment(ref initCounter);
+                return new ValueTask(completionSource.Task);
+            });
+
+            Check.That(initCounter).IsEqualTo(0);
+
+            Check.That(inst.IsInitializing).IsFalse();
+            Check.That(inst.IsInitialized).IsFalse();
+
+            var task = inst.InitializationAsync(42);
+
+            // Wait to be sure the completion task is waiting
+            await Task.Delay(1000);
+
+            Check.That(inst.IsInitializing).IsTrue();
+            Check.That(inst.IsInitialized).IsFalse();
+
+            completionSource.TrySetResult();
+
+            await task;
+
+            Check.That(initCounter).IsEqualTo(1);
+
+            Check.That(inst.IsInitializing).IsFalse();
+            Check.That(inst.IsInitialized).IsTrue();
+
+            Check.That(initCounter).IsEqualTo(1);
+
+            await inst.InitializationAsync(42);
+
+            Check.That(inst.IsInitializing).IsFalse();
+            Check.That(inst.IsInitialized).IsTrue();
+
+            Check.That(initCounter).IsEqualTo(1);
+        }
+
+        /// <summary>
         /// Ensure <see cref="SupportBaseInitialization"/> allow only one initialization
         /// </summary>
         [Fact]
@@ -106,6 +153,39 @@ namespace Elvex.Toolbox.UnitTests.Supports
             Check.That(inst.IsInitialized).IsTrue();
 
             Check.That(inst.InitializationCounter).IsEqualTo(1);
+        }
+
+        /// <summary>
+        /// Ensure <see cref="SupportInitializationImplementation"/> allow only one initialization even if theire many parallel call
+        /// </summary>
+        [Fact]
+        public async Task SupportInitializationImplementation_EnsureOnlyOneCall_ManyParallelCall()
+        {
+            var initCounter = 0;
+            var completionSource = new TaskCompletionSource();
+
+            var inst = new SupportInitializationImplementation<int>((_, token) =>
+            {
+                Interlocked.Increment(ref initCounter);
+                return new ValueTask(completionSource.Task);
+            });
+
+            Check.That(inst.IsInitializing).IsFalse();
+            Check.That(inst.IsInitialized).IsFalse();
+
+            var tasks = Enumerable.Range(0, 42)
+                                  .Select(_ => Task.Run(async () => await inst.InitializationAsync(42)))
+                                  .ToArray();
+
+            completionSource.TrySetResult();
+
+            await Task.WhenAll(tasks);
+
+            Check.That(inst.IsInitializing).IsFalse();
+            Check.That(inst.IsInitialized).IsTrue();
+
+            Check.That(initCounter).IsEqualTo(1);
+
         }
 
         /// <summary>

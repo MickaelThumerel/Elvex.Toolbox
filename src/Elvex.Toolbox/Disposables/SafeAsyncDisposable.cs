@@ -4,6 +4,7 @@
 
 namespace Elvex.Toolbox.Disposables
 {
+    using Elvex.Toolbox.Abstractions.Disposables;
     using Elvex.Toolbox.Memories;
 
     using System;
@@ -156,6 +157,52 @@ namespace Elvex.Toolbox.Disposables
         }
 
         #endregion
+
+        #endregion
+    }
+
+    /// <summary>
+    /// Thread Safe disposable implementations
+    /// </summary>
+    public abstract class SafeAsyncDisposable<TContent> : SafeAsyncDisposable, ISafeAsyncDisposable<TContent>, ISafeAsyncDisposable, IAsyncDisposable
+    {
+        #region Fields
+
+        private readonly bool _disposeContent;
+
+        #endregion
+
+        #region Ctor
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SafeAsyncDisposable"/> class.
+        /// </summary>
+        public SafeAsyncDisposable(TContent content, bool disposeContent = false)
+        {
+            this.Content = content;
+            this._disposeContent = disposeContent;
+        }
+
+        #endregion
+
+        #region Properties
+
+        /// <summary>
+        /// Gets the content.
+        /// </summary>
+        public TContent Content { get; }
+
+        #endregion
+
+        #region Methods
+
+        protected override async ValueTask DisposeBeginAsync()
+        {
+            if (this._disposeContent && this.Content is IAsyncDisposable disposable)
+                await disposable.DisposeAsync();
+
+            await base.DisposeBeginAsync();
+        }
 
         #endregion
     }

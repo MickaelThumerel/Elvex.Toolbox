@@ -161,14 +161,21 @@ namespace Elvex.Toolbox.Disposables
     /// </summary>
     public abstract class SafeDisposable<TContent> : SafeDisposable, ISafeDisposable<TContent>, ISafeDisposable, IDisposable
     {
+        #region Fields
+
+        private readonly bool _disposeContent;
+
+        #endregion
+
         #region Ctor
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SafeDisposable"/> class.
         /// </summary>
-        public SafeDisposable(TContent content)
+        public SafeDisposable(TContent content, bool disposeContent = false)
         {
             this.Content = content;
+            this._disposeContent = disposeContent;
         }
 
         #endregion
@@ -179,6 +186,19 @@ namespace Elvex.Toolbox.Disposables
         /// Gets the content.
         /// </summary>
         public TContent Content { get; }
+
+        #endregion
+
+        #region Methods
+
+        /// <inheritdoc />
+        protected override void DisposeBegin()
+        {
+            if (this._disposeContent && this.Content is IDisposable disposable)
+                disposable.Dispose();
+
+            base.DisposeBegin();
+        }
 
         #endregion
     }

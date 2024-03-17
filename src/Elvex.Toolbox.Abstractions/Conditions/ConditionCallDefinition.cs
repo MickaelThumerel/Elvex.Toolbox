@@ -10,7 +10,9 @@ namespace Elvex.Toolbox.Abstractions.Conditions
     using System.Collections.Generic;
     using System.ComponentModel;
     using System.Linq;
+    using System.Runtime.Serialization;
 
+    [DataContract]
     [Serializable]
     [ImmutableObject(true)]
 #pragma warning disable CS0660 // Type defines operator == or operator != but does not override Object.Equals(object o)
@@ -47,17 +49,20 @@ namespace Elvex.Toolbox.Abstractions.Conditions
         /// Gets the instance to call the method; could be null on static method
         /// </summary>
         [JsonProperty(ItemTypeNameHandling = TypeNameHandling.All)]
+        [DataMember]
         public ConditionBaseDefinition? Instance { get; }
 
         /// <summary>
         /// Gets the name of the method called
         /// </summary>
+        [DataMember]
         public string MethodName { get; }
 
         /// <summary>
         /// Gets the arguments.
         /// </summary>
         [JsonProperty(ItemTypeNameHandling = TypeNameHandling.All)]
+        [DataMember]
         public IReadOnlyCollection<ConditionBaseDefinition> Arguments { get; }
 
         #endregion

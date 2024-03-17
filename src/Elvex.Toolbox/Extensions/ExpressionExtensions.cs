@@ -422,13 +422,33 @@ namespace System.Linq.Expressions
         }
 
         /// <summary>
-        /// Converts back <see cref="ConditionExpressionDefinition"/> to executable <see cref="Expression{Func{TInput, TReturn}}"/>.
+        /// Converts back <see cref="ConditionExpressionDefinition"/> to executable <see cref="Expression{Func{TInput, TInputB, TReturn}}"/>.
         /// </summary>
         public static Expression<Func<TInputA, TInputB, TReturn>> ToExpression<TInputA, TInputB, TReturn>(this ConditionExpressionDefinition expressionDefinition)
         {
             ArgumentNullException.ThrowIfNull(expressionDefinition);
 
             return ToExpressionDelegate<Func<TInputA, TInputB, TReturn>>(expressionDefinition, typeof(TReturn));
+        }
+
+        /// <summary>
+        /// Converts back <see cref="ConditionExpressionDefinition"/> to executable <see cref="Expression{Func{TInput, TInputB, TInputC, TReturn}}"/>.
+        /// </summary>
+        public static Expression<Func<TInputA, TInputB, TInputC, TReturn>> ToExpression<TInputA, TInputB, TInputC, TReturn>(this ConditionExpressionDefinition expressionDefinition)
+        {
+            ArgumentNullException.ThrowIfNull(expressionDefinition);
+
+            return ToExpressionDelegate<Func<TInputA, TInputB, TInputC, TReturn>>(expressionDefinition, typeof(TReturn));
+        }
+
+        /// <summary>
+        /// Converts back <see cref="ConditionExpressionDefinition"/> to executable <see cref="Expression{Func{TInput, TInputB, TInputC, TInputD, TReturn}}"/>.
+        /// </summary>
+        public static Expression<Func<TInputA, TInputB, TInputC, TInputD, TReturn>> ToExpression<TInputA, TInputB, TInputC, TInputD, TReturn>(this ConditionExpressionDefinition expressionDefinition)
+        {
+            ArgumentNullException.ThrowIfNull(expressionDefinition);
+
+            return ToExpressionDelegate<Func<TInputA, TInputB, TInputC, TInputD, TReturn>>(expressionDefinition, typeof(TReturn));
         }
 
         /// <summary>
