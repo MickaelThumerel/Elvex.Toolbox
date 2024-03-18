@@ -14,6 +14,8 @@ namespace Elvex.Toolbox.UnitTests.Extensions
     using Elvex.Toolbox.UnitTests.ToolKit.Helpers;
     using Elvex.Toolbox.UnitTests.Xunits;
 
+    using Microsoft.VisualStudio.TestPlatform.Utilities;
+
     using Newtonsoft.Json;
 
     using NFluent;
@@ -50,6 +52,44 @@ namespace Elvex.Toolbox.UnitTests.Extensions
         #endregion
 
         #region Nested
+
+        public record class SimpleObj();
+
+        public class ComplexObj : IEquatable<ComplexObj>
+        {
+            public ComplexObj(Guid uid)
+            {
+                this.Uid = uid;
+            }
+
+            public Guid Uid { get; }
+
+            public string Name { get; set; }
+
+            public bool Equals(ComplexObj? other)
+            {
+                if (other is null)
+                    return false;
+
+                if (object.ReferenceEquals(other, this))
+                    return true;
+
+                return this.Uid == other.Uid &&
+                       this.Name == other.Name;
+            }
+
+            public override bool Equals(object? obj)
+            {
+                if (obj is ComplexObj complex)
+                    return Equals(complex);
+                return false;
+            }
+
+            public override int GetHashCode()
+            {
+                return HashCode.Combine(this.Uid, this.Name);
+            }
+        }
 
         public record struct ExpressioSimpleSampleObject(Guid uid, string name, bool value, StringComparison? StringComparison);
         public record struct ExpressionComplexSampleObject(Guid uid, string name, bool value, ExpressioSimpleSampleObject nested);
@@ -181,6 +221,22 @@ namespace Elvex.Toolbox.UnitTests.Extensions
             Check.That(newInst).IsEqualTo(inst);
         }
 
+        [Fact]
+        public void MemberInit_Complex_Binding()
+        {
+            var fixture = ObjectTestHelper.PrepareFixture(supportCyclingReference: true);
+
+            var nameValue = fixture.Create<string>();
+            var uidValue = Guid.NewGuid();
+
+            Expression<Func<string, ComplexObj>> expr = input => new ComplexObj(uidValue)
+            {
+                Name = nameValue
+            };
+
+            MemberInit_Tester(expr, "Poner Rose");
+        }
+
         /// <summary>
         /// Members the initialize constant binding.
         /// </summary>
@@ -199,6 +255,34 @@ namespace Elvex.Toolbox.UnitTests.Extensions
                 name = nameValue
             };
             MemberInit_Tester(expr, "Poner Rose");
+        }
+
+        /// <summary>
+        /// Members the initialize lambda new.
+        /// </summary>
+        [Fact]
+        public void MemberInit_New_Lambda_Binding()
+        {
+            var fixture = ObjectTestHelper.PrepareFixture(supportCyclingReference: true);
+
+            Expression<Func<SimpleObj>> expr = () => new SimpleObj();
+
+            var bindingModel = expr.SerializeMemberInitialization();
+            Check.That(bindingModel).IsNotNull();
+
+            var serializationJson = JsonConvert.SerializeObject(bindingModel, s_serializationSetting);
+            Check.That(serializationJson).IsNotNull();
+
+            var newBindingModel = (MemberInitializationDefinition)JsonConvert.DeserializeObject(serializationJson, bindingModel.GetType(), s_serializationSetting)!;
+            Check.That(serializationJson).IsNotNull();
+
+            var newInitExpr = newBindingModel.ToMemberInitializationExpression<SimpleObj>();
+            Check.That(newInitExpr).IsNotNull();
+
+            var sourceGenerated = expr.Compile().Invoke();
+            var generationAfter = newInitExpr.Compile().Invoke();
+
+            Check.That(sourceGenerated).IsEqualTo(generationAfter);
         }
 
         /// <summary>
@@ -334,6 +418,34 @@ namespace Elvex.Toolbox.UnitTests.Extensions
                     name = "Poney rose"
                 }
             };
+
+            MemberInit_Tester(expr, new ExpressioSimpleSampleObject() { uid = Guid.NewGuid() });
+        }
+
+        /// <summary>
+        /// Members the initialize constant and input binding.
+        /// </summary>
+        [Fact]
+        public void MemberInit_Nested_Build_Binding_Full_With_Ctor()
+        {
+            var fixture = ObjectTestHelper.PrepareFixture(supportCyclingReference: true);
+
+            var nameValue = fixture.Create<string>();
+
+            var externInput = new ExpressioSimpleSampleObject()
+            {
+                uid = Guid.NewGuid(),
+            };
+
+            Expression<Func<ExpressioSimpleSampleObject, ExpressionComplexSampleObject>> expr = input => new ExpressionComplexSampleObject(input.uid, 
+                                                                                                                                           nameValue, 
+                                                                                                                                           true,
+                                                                                                                                           new ExpressioSimpleSampleObject()
+                                                                                                                                           {
+                                                                                                                                               uid = externInput.uid,
+                                                                                                                                               value = true,
+                                                                                                                                               name = "Poney rose"
+                                                                                                                                           });
 
             MemberInit_Tester(expr, new ExpressioSimpleSampleObject() { uid = Guid.NewGuid() });
         }

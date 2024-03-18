@@ -25,7 +25,7 @@ namespace System
         private static readonly Dictionary<MethodBase, AbstractMethod> s_abstractMethodCache;
         private static readonly ReaderWriterLockSlim s_abstractMethodCachedLocker;
 
-        private static readonly Dictionary<string, MethodInfo> s_methodInfoFromAbstractCache;
+        private static readonly Dictionary<string, MethodBase> s_methodInfoFromAbstractCache;
         private static readonly ReaderWriterLockSlim s_methodInfoFromAbstractCacheLocker;
 
         #endregion
@@ -43,7 +43,7 @@ namespace System
             s_abstractMethodCache = new Dictionary<MethodBase, AbstractMethod>();
             s_abstractMethodCachedLocker = new ReaderWriterLockSlim();
 
-            s_methodInfoFromAbstractCache = new Dictionary<string, MethodInfo>();
+            s_methodInfoFromAbstractCache = new Dictionary<string, MethodBase>();
             s_methodInfoFromAbstractCacheLocker = new ReaderWriterLockSlim();
         }
 
@@ -54,9 +54,9 @@ namespace System
         /// <summary>
         /// Converts to method.
         /// </summary>
-        public static MethodBase ToMethod(this AbstractMethod method, Type type)
+        public static MethodBase? ToMethod(this AbstractMethod method, Type type)
         {
-            MethodInfo? mthd = null;
+            MethodBase? mthd = null;
 
             s_methodInfoFromAbstractCacheLocker.EnterReadLock();
             try
@@ -78,11 +78,14 @@ namespace System
                 mthd = type.GetAllMethodInfos(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
                            .FirstOrDefault(m => method.IsEqualTo(m, true));
 
+                if (mthd is null)
+                    mthd = type.GetConstructors().FirstOrDefault(c => method.IsEqualTo(c, true));
+
                 if (mthd != null)
                 {
-                    if (mthd.IsGenericMethodDefinition && method.HasGenericArguments)
+                    if (mthd is MethodInfo info && mthd.IsGenericMethodDefinition && method.HasGenericArguments)
                     {
-                        mthd = mthd.MakeGenericMethod(method.GenericArguments
+                        mthd = info.MakeGenericMethod(method.GenericArguments
                                                             .Select(g => g.ToType())
                                                             .ToArray());
                     }
@@ -248,7 +251,7 @@ namespace System
         /// <summary>
         /// Determines whether if <see cref="AbstractMethod"/> is equal to <see cref="MethodInfo"/>
         /// </summary>
-        public static bool IsEqualTo(this AbstractMethod abstractMethod, MethodInfo method, bool trySpecialization = false)
+        public static bool IsEqualTo(this AbstractMethod abstractMethod, MethodBase method, bool trySpecialization = false)
         {
             ArgumentNullException.ThrowIfNull(abstractMethod);
             ArgumentNullException.ThrowIfNull(method);
@@ -256,9 +259,13 @@ namespace System
             var other = method.GetAbstractMethod();
             var result = abstractMethod?.Equals(other) ?? abstractMethod is null;
 
-            if (result == false && trySpecialization && method.IsGenericMethodDefinition && method.GetGenericArguments().Length == abstractMethod!.GenericArguments.Count)
+            if (method is MethodInfo mth &&
+                result == false &&
+                trySpecialization &&
+                method.IsGenericMethodDefinition &&
+                method.GetGenericArguments().Length == abstractMethod!.GenericArguments.Count)
             {
-                var specializedMethod = method.MakeGenericMethod(abstractMethod!.GenericArguments.Select(g => g.ToType()).ToArray());
+                var specializedMethod = mth.MakeGenericMethod(abstractMethod!.GenericArguments.Select(g => g.ToType()).ToArray());
                 result = IsEqualTo(abstractMethod, specializedMethod, false);
             }
 
