@@ -137,7 +137,7 @@ namespace System.Linq.Expressions
                 return new AccessExpressionDefinition((ConcretType)cstExpression.Type.GetAbstractType(), TypedArgument.From(cstValue, cstExpression.Type), null, null);
             }
 
-            if (nodeType == ExpressionType.MemberInit)
+            if (nodeType == ExpressionType.MemberInit || nodeType == ExpressionType.New)
             {
                 initMember = lambdaAccessExpression.SerializeMemberInitialization();
             }
