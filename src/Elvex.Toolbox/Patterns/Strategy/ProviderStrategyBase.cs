@@ -41,6 +41,12 @@ namespace Elvex.Toolbox.Patterns.Strategy
         {
             this._logger = logger ?? NullLogger.Instance;
             this._providerSource = providerSource?.ToArray() ?? EnumerableHelper<TSource>.ReadOnlyArray;
+
+            foreach (var provider in this._providerSource)
+            {
+                provider.DataChanged -= Provider_DataChanged;
+                provider.DataChanged += Provider_DataChanged;
+            }
         }
 
         #endregion
@@ -199,6 +205,14 @@ namespace Elvex.Toolbox.Patterns.Strategy
             }
 
             return results;
+        }
+
+        /// <summary>
+        /// Providers the data changed.
+        /// </summary>
+        private void Provider_DataChanged(object? sender, IReadOnlyCollection<TKey> keys)
+        {
+            RaiseDataChanged(keys);
         }
 
         #endregion
