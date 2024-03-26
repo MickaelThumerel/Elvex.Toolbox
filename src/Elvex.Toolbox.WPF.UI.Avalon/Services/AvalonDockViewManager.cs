@@ -226,7 +226,7 @@
         /// <summary>
         /// Registers the dock manager.
         /// </summary>
-        internal void RegisterDockManager(AvalonDock.DockingManager avalonDock)
+        public void RegisterDockManager(AvalonDock.DockingManager avalonDock)
         {
             this._avalonDock = avalonDock;
         }
