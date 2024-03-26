@@ -4,7 +4,7 @@
                     xmlns:reskeys="clr-namespace:AvalonDock.Themes.VS2013.Themes;assembly=AvalonDock.Themes.VS2013">
 
     <SolidColorBrush x:Key="{x:Static reskeys:ResourceKeys.ControlAccentBrushKey}" options:Freeze="True"  Color="{DynamicResource AccentColor}" />
-    <SolidColorBrush x:Key="{x:Static reskeys:ResourceKeys.Background}" options:Freeze="True"  Color="{DynamicResource MainBackgroundColor}" />
+    <SolidColorBrush x:Key="{x:Static reskeys:ResourceKeys.Background}" options:Freeze="True"  Color="Transparent" />
     <SolidColorBrush x:Key="{x:Static reskeys:ResourceKeys.PanelBorderBrush}" options:Freeze="True"  Color="{DynamicResource MainBorderColor}" />
     <SolidColorBrush x:Key="{x:Static reskeys:ResourceKeys.TabBackground}" options:Freeze="True"  Color="{DynamicResource MainBackgroundColor}" />
 
