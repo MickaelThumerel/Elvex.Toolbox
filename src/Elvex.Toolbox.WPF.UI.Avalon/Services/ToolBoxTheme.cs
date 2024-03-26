@@ -2,7 +2,7 @@
 // The Democrite licenses this file to you under the MIT license.
 // Produce by nexai & community (cf. docs/Teams.md)
 
-namespace DataBlockAnalysis.Client.Services
+namespace Elvex.Toolbox.WPF.UI.Avalon.Services
 {
     using AvalonDock.Themes;
 
@@ -12,7 +12,7 @@ namespace DataBlockAnalysis.Client.Services
     {
         public override Uri GetResourceUri()
         {
-            return new Uri("/DataBlockAnalysis.Client;component/Resources/AvalonThemeBrushes.xaml", UriKind.Relative);
+            return new Uri("/Elvex.Toolbox.WPF.UI.Avalon;component/Resources/AvalonThemeBrushes.xaml", UriKind.Relative);
         }
     }
 }

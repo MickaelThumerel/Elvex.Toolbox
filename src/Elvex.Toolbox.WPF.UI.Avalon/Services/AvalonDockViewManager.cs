@@ -1,4 +1,4 @@
-﻿namespace DataBlockAnalysis.Client.Services
+﻿namespace Elvex.Toolbox.WPF.UI.Avalon.Services
 {
     using AvalonDock.Layout;
 
