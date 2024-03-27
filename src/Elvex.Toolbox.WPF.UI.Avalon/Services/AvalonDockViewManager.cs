@@ -7,6 +7,7 @@
     using Elvex.Toolbox.WPF.Abstractions.Navigations;
     using Elvex.Toolbox.WPF.Abstractions.Views;
     using Elvex.Toolbox.WPF.Services;
+    using Elvex.Toolbox.WPF.UI.Services;
 
     using Microsoft.Extensions.DependencyInjection;
 
@@ -19,24 +20,15 @@
     /// View manager to display view into <see cref="AvalonDock.DockingManager"/>
     /// </summary>
     /// <seealso cref="BaseViewManager" />
-    public sealed class AvalonDockViewManager : BaseViewManager
+    public sealed class AvalonDockViewManager : BaseViewWithWindowManager
     {
         #region Fields
 
-        private static readonly Type s_windowType;
         private AvalonDock.DockingManager? _avalonDock;
 
         #endregion
 
         #region Ctor
-
-        /// <summary>
-        /// Initializes the <see cref="AvalonDockViewManager"/> class.
-        /// </summary>
-        static AvalonDockViewManager()
-        {
-            s_windowType = typeof(Window);
-        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AvalonDockViewManager"/> class.
@@ -53,29 +45,12 @@
         #region Methods
 
         /// <inheritdoc />
-        protected override object? Display(Func<object?> viewModelBuilder,
-                                           ViewRelation relation,
-                                           bool dialog,
-                                           NavigationArguments? arguments,
-                                           string? specializedId)
+        protected override object? OnDisplay(Func<object?> viewModelBuilder,
+                                             ViewRelation relation,
+                                             bool dialog,
+                                             NavigationArguments? arguments,
+                                             string? specializedId)
         {
-            if (relation.View.IsAssignableTo(s_windowType))
-            {
-                var inst = this.ServiceProvider.GetRequiredService(relation.View) as Window;
-
-                ArgumentNullException.ThrowIfNull(inst);
-
-                var windowVM = viewModelBuilder();
-                inst.DataContext = windowVM;
-
-                if (dialog)
-                    inst.ShowDialog();
-                else
-                    inst.Show();
-
-                return windowVM;
-            }
-
             ArgumentNullException.ThrowIfNull(this._avalonDock);
 
             var viewUid = relation.Uid.ToString();
