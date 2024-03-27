@@ -26,6 +26,11 @@ namespace Elvex.Toolbox.WPF.UI.Controls
                                                                                                   typeof(ButtonPath),
                                                                                                   new PropertyMetadata(null));
 
+        public static readonly DependencyProperty IconStyleProperty = DependencyProperty.Register(nameof(IconStyle),
+                                                                                                  typeof(Style),
+                                                                                                  typeof(ButtonPath),
+                                                                                                  new PropertyMetadata(null));
+
         #endregion
 
         #region Ctor
@@ -58,6 +63,15 @@ namespace Elvex.Toolbox.WPF.UI.Controls
         {
             get { return (Brush)GetValue(IconBrushProperty); }
             set { SetValue(IconBrushProperty, value); }
+        }
+
+        /// <summary>
+        /// Gets or sets the icon style.
+        /// </summary>
+        public Style? IconStyle
+        {
+            get { return (Style?)GetValue(IconStyleProperty); }
+            set { SetValue(IconStyleProperty, value); }
         }
 
         #endregion
