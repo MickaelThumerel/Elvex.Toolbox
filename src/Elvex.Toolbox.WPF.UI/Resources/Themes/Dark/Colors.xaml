@@ -38,7 +38,7 @@
 
     <SolidColorBrush x:Key="ContrastAccentBrush" Color="{StaticResource ContrastAccentColor}"/>
 
-    <SolidColorBrush x:Key="LightBorderBrush" Color="{StaticResource LightMainBorderColor}" />
+    <SolidColorBrush x:Key="LightBorderBrush" Color="{StaticResource LightBorderColor}" />
     <SolidColorBrush x:Key="MainBorderBrush" Color="{StaticResource MainBorderColor}"/>
     <SolidColorBrush x:Key="SelectionBackgroundBrush" Color="{StaticResource SelectionBackgroundColor}"/>
     
