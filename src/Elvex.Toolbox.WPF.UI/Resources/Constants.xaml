@@ -51,9 +51,6 @@
 
     <Thickness x:Key="SmallMarginLeft" Left="{StaticResource SmallSpace}" />
 
-    <Thickness x:Key="SmallTopBottomMargin" Top="{StaticResource SmallSpace}"
-                                            Bottom="{StaticResource SmallSpace}" />
-
     <GridLength x:Key="SmallGridSeparator">3px</GridLength>
     <GridLength x:Key="DefaultGridSeparator">5px</GridLength>
 
