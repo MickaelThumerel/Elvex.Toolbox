@@ -3,6 +3,7 @@
     <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary Source="Constants.xaml" />
         <ResourceDictionary Source="Paths.xaml" />
+        <ResourceDictionary Source="Brushes.xaml" />
 
         <ResourceDictionary Source="Styles/BorderLessWindowStyle.xaml" />
         <ResourceDictionary Source="Styles/PathStyles.xaml" />

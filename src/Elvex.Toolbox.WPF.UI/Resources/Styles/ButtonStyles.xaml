@@ -72,6 +72,7 @@
     <Style x:Key="DefaultButtonPathFlatStyle" TargetType="{x:Type ctrl:ButtonPath}" BasedOn="{StaticResource DefaultButtonFlatStyle}">
         <Setter Property="Padding" Value="{DynamicResource SmallMargin}" />
         <Setter Property="IconBrush" Value="{DynamicResource AccentBrush}" />
+        <Setter Property="IconStyle" Value="{DynamicResource IconSmallPathStyle}" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type ctrl:ButtonPath}">
@@ -85,7 +86,7 @@
                             <Path Data="{TemplateBinding IconPath}"
                                   Fill="{TemplateBinding IconBrush}"
                                   Opacity="{TemplateBinding Opacity}"
-                                  Style="{DynamicResource IconSmallPathStyle}" />
+                                  Style="{TemplateBinding IconStyle}" />
 
                             <ContentPresenter Margin="{DynamicResource SmallMarginLeft}"
                                               Visibility="{TemplateBinding Content, Converter={StaticResource CollapsedIfNullConverter}}"

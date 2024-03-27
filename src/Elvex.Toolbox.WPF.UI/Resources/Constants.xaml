@@ -36,6 +36,10 @@
     <Thickness x:Key="DefaultTopBottomMargin" Top="{StaticResource DefaultSpace}"
                                               Bottom="{StaticResource DefaultSpace}" />
 
+    <Thickness x:Key="SmallBottomMargin" Bottom="{StaticResource SmallSpace}" />
+    
+    <Thickness x:Key="SmallTopBottomMargin" Top="{StaticResource SmallSpace}"
+                                            Bottom="{StaticResource SmallSpace}" />
 
     <Thickness x:Key="DefaultLeftMargin" Left="{StaticResource DefaultSpace}" />
 
@@ -46,7 +50,6 @@
 
 
     <Thickness x:Key="SmallMarginLeft" Left="{StaticResource SmallSpace}" />
-
 
     <Thickness x:Key="SmallTopBottomMargin" Top="{StaticResource SmallSpace}"
                                             Bottom="{StaticResource SmallSpace}" />
