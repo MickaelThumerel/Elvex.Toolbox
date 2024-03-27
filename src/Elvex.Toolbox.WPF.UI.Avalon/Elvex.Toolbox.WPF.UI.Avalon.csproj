@@ -16,6 +16,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<ProjectReference Include="..\Elvex.Toolbox.WPF.UI\Elvex.Toolbox.WPF.UI.csproj" />
 		<ProjectReference Include="..\Elvex.Toolbox.WPF\Elvex.Toolbox.WPF.csproj" />
 	</ItemGroup>
 
