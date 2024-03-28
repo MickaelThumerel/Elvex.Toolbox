@@ -4,6 +4,7 @@
 
 namespace System
 {
+    using System.Buffers;
     using System.Collections.Generic;
     using System.Runtime.CompilerServices;
 
@@ -35,6 +36,44 @@ namespace System
             }
 
             return counter;
+        }
+
+        /// <summary>
+        /// Replaces many char by a new value
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Span<char> ReplaceMany(in this ReadOnlySpan<char> source, in char replacement, in ReadOnlySpan<char> values)
+        {
+            var result = new Span<char>(source.ToArray());
+
+            result.ReplaceMany(replacement, values);
+
+            return result;
+        }
+
+        /// <summary>
+        /// Replaces many char by a new value
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Span<char> ReplaceMany(in this Span<char> source, in char replacement, in ReadOnlySpan<char> values)
+        {
+            var searchValues = SearchValues.Create(values);
+
+            var workSpan = source;
+
+            var searchIndx = workSpan.IndexOfAny(searchValues);
+            while (searchIndx > -1)
+            {
+                workSpan[searchIndx] = replacement;
+
+                if (searchIndx + 1 >= source.Length)
+                    break;
+
+                workSpan = workSpan.Slice(searchIndx + 1);
+                searchIndx = workSpan.IndexOfAny(searchValues);
+            }
+
+            return source;
         }
     }
 }
