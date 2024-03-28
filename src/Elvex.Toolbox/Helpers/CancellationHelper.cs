@@ -43,7 +43,8 @@ namespace Elvex.Toolbox.Helpers
         public static ISafeDisposable<CancellationToken> SingleAccessScope(SemaphoreSlim locker,
                                                                            Func<CancellationTokenSource?> getCurrentSource,
                                                                            Action<CancellationTokenSource> setterNewSource,
-                                                                           TimeSpan? timeout = null)
+                                                                           TimeSpan? timeout = null,
+                                                                           params CancellationToken[] extraTokens)
         {
 #if DEBUG
             ArgumentNullException.ThrowIfNull(locker);
@@ -58,7 +59,10 @@ namespace Elvex.Toolbox.Helpers
                 var current = getCurrentSource();
                 current?.Cancel();
 
-                current = new CancellationTokenSource();
+                if (extraTokens.Any())
+                    current = CancellationTokenSource.CreateLinkedTokenSource(extraTokens);
+                else
+                    current = new CancellationTokenSource();
                 setterNewSource(current);
 
                 return new DisposableAction<CancellationToken>(static _ => { }, current.Token);

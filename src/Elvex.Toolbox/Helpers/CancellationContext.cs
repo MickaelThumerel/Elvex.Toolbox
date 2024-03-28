@@ -36,9 +36,11 @@ namespace Elvex.Toolbox.Helpers
         #region Methods
 
         /// <inheritdoc cref="CancellationHelper.SingleAccessScope"/>
-        public ISafeDisposable<CancellationToken> Lock()
+        public ISafeDisposable<CancellationToken> Lock(CancellationToken? token = null)
         {
-            return CancellationHelper.SingleAccessScope(this._locker, () => this._cancellationSource, c => this._cancellationSource = c);
+            return CancellationHelper.SingleAccessScope(this._locker,
+                                                        () => this._cancellationSource,
+                                                        c => this._cancellationSource = c);
         }
 
         /// <summary>
