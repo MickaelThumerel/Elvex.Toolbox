@@ -9,6 +9,14 @@
         <Setter Property="Fill" Value="{DynamicResource AccentBrush}" />
     </Style>
 
+    <Style x:Key="HorizontalSeparatorStyle" TargetType="{x:Type Rectangle}">
+        <Setter Property="Height" Value="{DynamicResource SeparatorSize}" />
+        <Setter Property="HorizontalAlignment" Value="Stretch" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="Margin" Value="{DynamicResource DefaultMargin}" />
+        <Setter Property="Fill" Value="{DynamicResource AccentBrush}" />
+    </Style>
+
     <Style x:Key="DefaultGridSplitterStyle" TargetType="{x:Type GridSplitter}">
         <Setter Property="Background" Value="{DynamicResource LightAccentBrush}" />
         <Style.Triggers>

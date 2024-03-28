@@ -20,11 +20,6 @@
 
     <FontFamily x:Key="DefaultUniformFontFamily">Segoe UI</FontFamily>
     
-    <Thickness x:Key="SmallMargin" Top="{StaticResource SmallSpace}"
-                                   Left="{StaticResource SmallSpace}"
-                                   Bottom="{StaticResource SmallSpace}"
-                                   Right="{StaticResource SmallSpace}" />
-
     <Thickness x:Key="DefaultMargin" Top="{StaticResource DefaultSpace}"
                                      Left="{StaticResource DefaultSpace}"
                                      Bottom="{StaticResource DefaultSpace}"
@@ -36,20 +31,31 @@
     <Thickness x:Key="DefaultTopBottomMargin" Top="{StaticResource DefaultSpace}"
                                               Bottom="{StaticResource DefaultSpace}" />
 
-    <Thickness x:Key="SmallBottomMargin" Bottom="{StaticResource SmallSpace}" />
-    
-    <Thickness x:Key="SmallTopBottomMargin" Top="{StaticResource SmallSpace}"
-                                            Bottom="{StaticResource SmallSpace}" />
-
+    <Thickness x:Key="DefaultRightMargin" Right="{StaticResource DefaultSpace}" />
     <Thickness x:Key="DefaultLeftMargin" Left="{StaticResource DefaultSpace}" />
+    <Thickness x:Key="DefaultTopMargin" Top="{StaticResource DefaultSpace}" />
+    <Thickness x:Key="DefaultBottomMargin" Bottom="{StaticResource DefaultSpace}" />
 
     <Thickness x:Key="GoldenMargin" Top="{StaticResource SmallSpace}"
                                     Left="{StaticResource DefaultSpace}"
                                     Bottom="{StaticResource SmallSpace}"
                                     Right="{StaticResource DefaultSpace}" />
 
+    <Thickness x:Key="SmallMargin" Top="{StaticResource SmallSpace}"
+                                   Left="{StaticResource SmallSpace}"
+                                   Bottom="{StaticResource SmallSpace}"
+                                   Right="{StaticResource SmallSpace}" />
 
-    <Thickness x:Key="SmallMarginLeft" Left="{StaticResource SmallSpace}" />
+    <Thickness x:Key="SmallTopBottomMargin" Top="{StaticResource SmallSpace}"
+                                            Bottom="{StaticResource SmallSpace}" />
+
+    <Thickness x:Key="SmallLeftRightMargin" Left="{StaticResource SmallSpace}"
+                                            Right="{StaticResource SmallSpace}" />
+
+    <Thickness x:Key="SmallRightMargin" Right="{StaticResource SmallSpace}" />
+    <Thickness x:Key="SmallLeftMargin" Left="{StaticResource SmallSpace}" />
+    <Thickness x:Key="SmallTopMargin" Top="{StaticResource SmallSpace}" />
+    <Thickness x:Key="SmallBottomMargin" Bottom="{StaticResource SmallSpace}" />
 
     <GridLength x:Key="SmallGridSeparator">3px</GridLength>
     <GridLength x:Key="DefaultGridSeparator">5px</GridLength>
