@@ -44,6 +44,23 @@ namespace Elvex.Toolbox.Helpers
         }
 
         /// <summary>
+        /// Force Cancel
+        /// </summary>
+        public void Cancel()
+        {
+            this._locker.Wait();
+            try
+            {
+                this._cancellationSource?.Cancel();
+                this._cancellationSource = null;
+            }
+            finally
+            {
+                this._locker.Release();
+            }
+        }
+
+        /// <summary>
         /// Start to disposed
         /// </summary>
         protected override void DisposeBegin()
