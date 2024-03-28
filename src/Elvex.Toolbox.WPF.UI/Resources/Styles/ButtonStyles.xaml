@@ -88,7 +88,7 @@
                                   Opacity="{TemplateBinding Opacity}"
                                   Style="{TemplateBinding IconStyle}" />
 
-                            <ContentPresenter Margin="{DynamicResource SmallMarginLeft}"
+                            <ContentPresenter Margin="{DynamicResource SmallLeftMargin}"
                                               Visibility="{TemplateBinding Content, Converter={StaticResource CollapsedIfNullConverter}}"
                                               VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
 
