@@ -13,6 +13,8 @@ namespace System
     /// </summary>
     public static class SpanExtensions
     {
+        #region Methods
+
         /// <summary>
         /// Counts number of time the value <paramref name="valueToCount"/> is in <paramref name="values"/>
         /// </summary>
@@ -36,6 +38,64 @@ namespace System
             }
 
             return counter;
+        }
+
+        /// <summary>
+        /// Replaces many char by a new value
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Span<char> ToLower(in this ReadOnlySpan<char> source)
+        {
+            var result = new Span<char>(source.ToArray());
+
+            ToLower(result);
+
+            return result;
+        }
+
+        /// <summary>
+        /// Replaces many char by a new value
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Span<char> ToLower(in this Span<char> source)
+        {
+            for(int i = 0; i < source.Length; ++i)
+            {
+                var c = source[i];
+                if (char.IsUpper(c))
+                    source[i] = char.ToLower(c);
+            }
+
+            return source;
+        }
+
+        /// <summary>
+        /// Replaces many char by a new value
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Span<char> ToUpper(in this ReadOnlySpan<char> source)
+        {
+            var result = new Span<char>(source.ToArray());
+
+            ToUpper(result);
+
+            return result;
+        }
+
+        /// <summary>
+        /// Replaces many char by a new value
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Span<char> ToUpper(in this Span<char> source)
+        {
+            for (int i = 0; i < source.Length; ++i)
+            {
+                var c = source[i];
+                if (char.IsLower(c))
+                    source[i] = char.ToUpper(c);
+            }
+
+            return source;
         }
 
         /// <summary>
@@ -75,5 +135,7 @@ namespace System
 
             return source;
         }
+
+        #endregion
     }
 }
