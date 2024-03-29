@@ -28,6 +28,9 @@ namespace Elvex.Toolbox.WPF.UI.Converters
             if (value is string str)
                 return string.IsNullOrEmpty(str);
 
+            if (value is Guid id)
+                return id == Guid.Empty;
+
             if (value is IEnumerable collection)
                 return !collection.OfType<object>().Any();
 
