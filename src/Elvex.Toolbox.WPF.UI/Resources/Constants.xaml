@@ -13,10 +13,10 @@
     <system:Double x:Key="IconDefaultSize">32</system:Double>
     <system:Double x:Key="IconBigSize">64</system:Double>
 
-    <system:Double x:Key="InfoFontSize">8</system:Double>
-    <system:Double x:Key="DefaultFontSize">10</system:Double>
-    <system:Double x:Key="HighlightValueFontSize">12</system:Double>
-    <system:Double x:Key="CategoryTileFontSize">12</system:Double>
+    <system:Double x:Key="InfoFontSize">12</system:Double>
+    <system:Double x:Key="DefaultFontSize">16</system:Double>
+    <system:Double x:Key="HighlightValueFontSize">18</system:Double>
+    <system:Double x:Key="CategoryTileFontSize">18</system:Double>
 
     <FontFamily x:Key="DefaultUniformFontFamily">Segoe UI</FontFamily>
     
