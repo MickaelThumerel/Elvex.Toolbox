@@ -17,4 +17,6 @@
 
     <cnv:OrderCollectionConverter x:Key="OrderCollectionConverter" />
 
+    <cnv:InvertConverter x:Key="InvertConverter" />
+
 </ResourceDictionary>
