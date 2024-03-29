@@ -35,9 +35,57 @@ namespace Elvex.Toolbox.UnitTests.Extensions
                     StringSplitOptions.TrimEntries,
                     new[] { "<<", ">>", ",", " ", "<" },
                     "List`3", "int", "double", "List", "string", "double", "float")]
+
+
+        [InlineData("<Split muti sentence. To ensure ? that all the sentence are split ... Correctly !>",
+                    true,
+                    StringSplitOptions.TrimEntries,
+                    new[] { "...", "<", ">", ".", "!", "?" },
+                    "<", "Split muti sentence", ".", "To ensure", "?", "that all the sentence are split", "...", "Correctly", "!", ">")]
         public void SplitByMultipleSeparators(string source, bool includeSeparator, StringSplitOptions options, string[] separators, params string[] expectedResults)
         {
-            var args = source.OptiSplit(includeSeparator, StringComparison.Ordinal, options, separators);
+            var args = source.OptiSplit(includeSeparator ? Models.StringIncludeSeparatorMode.Isolated : Models.StringIncludeSeparatorMode.None, StringComparison.Ordinal, options, separators);
+
+            Check.That(args).IsNotNull()
+                            .And
+                            .CountIs(expectedResults.Length)
+                            .And
+                            .ContainsExactly(expectedResults);
+        }
+
+        [Theory]
+        [InlineData("List", false, StringSplitOptions.RemoveEmptyEntries, new[] { "<<", ">>" }, "List")]
+        [InlineData("List<<int>>", false, StringSplitOptions.RemoveEmptyEntries, new[] { "<<", ">>" }, "List", "int")]
+        [InlineData("List<<int>>", true, StringSplitOptions.RemoveEmptyEntries, new[] { "<<", ">>" }, "List<<", "int>>")]
+        [InlineData("<<List<<int>>", true, StringSplitOptions.RemoveEmptyEntries, new[] { "<<", ">>" }, "<<", "List<<", "int>>")]
+
+        [InlineData("    List`3<<int, double, List<<string, double, float>>   >>",
+                    true,
+                    StringSplitOptions.RemoveEmptyEntries,
+                    new[] { "<<", ">>", ",", " " },
+                    "List`3<<", "int,", "double,", "List<<", "string,", "double,", "float>>", ">>")]
+
+        [InlineData("    List`3<<int, double, List<< <string, double, float>>   >>",
+                    true,
+                    StringSplitOptions.TrimEntries,
+                    new[] { "<<", ">>", ",", " ", "<" },
+                    "List`3<<", "int,", "double,", "List<<", "<", "string,", "double,", "float>>", ">>")]
+
+        [InlineData("    List`3<<int, double, List<< <string, double, float>>   >>",
+                    false,
+                    StringSplitOptions.TrimEntries,
+                    new[] { "<<", ">>", ",", " ", "<" },
+                    "List`3", "int", "double", "List", "string", "double", "float")]
+
+        [InlineData("<Split muti sentence. To ensure ? that all the sentence are split ... Correctly !>",
+                    true,
+                    StringSplitOptions.TrimEntries,
+                    new[] { "...", "<", ">", ".", "!", "?" },
+                    "<", "Split muti sentence.", "To ensure ?", "that all the sentence are split ...", "Correctly !", ">")]
+
+        public void SplitByMultipleSeparatorsAttached(string source, bool includeSeparator, StringSplitOptions options, string[] separators, params string[] expectedResults)
+        {
+            var args = source.OptiSplit(includeSeparator ? Models.StringIncludeSeparatorMode.AttachedToPrevious : Models.StringIncludeSeparatorMode.None, StringComparison.Ordinal, options, separators);
 
             Check.That(args).IsNotNull()
                             .And

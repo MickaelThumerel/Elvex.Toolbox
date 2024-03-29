@@ -4,6 +4,8 @@
 
 namespace System
 {
+    using Elvex.Toolbox.Models;
+
     using System.Runtime.CompilerServices;
 
     /// <summary>
@@ -25,11 +27,80 @@ namespace System
         /// <summary>
         /// OptiSplit the string using multiple string as separators with <paramref name="includeSeparator"/> you could keep the separator in the result
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static IReadOnlyList<string> OptiSplit(this string str,
+                                                      params string[] separators)
+        {
+            return OptiSplit(str, StringIncludeSeparatorMode.None, StringComparison.Ordinal, StringSplitOptions.None, separators);
+        }
+
+        /// <summary>
+        /// OptiSplit the string using multiple string as separators with <paramref name="includeSeparator"/> you could keep the separator in the result
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static IReadOnlyList<string> OptiSplit(this string str,
+                                                      StringComparison comparison,
+                                                      StringSplitOptions splitOptions,
+                                                      params string[] separators)
+        {
+            return OptiSplit(str, StringIncludeSeparatorMode.None, comparison, splitOptions, separators);
+        }
+
+        /// <summary>
+        /// OptiSplit the string using multiple string as separators with <paramref name="includeSeparator"/> you could keep the separator in the result
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static IReadOnlyList<string> OptiSplit(this string str,
+                                                      StringIncludeSeparatorMode includeSeparator,
+                                                      params string[] separators)
+        {
+            return OptiSplit(str, includeSeparator, StringComparison.Ordinal, StringSplitOptions.None, separators);
+        }
+
+        /// <summary>
+        /// OptiSplit the string using multiple string as separators with <paramref name="includeSeparator"/> you could keep the separator in the result
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static IReadOnlyList<string> OptiSplit(this string str,
+                                                      StringComparison comparison,
+                                                      params string[] separators)
+        {
+            return OptiSplit(str, StringIncludeSeparatorMode.None, comparison, StringSplitOptions.None, separators);
+        }
+
+        /// <summary>
+        /// OptiSplit the string using multiple string as separators with <paramref name="includeSeparator"/> you could keep the separator in the result
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static IReadOnlyList<string> OptiSplit(this string str,
+                                                      StringSplitOptions splitOptions,
+                                                      params string[] separators)
+        {
+            return OptiSplit(str, StringIncludeSeparatorMode.None, StringComparison.Ordinal, splitOptions, separators);
+        }
+
+        /// <summary>
+        /// OptiSplit the string using multiple string as separators with <paramref name="includeSeparator"/> you could keep the separator in the result
+        /// </summary>
+        [Obsolete("Use version with StringIncludeSeparatorMode includeSeparator")]
         public static IReadOnlyList<string> OptiSplit(this string str,
                                                       bool includeSeparator,
                                                       StringComparison comparison,
                                                       StringSplitOptions splitOptions,
                                                       params string[] separators)
+        {
+            return OptiSplit(str, includeSeparator ? StringIncludeSeparatorMode.Isolated : StringIncludeSeparatorMode.None, comparison, splitOptions, separators);
+        }
+
+        /// <summary>
+        /// OptiSplit the string using multiple string as separators with <paramref name="includeSeparator"/> you could keep the separator in the result
+        /// </summary>
+        public static IReadOnlyList<string> OptiSplit(this string str,
+                                                      StringIncludeSeparatorMode includeSeparator,
+                                                      StringComparison comparison,
+                                                      StringSplitOptions splitOptions,
+                                                      params string[] separators)
+
         {
             if (string.IsNullOrEmpty(str))
                 return EnumerableHelper<string>.ReadOnlyArray;
@@ -59,11 +130,17 @@ namespace System
                 if (index < 0 || size == 0)
                     break;
 
-                if (index > 0)
-                    InesrtInResult(results, remainStr, 0, index, splitOptions);
+                if (includeSeparator == StringIncludeSeparatorMode.AttachedToPrevious)
+                {
+                    index = index + size;
+                    size = 0;
+                }
 
-                if (includeSeparator)
-                    InesrtInResult(results, remainStr, index, size, splitOptions);
+                if (index > 0)
+                    InsertInResult(results, remainStr, 0, index, splitOptions);
+
+                if (includeSeparator == StringIncludeSeparatorMode.Isolated)
+                    InsertInResult(results, remainStr, index, size, splitOptions);
 
                 remainStr = remainStr.Slice(index + size);
             }
@@ -78,7 +155,7 @@ namespace System
         /// Insert in the collection if allaw by the options
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static void InesrtInResult(in IList<string> results, in ReadOnlySpan<char> remainStr, int index, int size, StringSplitOptions options)
+        private static void InsertInResult(in IList<string> results, in ReadOnlySpan<char> remainStr, int index, int size, StringSplitOptions options)
         {
             if (size == 0)
                 return;
