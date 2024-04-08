@@ -14,6 +14,18 @@ namespace Elvex.Toolbox.Tasks
     /// <seealso cref="ITaskCompletionSourceEx" />
     public sealed class TaskCompletionSourceEx : TaskCompletionSource, ITaskCompletionSourceEx
     {
+        #region Ctor
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TaskCompletionSourceEx"/> class.
+        /// </summary>
+        public TaskCompletionSourceEx(object? state = null)
+        {
+            this.State = state;
+        }
+
+        #endregion
+
         #region Properties
 
         /// <inheritdoc />
@@ -21,6 +33,9 @@ namespace Elvex.Toolbox.Tasks
         {
             get { return NoneType.Trait; }
         }
+
+        /// <inheritdoc />
+        public object? State { get; }
 
         #endregion
 
@@ -71,6 +86,14 @@ namespace Elvex.Toolbox.Tasks
             s_resultTraits = typeof(TResult);
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TaskCompletionSourceEx{TResult}"/> class.
+        /// </summary>
+        public TaskCompletionSourceEx(object? state)
+        {
+            this.State = state;
+        }
+
         #endregion
 
         #region Properties
@@ -80,6 +103,9 @@ namespace Elvex.Toolbox.Tasks
         {
             get { return s_resultTraits; }
         }
+
+        /// <inheritdoc />
+        public object? State { get; }
 
         #endregion
 
