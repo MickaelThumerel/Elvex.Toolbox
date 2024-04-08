@@ -49,7 +49,10 @@ namespace Elvex.Toolbox.Core.UnitTests.Tasks
         {
             var result = (resultType == NoneType.Trait) ? NoneType.Instance : Activator.CreateInstance(resultType);
 
-            var completion = (ITaskCompletionSourceEx)Activator.CreateInstance(completionSourceType)!;
+            var completion = (ITaskCompletionSourceEx)Activator.CreateInstance(completionSourceType, new object?[] { resultType })!;
+
+            Check.That(completion).IsNotNull();
+            Check.That(completion.State).IsNotNull().And.IsEqualTo(resultType);
 
             Check.That(completion).IsNotNull();
             Check.That(completion.ExpectedResultType).IsEqualTo(resultType);
@@ -75,7 +78,10 @@ namespace Elvex.Toolbox.Core.UnitTests.Tasks
         [InlineData(typeof(TaskCompletionSourceEx<int>))]
         public void Generic_TaskCompletion_Cancellation(Type completionSourceType)
         {
-            var completion = (ITaskCompletionSourceEx)Activator.CreateInstance(completionSourceType)!;
+            var completion = (ITaskCompletionSourceEx)Activator.CreateInstance(completionSourceType, new object?[] { completionSourceType })!;
+
+            Check.That(completion).IsNotNull();
+            Check.That(completion.State).IsNotNull().And.IsEqualTo(completionSourceType);
 
             Check.That(completion).IsNotNull();
 
@@ -91,9 +97,10 @@ namespace Elvex.Toolbox.Core.UnitTests.Tasks
         [InlineData(typeof(TaskCompletionSourceEx<int>))]
         public void Generic_TaskCompletion_Exceptions(Type completionSourceType)
         {
-            var completion = (ITaskCompletionSourceEx)Activator.CreateInstance(completionSourceType)!;
+            var completion = (ITaskCompletionSourceEx)Activator.CreateInstance(completionSourceType, new object?[] { completionSourceType })!;
 
             Check.That(completion).IsNotNull();
+            Check.That(completion.State).IsNotNull().And.IsEqualTo(completionSourceType);
 
             var task = completion.GetTask();
             Check.That(task.Status).IsEqualTo(TaskStatus.WaitingForActivation);

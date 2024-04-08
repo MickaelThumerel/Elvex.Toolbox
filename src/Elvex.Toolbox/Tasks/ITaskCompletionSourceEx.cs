@@ -23,6 +23,11 @@ namespace Elvex.Toolbox.Tasks
         /// </remarks>
         Type ExpectedResultType { get; }
 
+        /// <summary>
+        /// Gets information store at the creation
+        /// </summary>
+        object? State { get; }
+
         #endregion
 
         #region Methods
