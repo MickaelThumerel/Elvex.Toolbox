@@ -31,6 +31,8 @@ namespace Elvex.Toolbox.UnitTests.Extensions
     {
         #region Fields
 
+        private const string SAMPLE_VALUE = "SAMPLE_VALUE";
+
         private static readonly JsonSerializerSettings s_serializationSetting;
 
         #endregion
@@ -42,6 +44,8 @@ namespace Elvex.Toolbox.UnitTests.Extensions
         /// </summary>
         static ExpressionExtensionUTest()
         {
+            SampleValueStaticProp = SAMPLE_VALUE;
+
             s_serializationSetting = new JsonSerializerSettings()
             {
                 Formatting = Formatting.Indented,
@@ -53,7 +57,11 @@ namespace Elvex.Toolbox.UnitTests.Extensions
 
         #region Nested
 
+        private static string SampleValueStaticProp { get; }
+
         public record class SimpleObj();
+
+        public record class SimpleObjWithString(string arg, string b);
 
         public class ComplexObj : IEquatable<ComplexObj>
         {
@@ -254,6 +262,50 @@ namespace Elvex.Toolbox.UnitTests.Extensions
                 value = true,
                 name = nameValue
             };
+            MemberInit_Tester(expr, "Poner Rose");
+        }
+
+        /// <summary>
+        /// Members the initialize constant binding.
+        /// </summary>
+        [Fact]
+        public void MemberInit_Constant_Binding_Using_ConstValue()
+        {
+            var fixture = ObjectTestHelper.PrepareFixture(supportCyclingReference: true);
+
+            var nameValue = fixture.Create<string>();
+            var uidValue = Guid.NewGuid();
+
+            Expression<Func<string, ExpressioSimpleSampleObject>> expr = input => new ExpressioSimpleSampleObject()
+            {
+                uid = uidValue,
+                value = true,
+                name = SAMPLE_VALUE
+            };
+            MemberInit_Tester(expr, "Poner Rose");
+        }
+
+        [Fact]
+        public void MemberInit_Ctor_Class_Binding_Using_ConstValue()
+        {
+            var fixture = ObjectTestHelper.PrepareFixture(supportCyclingReference: true);
+
+            var nameValue = fixture.Create<string>();
+            var uidValue = Guid.NewGuid();
+
+            Expression<Func<string, SimpleObjWithString>> expr = input => new SimpleObjWithString(SAMPLE_VALUE, input);
+            MemberInit_Tester(expr, "Poner Rose");
+        }
+
+        [Fact]
+        public void MemberInit_Ctor_Class_Binding_Using_StaticReadOnlyProp()
+        {
+            var fixture = ObjectTestHelper.PrepareFixture(supportCyclingReference: true);
+
+            var nameValue = fixture.Create<string>();
+            var uidValue = Guid.NewGuid();
+
+            Expression<Func<string, SimpleObjWithString>> expr = input => new SimpleObjWithString(SampleValueStaticProp, input);
             MemberInit_Tester(expr, "Poner Rose");
         }
 
