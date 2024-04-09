@@ -191,7 +191,10 @@ namespace System.Linq.Expressions
 
             if (member.Expression is ConstantExpression context)
             {
-                var cstValue = context.Type.GetValueFromPropertyOrField(context.Value, member.Member.Name, out objectType);
+                var cstValue = context.Type.GetValueFromPropertyOrField(context.Value,
+                                                                        member.Member.Name,
+                                                                        out objectType,
+                                                                        BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance);
                 return cstValue;
             }
 
@@ -201,11 +204,25 @@ namespace System.Linq.Expressions
 
                 ArgumentNullException.ThrowIfNull(objectType);
 
-                var cstValue = objectType!.GetValueFromPropertyOrField(contextInst, member.Member.Name, out objectType);
+                var cstValue = objectType!.GetValueFromPropertyOrField(contextInst,
+                                                                       member.Member.Name,
+                                                                       out objectType,
+                                                                       BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance);
                 return cstValue;
             }
 
-            throw new NotSupportedException("Could not resolved the expression to extract the value");
+            if (member.NodeType == ExpressionType.MemberAccess)
+            {
+                Debug.Assert(member.Expression is null);
+
+                var cstValue = member.Member.DeclaringType!.GetValueFromPropertyOrField(null,
+                                                                                        member.Member.Name,
+                                                                                        out objectType,
+                                                                                        BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Static);
+                return cstValue;
+            }
+
+            throw new NotSupportedException("Could not resolved the expression to extract the value : " + member?.NodeType);
         }
 
         /// <summary>
