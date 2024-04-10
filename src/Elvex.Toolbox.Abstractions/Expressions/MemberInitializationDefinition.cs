@@ -73,7 +73,33 @@ namespace Elvex.Toolbox.Abstractions.Expressions
         /// <inheritdoc />
         public bool Equals(MemberInitializationDefinition? other)
         {
-            throw new NotImplementedException();
+            if (other is null)
+                return false;
+
+            if (object.ReferenceEquals(other, this))
+                return true;
+
+            return (this.Ctor?.Equals(other.Ctor) ?? other.Ctor is null) &&
+                   this.NewType.Equals(other.NewType) &&
+                   this.Inputs.SequenceEqual(other.Inputs) &&
+                   this.Bindings.SequenceEqual(other.Bindings);
+        }
+
+        /// <inheritdoc />
+        public override bool Equals(object? obj)
+        {
+            if (obj is MemberInitializationDefinition memberInitialization)
+                return Equals(memberInitialization); 
+            return base.Equals(obj);
+        }
+
+        /// <inheritdoc />
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(this.Ctor,
+                                    this.NewType,
+                                    this.Inputs.Aggregate(0, (acc, i) => acc ^ i.GetHashCode()),
+                                    this.Bindings.Aggregate(0, (acc, i) => acc ^ i.GetHashCode()));
         }
 
         #endregion

@@ -23,6 +23,7 @@ namespace Elvex.Toolbox.UnitTests.Extensions
     using System;
     using System.Collections.Generic;
     using System.Linq.Expressions;
+    using System.Runtime.Serialization;
 
     /// <summary>
     /// Test extension around <see cref="Expression"/>
@@ -207,14 +208,23 @@ namespace Elvex.Toolbox.UnitTests.Extensions
         //[InlineData(typeof(MemberBindingDefinition))]
         [InlineData(typeof(MemberInputConstantBindingDefinition<string>))]
         [InlineData(typeof(MemberInputConstantBindingDefinition<bool>))]
+
+        [InlineData(typeof(MemberInputParameterBindingDefinition))]
+        [InlineData(typeof(MemberInputCallChainBindingDefinition))]
+        [InlineData(typeof(MemberInputNestedInitBindingDefinition))]
+        [InlineData(typeof(MemberInputAccessBindingDefinition))]
+
         public void Expression_serialization_part(Type partType)
         {
             var fixture = ObjectTestHelper.PrepareFixture(supportCyclingReference: true);
 
             // TODO: Allow more type combinaison to improve test efficiency
             fixture.Register<AbstractType>(() => typeof(int).GetAbstractType());
+            fixture.Register<ConcretType>(() => (ConcretType)typeof(int).GetAbstractType());
+            fixture.Register<ConcretBaseType>(() => (ConcretBaseType)typeof(int).GetAbstractType());
             fixture.Register<ConditionValueDefinition>(() => new ConditionValueDefinition(typeof(int).GetAbstractType(), Random.Shared.Next(0, 152)));
             fixture.Register<ConditionBaseDefinition>(() => fixture.Create<ConditionValueDefinition>());
+            fixture.Register<MemberBindingDefinition>(() => new MemberInputConstantBindingDefinition<string>(false, SAMPLE_VALUE, SAMPLE_VALUE));
 
             var inst = fixture.Create(partType, new SpecimenContext(fixture));
             Check.That(inst).IsNotNull();

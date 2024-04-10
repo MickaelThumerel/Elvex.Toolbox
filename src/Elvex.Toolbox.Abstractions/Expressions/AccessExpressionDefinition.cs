@@ -46,7 +46,7 @@ namespace Elvex.Toolbox.Abstractions.Expressions
     [DataContract]
     [Serializable]
     [ImmutableObject(true)]
-    public sealed class AccessExpressionDefinition : ISupportDebugDisplayName
+    public sealed class AccessExpressionDefinition : IEquatable<AccessExpressionDefinition>, ISupportDebugDisplayName
     {
         #region Ctor
 
@@ -112,6 +112,39 @@ namespace Elvex.Toolbox.Abstractions.Expressions
             return $"Access {this.TargetType.DisplayName} Direct : " + this.DirectObject;
 
         }
+
+        /// <inheritdoc />
+        public override bool Equals(object? obj)
+        {
+            if (obj is AccessExpressionDefinition other)
+                return Equals(other);
+            return false;
+        }
+
+        /// <inheritdoc />
+        public sealed override int GetHashCode()
+        {
+            return HashCode.Combine(this.TargetType,
+                                    this.DirectObject,
+                                    this.ChainCall,
+                                    this.MemberInit);
+        }
+
+        /// <inheritdoc />
+        public bool Equals(AccessExpressionDefinition? other)
+        {
+            if (other is null)
+                return false;
+
+            if (object.ReferenceEquals(other, this))
+                return true;
+
+            return string.Equals(this.ChainCall, other.ChainCall) &&
+                   this.TargetType.Equals(other.TargetType) &&
+                   this.DirectObject == other.DirectObject &&
+                   (this.MemberInit?.Equals(other.MemberInit) ?? other.MemberInit is null);
+        }
+
         #endregion
     }
 }

@@ -6,6 +6,7 @@ namespace Elvex.Toolbox.Core.UnitTests.Extensions
 {
     using Elvex.Toolbox.Abstractions.Models;
     using Elvex.Toolbox.Extensions;
+    using Elvex.Toolbox.UnitTests.ToolKit.Tests;
 
     using NFluent;
 
@@ -43,12 +44,48 @@ namespace Elvex.Toolbox.Core.UnitTests.Extensions
         }
 
         [Fact]
+        public void CreateAccess_Direct_Serialization()
+        {
+            var obj = Guid.NewGuid();
+
+            var access = obj.CreateAccess();
+
+            SerializationTester.SerializeTester(access);
+
+            Check.That(access).IsNotNull();
+            Check.That(access.ChainCall).IsNull();
+            Check.That(access.MemberInit).IsNull();
+            Check.That(access.TargetType).IsNotNull().And.IsEqualTo(typeof(Guid).GetAbstractType());
+            Check.That(access.DirectObject).IsNotNull().And.IsInstanceOf<TypedArgument<Guid>>();
+
+            Check.That(((TypedArgument<Guid>)access.DirectObject!).Value).IsEqualTo(obj);
+        }
+
+        [Fact]
         public void CreateAccess_ChainCall()
         {
             var obj = Guid.NewGuid().ToString();
             Expression<Func<string, int>> func = (string o) => o.Length;
 
             var access = func.CreateAccess();
+
+            Check.That(access).IsNotNull();
+            Check.That(access.DirectObject).IsNull();
+            Check.That(access.MemberInit).IsNull();
+            Check.That(access.TargetType).IsNotNull().And.IsEqualTo(typeof(int).GetAbstractType());
+
+            Check.That(access.ChainCall).IsNotNull().And.IsEqualTo("o." + nameof(string.Length));
+        }
+
+        [Fact]
+        public void CreateAccess_ChainCall_Serialization()
+        {
+            var obj = Guid.NewGuid().ToString();
+            Expression<Func<string, int>> func = (string o) => o.Length;
+
+            var access = func.CreateAccess();
+
+            SerializationTester.SerializeTester(access);
 
             Check.That(access).IsNotNull();
             Check.That(access.DirectObject).IsNull();
@@ -73,6 +110,25 @@ namespace Elvex.Toolbox.Core.UnitTests.Extensions
 
             Check.That(access.MemberInit).IsNotNull();
         }
+
+        [Fact]
+        public void CreateAccess_MemberInit_Serialization()
+        {
+            var obj = Guid.NewGuid().ToString();
+            Expression<Func<string, Container>> func = (string o) => new Container() { strId = obj };
+
+            var access = func.CreateAccess();
+            
+            SerializationTester.SerializeTester(access);
+
+            Check.That(access).IsNotNull();
+            Check.That(access.ChainCall).IsNull();
+            Check.That(access.DirectObject).IsNull();
+            Check.That(access.TargetType).IsNotNull().And.IsEqualTo(typeof(Container).GetAbstractType());
+
+            Check.That(access.MemberInit).IsNotNull();
+        }
+
 
         [Fact]
         public void CreateAccess_MemberInit_WithoutInput()
