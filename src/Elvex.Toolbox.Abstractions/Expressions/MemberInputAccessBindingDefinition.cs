@@ -50,13 +50,13 @@ namespace Elvex.Toolbox.Abstractions.Expressions
         protected override bool OnEquals(MemberBindingDefinition other)
         {
             return other is MemberInputAccessBindingDefinition otherChain &&
-                   otherChain.Access == this.Access;
+                   (otherChain.Access?.Equals(this.Access) ?? this.Access is null);
         }
 
         /// <inheritdoc />
         protected override int OnGetHashCode()
         {
-            return HashCode.Combine(this.Access);
+            return this.Access?.GetHashCode() ?? 0;
         }
 
         /// <inheritdoc />

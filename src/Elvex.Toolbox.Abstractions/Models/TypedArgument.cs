@@ -19,7 +19,7 @@ namespace Elvex.Toolbox.Abstractions.Models
 
     [KnownType(typeof(TypedArgument<>))]
 
-    public abstract class TypedArgument
+    public abstract class TypedArgument : IEquatable<TypedArgument>
     {
         #region Fields
 
@@ -160,6 +160,54 @@ namespace Elvex.Toolbox.Abstractions.Models
             return new TypedArgument<TType>(arg, From(tail, providedTypes, nullIfConditionFalse, depth + 1));
         }
 
+        /// <inheritdoc />
+        public sealed override int GetHashCode()
+        {
+            return HashCode.Combine(this.Next, OnGetHashCode());
+        }
+
+        /// <inheritdoc />
+        public sealed override bool Equals(object? obj)
+        {
+            if (obj is TypedArgument argument)
+                return Equals(argument);
+            return false;
+        }
+
+        /// <inheritdoc />
+        public bool Equals(TypedArgument? other)
+        {
+            if (other is null)
+                return false;
+
+            if (object.ReferenceEquals(this, other))
+                return true;
+
+            return OnEquals(other) && (other.Next?.Equals(this.Next) ?? this.Next is null);
+        }
+
+        /// <summary>
+        /// Implements the operator ==.
+        /// </summary>
+        public static bool operator ==(TypedArgument? arg, TypedArgument? other)
+        {
+            return arg?.Equals(other) ?? other is null;
+        }
+
+        /// <summary>
+        /// Implements the operator !=.
+        /// </summary>
+        public static bool operator !=(TypedArgument? arg, TypedArgument? other)
+        {
+            return !(arg == other);
+        }
+
+        /// <inheritdoc cref="object.Equals(object?)" />
+        protected abstract bool OnEquals(TypedArgument other);
+
+        /// <inheritdoc cref="object.GetHashCode" />
+        protected abstract object OnGetHashCode();
+
         #endregion
     }
 
@@ -195,12 +243,42 @@ namespace Elvex.Toolbox.Abstractions.Models
         #endregion
 
         #region Methods
+
         /// <summary>
         /// Gets the value.
         /// </summary>
         public sealed override object? GetValue()
         {
             return this.Value;
+        }
+
+        /// <summary>
+        /// Implements the operator ==.
+        /// </summary>
+        public static bool operator ==(TypedArgument<TArg>? arg, TypedArgument<TArg>? other)
+        {
+            return arg?.Equals(other) ?? other is null;
+        }
+
+        /// <summary>
+        /// Implements the operator !=.
+        /// </summary>
+        public static bool operator !=(TypedArgument<TArg>? arg, TypedArgument<TArg>? other)
+        {
+            return !(arg == other);
+        }
+
+        /// <inheritdoc />
+        protected override bool OnEquals(TypedArgument other)
+        {
+            return other is TypedArgument<TArg> otherArg &&
+                   EqualityComparer<TArg>.Default.Equals(this.Value, otherArg.Value);
+        }
+
+        /// <inheritdoc />
+        protected override object OnGetHashCode()
+        {
+            return this.Value?.GetHashCode() ?? 0;
         }
 
         #endregion
