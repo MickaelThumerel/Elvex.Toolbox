@@ -451,7 +451,7 @@ namespace System.Linq.Expressions
         /// <summary>
         /// Converts back <see cref="ConditionExpressionDefinition"/> to executable <see cref="LambdaExpression"/>.
         /// </summary>
-        public static LambdaExpression ToExpressionDelegate(this ConditionExpressionDefinition expressionDefinition, 
+        public static LambdaExpression ToExpressionDelegate(this ConditionExpressionDefinition expressionDefinition,
                                                             Type? returnType = null,
                                                             bool useCache = true)
         {
@@ -723,8 +723,11 @@ namespace System.Linq.Expressions
                                                                 body.NodeType.ToMathOperand(),
                                                                 SerializeConditions(((BinaryExpression)body).Right, sourceInputExpressions)!);
 
+                case ExpressionType.TypeAs:
                 case ExpressionType.Convert:
-                    return new ConditionConvertDefinition(SerializeConditions(((UnaryExpression)body).Operand, sourceInputExpressions)!, ((UnaryExpression)body).Type.GetAbstractType());
+                    return new ConditionConvertDefinition(SerializeConditions(((UnaryExpression)body).Operand, sourceInputExpressions)!,
+                                                          ((UnaryExpression)body).Type.GetAbstractType(),
+                                                          body.NodeType == ExpressionType.Convert);
 
                 case ExpressionType.And:
                 //throw new NotImplementedException(body.NodeType.ToString());
@@ -762,7 +765,7 @@ namespace System.Linq.Expressions
                 return paramExpressionDefinition;
 
             // Recursion throught members
-            if (instance.NodeType == ExpressionType.MemberAccess)
+            if (instance.NodeType == ExpressionType.MemberAccess || instance.NodeType == ExpressionType.TypeAs || instance.NodeType == ExpressionType.Convert)
                 return SerializeConditions(instance, sourceInputExpressions);
 
             throw new NotSupportedException(instance + " is not allowed as Call host.");
@@ -848,7 +851,10 @@ namespace System.Linq.Expressions
             if (body is ConditionConvertDefinition cnv)
             {
                 var fromExpression = SerializeConditionsToExpression(cnv.From, sourceInputExpressions);
-                return Expression.Convert(fromExpression, cnv.To.ToType());
+
+                if (cnv.StrictCast)
+                    return Expression.Convert(fromExpression, cnv.To.ToType());
+                return Expression.TypeAs(fromExpression, cnv.To.ToType());
             }
 
             throw new NotSupportedException("Serialize expression restoration not restorable");
