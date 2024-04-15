@@ -35,13 +35,14 @@ namespace Elvex.Toolbox.Abstractions.Conditions
         /// <summary>
         /// Initializes a new instance of the <see cref="ConditionValueDefinition"/> class.
         /// </summary>
-        public ConditionConvertDefinition(ConditionBaseDefinition from, AbstractType to)
+        public ConditionConvertDefinition(ConditionBaseDefinition from, AbstractType to, bool strictCast)
         {
             ArgumentNullException.ThrowIfNull(from);
             ArgumentNullException.ThrowIfNull(to);
 
             this.From = from;
             this.To = to;
+            this.StrictCast = strictCast;
         }
 
         #endregion
@@ -59,6 +60,12 @@ namespace Elvex.Toolbox.Abstractions.Conditions
         /// </summary>
         [DataMember(IsRequired = true)]
         public AbstractType To { get; }
+
+        /// <summary>
+        /// Gets a value indicating whether it's strict cast or 'As'.
+        /// </summary>
+        [DataMember(IsRequired = true)]
+        public bool StrictCast { get; }
 
         #endregion
 
@@ -84,6 +91,7 @@ namespace Elvex.Toolbox.Abstractions.Conditions
         protected override bool OnEquals(ConditionBaseDefinition other)
         {
             return other is ConditionConvertDefinition val &&
+                   this.StrictCast == val.StrictCast &&
                    this.From.Equals(val.From) &&
                    this.To.Equals(val.To);
         }
@@ -91,7 +99,7 @@ namespace Elvex.Toolbox.Abstractions.Conditions
         /// <inheritdoc />
         protected override int OnGetHashCode()
         {
-            return HashCode.Combine(this.From, this.To);
+            return HashCode.Combine(this.From, this.To, this.StrictCast);
         }
 
         /// <summary>

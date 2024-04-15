@@ -58,6 +58,13 @@ namespace Elvex.Toolbox.UnitTests.Extensions
 
         #region Nested
 
+        public record class ParentClass();
+        public sealed record class ChildClassA(string Name) : ParentClass();
+        public sealed record class ChildClassB(string Name) : ParentClass();
+
+        public record class HierachyRootClass(ParentClass? Child);
+
+
         private static string SampleValueStaticProp { get; }
 
         public record class SimpleObj();
@@ -120,6 +127,30 @@ namespace Elvex.Toolbox.UnitTests.Extensions
             ConditionSerializationTest((string? item) => item == "sucess", new[] { sucessStr }, new[] { failStr, string.Empty, null });
             ConditionSerializationTest((string? item) => item == sucessStr, new[] { sucessStr }, new[] { failStr, string.Empty, null });
             ConditionSerializationTest((string? item) => !string.IsNullOrEmpty(item), new[] { sucessStr, failStr }, new[] { string.Empty, null });
+        }
+
+        /// <summary>
+        /// Test <see cref="ExpressionExtensions.Serialize{TInput}(this Expression{Func{TInput, bool}} expression)"/>
+        /// one condition simple
+        /// </summary>
+        [Fact]
+        public void ConditionSerialization_Cast()
+        {
+            var sucessStr = "sucess";
+            var failStr = "fail";
+
+            ConditionSerializationTest((ParentClass? item) => item as ParentClass != null && 
+                                                              ((ChildClassA)item).Name == "sucess", 
+                                                              
+                                       new ParentClass[] { new ChildClassA(sucessStr) }, 
+                                       new ParentClass[] { new ChildClassA(failStr), new ChildClassB(string.Empty) });
+
+            ConditionSerializationTest((HierachyRootClass? item) => item != null && 
+                                                                    item.Child as ParentClass != null && 
+                                                                    ((ChildClassA)item.Child).Name == "sucess", 
+                                       
+                                       new[] { new HierachyRootClass(new ChildClassA(sucessStr)) }, 
+                                       new[] { new HierachyRootClass(new ChildClassA(failStr)), new HierachyRootClass(null) });
         }
 
         /// <summary>
