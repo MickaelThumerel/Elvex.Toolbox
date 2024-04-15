@@ -33,6 +33,12 @@ namespace System.Linq.Expressions
 
         private static readonly Type s_memberInputConstantBindingDefinition = typeof(MemberInputConstantBindingDefinition<>);
 
+        private static readonly IDictionary<ConditionExpressionDefinition, LambdaExpression> s_conditionalExperssionDefCache;
+        private static readonly ReaderWriterLockSlim s_conditionalExperssionDefCacheLocker;
+
+        private static readonly IDictionary<MemberInitializationDefinition, LambdaExpression> s_memberInitExperssionDefCache;
+        private static readonly ReaderWriterLockSlim s_memberInitExperssionDefCacheLocker;
+
         #endregion
 
         #region Ctor
@@ -42,6 +48,12 @@ namespace System.Linq.Expressions
         /// </summary>
         static ExpressionExtensions()
         {
+            s_conditionalExperssionDefCacheLocker = new ReaderWriterLockSlim();
+            s_conditionalExperssionDefCache = new Dictionary<ConditionExpressionDefinition, LambdaExpression>();
+
+            s_memberInitExperssionDefCache = new Dictionary<MemberInitializationDefinition, LambdaExpression>();
+            s_memberInitExperssionDefCacheLocker = new ReaderWriterLockSlim();
+
             s_logicalExpressionBuild = new Dictionary<LogicEnum, Func<Expression, Expression, Expression>>()
             {
                 [LogicEnum.Or] = (left, right) => Expression.OrElse(left, right),
@@ -377,25 +389,25 @@ namespace System.Linq.Expressions
         /// <summary>
         /// Converts back a <see cref="MemberInitializationDefinition"/> to an expression 
         /// </summary>
-        public static Expression<Func<TInput, TOutput>> ToMemberInitializationExpression<TInput, TOutput>(this MemberInitializationDefinition def)
+        public static Expression<Func<TInput, TOutput>> ToMemberInitializationExpression<TInput, TOutput>(this MemberInitializationDefinition def, bool useCache = true)
         {
-            return (Expression<Func<TInput, TOutput>>)ToMemberInitializationLambdaExpression(def);
+            return (Expression<Func<TInput, TOutput>>)ToMemberInitializationLambdaExpression(def, useCache);
         }
 
         /// <summary>
         /// Converts back a <see cref="MemberInitializationDefinition"/> to an expression 
         /// </summary>
-        public static Expression<Func<TOutput>> ToMemberInitializationExpression<TOutput>(this MemberInitializationDefinition def)
+        public static Expression<Func<TOutput>> ToMemberInitializationExpression<TOutput>(this MemberInitializationDefinition def, bool useCache = true)
         {
-            return (Expression<Func<TOutput>>)ToMemberInitializationLambdaExpression(def);
+            return (Expression<Func<TOutput>>)ToMemberInitializationLambdaExpression(def, useCache);
         }
 
         /// <summary>
         /// Converts back a <see cref="MemberInitializationDefinition"/> to an expression 
         /// </summary>
-        public static LambdaExpression ToMemberInitializationExpression(this MemberInitializationDefinition def)
+        public static LambdaExpression ToMemberInitializationExpression(this MemberInitializationDefinition def, bool useCache = true)
         {
-            return ToMemberInitializationLambdaExpression(def);
+            return ToMemberInitializationLambdaExpression(def, useCache);
         }
 
         /// <summary>
@@ -423,25 +435,41 @@ namespace System.Linq.Expressions
         /// <summary>
         /// Converts back <see cref="ConditionExpressionDefinition"/> to executable <see cref="LambdaExpression"/>.
         /// </summary>
-        public static LambdaExpression ToExpressionDelegate(this ConditionExpressionDefinition expressionDefinition)
+        public static LambdaExpression ToExpressionDelegate(this ConditionExpressionDefinition expressionDefinition, bool useCache = true)
         {
-            return ToExpressionDelegate(expressionDefinition, null);
+            return ToExpressionDelegate(expressionDefinition, null, useCache);
         }
 
         /// <summary>
         /// Converts back <see cref="ConditionExpressionDefinition"/> to executable <see cref="LambdaExpression"/>.
         /// </summary>
-        public static LambdaExpression ToExpressionDelegateWithResult(this ConditionExpressionDefinition expressionDefinition)
+        public static LambdaExpression ToExpressionDelegateWithResult(this ConditionExpressionDefinition expressionDefinition, bool useCache = true)
         {
-            return ToExpressionDelegate(expressionDefinition, typeof(bool));
+            return ToExpressionDelegate(expressionDefinition, typeof(bool), useCache);
         }
 
         /// <summary>
         /// Converts back <see cref="ConditionExpressionDefinition"/> to executable <see cref="LambdaExpression"/>.
         /// </summary>
-        public static LambdaExpression ToExpressionDelegate(this ConditionExpressionDefinition expressionDefinition, Type? returnType = null)
+        public static LambdaExpression ToExpressionDelegate(this ConditionExpressionDefinition expressionDefinition, 
+                                                            Type? returnType = null,
+                                                            bool useCache = true)
         {
             ArgumentNullException.ThrowIfNull(expressionDefinition);
+
+            if (useCache)
+            {
+                s_conditionalExperssionDefCacheLocker.EnterReadLock();
+                try
+                {
+                    if (s_conditionalExperssionDefCache.TryGetValue(expressionDefinition, out var lambda))
+                        return lambda;
+                }
+                finally
+                {
+                    s_conditionalExperssionDefCacheLocker.ExitReadLock();
+                }
+            }
 
             var inputs = expressionDefinition.Parameters
                                              .Select(p => (Expression.Parameter(p.Type.ToType(), p.Name), definition: p))
@@ -470,47 +498,63 @@ namespace System.Linq.Expressions
             if (delegateType == null)
                 throw new InvalidDataException("Couldn't found a delegate template model in action or func. May be due to arguments numbers");
 
-            return LambdaExpression.Lambda(delegateType, body, orderedInputs);
+            var result = LambdaExpression.Lambda(delegateType, body, orderedInputs);
+
+            if (useCache)
+            {
+                s_conditionalExperssionDefCacheLocker.EnterWriteLock();
+                try
+                {
+                    if (!s_conditionalExperssionDefCache.ContainsKey(expressionDefinition))
+                        s_conditionalExperssionDefCache.Add(expressionDefinition, result);
+                }
+                finally
+                {
+                    s_conditionalExperssionDefCacheLocker.ExitWriteLock();
+                }
+            }
+
+            return result;
         }
 
         /// <summary>
         /// Converts back <see cref="ConditionExpressionDefinition"/> to executable <see cref="Expression{Func{TInput, TReturn}}"/>.
         /// </summary>
-        public static Expression<Func<TInput, TReturn>> ToExpression<TInput, TReturn>(this ConditionExpressionDefinition expressionDefinition)
+        public static Expression<Func<TInput, TReturn>> ToExpression<TInput, TReturn>(this ConditionExpressionDefinition expressionDefinition, bool useCache = true)
         {
             ArgumentNullException.ThrowIfNull(expressionDefinition);
 
-            return ToExpressionDelegate<Func<TInput, TReturn>>(expressionDefinition, typeof(TReturn));
+            return ToExpressionDelegate<Func<TInput, TReturn>>(expressionDefinition, typeof(TReturn), useCache);
         }
 
         /// <summary>
         /// Converts back <see cref="ConditionExpressionDefinition"/> to executable <see cref="Expression{Func{TInput, TInputB, TReturn}}"/>.
         /// </summary>
-        public static Expression<Func<TInputA, TInputB, TReturn>> ToExpression<TInputA, TInputB, TReturn>(this ConditionExpressionDefinition expressionDefinition)
+        public static Expression<Func<TInputA, TInputB, TReturn>> ToExpression<TInputA, TInputB, TReturn>(this ConditionExpressionDefinition expressionDefinition, bool useCache = true)
         {
             ArgumentNullException.ThrowIfNull(expressionDefinition);
 
-            return ToExpressionDelegate<Func<TInputA, TInputB, TReturn>>(expressionDefinition, typeof(TReturn));
+            return ToExpressionDelegate<Func<TInputA, TInputB, TReturn>>(expressionDefinition, typeof(TReturn), useCache);
         }
 
         /// <summary>
         /// Converts back <see cref="ConditionExpressionDefinition"/> to executable <see cref="Expression{Func{TInput, TInputB, TInputC, TReturn}}"/>.
         /// </summary>
-        public static Expression<Func<TInputA, TInputB, TInputC, TReturn>> ToExpression<TInputA, TInputB, TInputC, TReturn>(this ConditionExpressionDefinition expressionDefinition)
+        public static Expression<Func<TInputA, TInputB, TInputC, TReturn>> ToExpression<TInputA, TInputB, TInputC, TReturn>(this ConditionExpressionDefinition expressionDefinition, bool useCache = true)
         {
             ArgumentNullException.ThrowIfNull(expressionDefinition);
 
-            return ToExpressionDelegate<Func<TInputA, TInputB, TInputC, TReturn>>(expressionDefinition, typeof(TReturn));
+            return ToExpressionDelegate<Func<TInputA, TInputB, TInputC, TReturn>>(expressionDefinition, typeof(TReturn), useCache);
         }
 
         /// <summary>
         /// Converts back <see cref="ConditionExpressionDefinition"/> to executable <see cref="Expression{Func{TInput, TInputB, TInputC, TInputD, TReturn}}"/>.
         /// </summary>
-        public static Expression<Func<TInputA, TInputB, TInputC, TInputD, TReturn>> ToExpression<TInputA, TInputB, TInputC, TInputD, TReturn>(this ConditionExpressionDefinition expressionDefinition)
+        public static Expression<Func<TInputA, TInputB, TInputC, TInputD, TReturn>> ToExpression<TInputA, TInputB, TInputC, TInputD, TReturn>(this ConditionExpressionDefinition expressionDefinition, bool useCache = true)
         {
             ArgumentNullException.ThrowIfNull(expressionDefinition);
 
-            return ToExpressionDelegate<Func<TInputA, TInputB, TInputC, TInputD, TReturn>>(expressionDefinition, typeof(TReturn));
+            return ToExpressionDelegate<Func<TInputA, TInputB, TInputC, TInputD, TReturn>>(expressionDefinition, typeof(TReturn), useCache);
         }
 
         /// <summary>
@@ -576,11 +620,11 @@ namespace System.Linq.Expressions
         /// <summary>
         /// Converts back <see cref="ConditionExpressionDefinition"/> to executable <typeparamref name="TDelegate"/>
         /// </summary>
-        private static Expression<TDelegate> ToExpressionDelegate<TDelegate>(this ConditionExpressionDefinition expressionDefinition, Type returnType)
+        private static Expression<TDelegate> ToExpressionDelegate<TDelegate>(this ConditionExpressionDefinition expressionDefinition, Type returnType, bool useCache = true)
         {
             ArgumentNullException.ThrowIfNull(expressionDefinition);
 
-            var lambdaExpression = ToExpressionDelegate(expressionDefinition, returnType);
+            var lambdaExpression = ToExpressionDelegate(expressionDefinition, returnType, useCache);
             var funcExpression = (Expression<TDelegate>)lambdaExpression;
 
             return funcExpression;
@@ -813,18 +857,48 @@ namespace System.Linq.Expressions
         /// <summary>
         /// Converts back a <see cref="MemberInitializationDefinition"/> to an expression 
         /// </summary>
-        public static LambdaExpression ToMemberInitializationLambdaExpression(this MemberInitializationDefinition def)
+        public static LambdaExpression ToMemberInitializationLambdaExpression(this MemberInitializationDefinition def, bool useCache = true)
         {
+            if (useCache)
+            {
+                s_memberInitExperssionDefCacheLocker.EnterReadLock();
+                try
+                {
+                    if (s_memberInitExperssionDefCache.TryGetValue(def, out var lambdaExpression))
+                        return lambdaExpression;
+                }
+                finally
+                {
+                    s_memberInitExperssionDefCacheLocker.ExitReadLock();
+                }
+            }
+
             var indexedArgs = def.Inputs.Select((input, index) => (input, index))
                                         .ToDictionary(k => k.index, kv => Expression.Parameter(kv.input.ToType(), "Arg" + kv.index));
 
-            return ToMemberInitializationLambdaExpression(def, indexedArgs);
+            var lambda = ToMemberInitializationLambdaExpression(def, indexedArgs, useCache);
+
+            if (useCache)
+            {
+                s_memberInitExperssionDefCacheLocker.EnterWriteLock();
+                try
+                {
+                    if (!s_memberInitExperssionDefCache.ContainsKey(def))
+                        s_memberInitExperssionDefCache.Add(def, lambda);
+                }
+                finally
+                {
+                    s_memberInitExperssionDefCacheLocker.ExitWriteLock();
+                }
+            }
+
+            return lambda;
         }
 
         /// <summary>
         /// Converts back a <see cref="MemberInitializationDefinition"/> to an expression 
         /// </summary>
-        public static LambdaExpression ToMemberInitializationLambdaExpression(this MemberInitializationDefinition def, IReadOnlyDictionary<int, ParameterExpression> indexedArgs)
+        public static LambdaExpression ToMemberInitializationLambdaExpression(this MemberInitializationDefinition def, IReadOnlyDictionary<int, ParameterExpression> indexedArgs, bool useCache = true)
         {
             NewExpression ctorExp;
 
