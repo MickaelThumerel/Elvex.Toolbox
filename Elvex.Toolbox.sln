@@ -32,7 +32,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Elvex.Toolbox.Configuration
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Elvex.Toolbox.WPF.UI.Avalon", "src\Elvex.Toolbox.WPF.UI.Avalon\Elvex.Toolbox.WPF.UI.Avalon.csproj", "{9C521A61-B19F-486D-A2DD-FE40166AD882}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Elvex.Toolbox.Abstractions.UnitTests", "src\tests\Elvex.Toolbox.Abstractions.UnitTests\Elvex.Toolbox.Abstractions.UnitTests.csproj", "{CD0128FE-CCCE-4AEE-A330-D12826C18C2B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Elvex.Toolbox.Abstractions.UnitTests", "src\tests\Elvex.Toolbox.Abstractions.UnitTests\Elvex.Toolbox.Abstractions.UnitTests.csproj", "{CD0128FE-CCCE-4AEE-A330-D12826C18C2B}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Benchmarks", "Benchmarks", "{72CE5BFE-4F06-4134-A3F9-228077AF6A81}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Elvex.Toolbox.Benchmark.Sandbox", "src\benchmarks\Elvex.Toolbox.Benchmark.Sandbox\Elvex.Toolbox.Benchmark.Sandbox.csproj", "{C0FDAAF8-2599-4D1E-8D64-BE2C33C39662}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -84,6 +88,10 @@ Global
 		{CD0128FE-CCCE-4AEE-A330-D12826C18C2B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CD0128FE-CCCE-4AEE-A330-D12826C18C2B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CD0128FE-CCCE-4AEE-A330-D12826C18C2B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C0FDAAF8-2599-4D1E-8D64-BE2C33C39662}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C0FDAAF8-2599-4D1E-8D64-BE2C33C39662}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C0FDAAF8-2599-4D1E-8D64-BE2C33C39662}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C0FDAAF8-2599-4D1E-8D64-BE2C33C39662}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -93,6 +101,7 @@ Global
 		{293E5612-480B-4B39-B4BA-3215BE258C9B} = {8BB90B28-5CC9-4BAE-BC32-9A724CD71EF1}
 		{B126A88A-3095-4DFC-ABCA-C25FE509272B} = {8BB90B28-5CC9-4BAE-BC32-9A724CD71EF1}
 		{CD0128FE-CCCE-4AEE-A330-D12826C18C2B} = {8BB90B28-5CC9-4BAE-BC32-9A724CD71EF1}
+		{C0FDAAF8-2599-4D1E-8D64-BE2C33C39662} = {72CE5BFE-4F06-4134-A3F9-228077AF6A81}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {C4BF7339-CA28-415E-85F2-FC495C4B58F2}
