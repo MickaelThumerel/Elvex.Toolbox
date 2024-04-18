@@ -12,6 +12,37 @@ namespace System.Collections.Generic
     public static class EnumerableExtensions
     {
         /// <summary>
+        /// Adds to the collection, create the collection if null
+        /// </summary>
+        /// <remarks>
+        ///     Allow algorithme that instanciate the collection on if needed
+        /// </remarks>
+        public static TCollection AddOnNull<TCollection, TItem>(this TCollection? collection, TItem item)
+            where TCollection : ICollection<TItem>, new()
+        {
+            collection ??= new TCollection();
+            collection.Add(item);
+            return collection;
+        }
+
+        /// <summary>
+        /// Adds to the collection, create the collection if null
+        /// </summary>
+        /// <remarks>
+        ///     Allow algorithme that instanciate the collection on if needed
+        /// </remarks>
+        public static TCollection AddRangeOnNull<TCollection, TItem>(this TCollection? collection, IEnumerable<TItem> items)
+            where TCollection : ICollection<TItem>, new()
+        {
+            collection ??= new TCollection();
+
+            foreach (var item in items)
+                collection.Add(item);
+
+            return collection;
+        }
+
+        /// <summary>
         /// Flattern result through tree recursion
         /// </summary>
         public static IEnumerable<TInst> GetTreeValues<TInst>(this TInst instance, Func<TInst?, IEnumerable<TInst?>?> getChildren)

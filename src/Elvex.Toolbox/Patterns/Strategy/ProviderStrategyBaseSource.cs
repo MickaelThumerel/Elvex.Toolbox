@@ -30,7 +30,7 @@ namespace Elvex.Toolbox.Patterns.Strategy
 
         private readonly Dictionary<TKey, TValue> _cachedData;
         private readonly ReaderWriterLockSlim _dataCacheLock;
-
+        private readonly bool _supportFallback;
         private readonly HashSet<TKey> _keys;
 
         #endregion
@@ -41,7 +41,8 @@ namespace Elvex.Toolbox.Patterns.Strategy
         /// Initializes a new instance of the <see cref="ProviderStrategyBaseSource{TValue, TKey}"/> class.
         /// </summary>
         protected ProviderStrategyBaseSource(IServiceProvider serviceProvider,
-                                             IEnumerable<(TKey key, TValue value)>? initValues = null)
+                                             IEnumerable<(TKey key, TValue value)>? initValues = null,
+                                             bool supportFallback = false)
         {
             this._serviceProvider = serviceProvider;
 
@@ -51,6 +52,7 @@ namespace Elvex.Toolbox.Patterns.Strategy
             this._cachedData = new Dictionary<TKey, TValue>(readOnlyInitValues);
             this._dataCacheLock = new ReaderWriterLockSlim();
 
+            this._supportFallback = supportFallback;
             this._keys = new HashSet<TKey>();
         }
 
@@ -91,18 +93,23 @@ namespace Elvex.Toolbox.Patterns.Strategy
         {
             await EnsureProviderIsInitialized();
 
-            this._dataCacheLock.EnterReadLock();
-            try
+            return await ExecWithRetry<IReadOnlyCollection<TValue>>(() =>
             {
-                var result = this._cachedData.Select(kv => kv.Value)
-                                             .ToArray();
+                this._dataCacheLock.EnterReadLock();
+                try
+                {
+                    var result = this._cachedData.Select(kv => kv.Value)
+                                                 .ToArray();
 
-                return result;
-            }
-            finally
-            {
-                this._dataCacheLock.ExitReadLock();
-            }
+                    return result;
+                }
+                finally
+                {
+                    this._dataCacheLock.ExitReadLock();
+                }
+            },
+            r => r is null || r.Count == 0,
+            token) ?? EnumerableHelper<TValue>.ReadOnlyArray;
         }
 
         /// <inheritdoc />
@@ -110,18 +117,23 @@ namespace Elvex.Toolbox.Patterns.Strategy
         {
             await EnsureProviderIsInitialized();
 
-            this._dataCacheLock.EnterReadLock();
-            try
+            return await ExecWithRetry<(bool Success, TValue? Result)>(() =>
             {
-                if (this._cachedData.TryGetValue(key, out var cachedValue))
-                    return (Success: true, Result: cachedValue);
-            }
-            finally
-            {
-                this._dataCacheLock.ExitReadLock();
-            }
+                this._dataCacheLock.EnterReadLock();
+                try
+                {
+                    if (this._cachedData.TryGetValue(key, out var cachedValue))
+                        return (Success: true, Result: cachedValue);
+                }
+                finally
+                {
+                    this._dataCacheLock.ExitReadLock();
+                }
 
-            return (false, default(TValue));
+                return (false, default(TValue));
+            },
+            r => r.Success == false,
+            token);
         }
 
         /// <inheritdoc />
@@ -129,19 +141,24 @@ namespace Elvex.Toolbox.Patterns.Strategy
         {
             await EnsureProviderIsInitialized();
 
-            this._dataCacheLock.EnterReadLock();
-            try
+            return await ExecWithRetry<IReadOnlyCollection<TValue>>(() =>
             {
-                var result = this._cachedData.Where(kv => filter(kv.Value))
-                                             .Select(kv => kv.Value)
-                                             .ToArray();
+                this._dataCacheLock.EnterReadLock();
+                try
+                {
+                    var result = this._cachedData.Where(kv => filter(kv.Value))
+                                                 .Select(kv => kv.Value)
+                                                 .ToArray();
 
-                return result;
-            }
-            finally
-            {
-                this._dataCacheLock.ExitReadLock();
-            }
+                    return result;
+                }
+                finally
+                {
+                    this._dataCacheLock.ExitReadLock();
+                }
+            },
+            r => r is null || r.Count == 0,
+            token) ?? EnumerableHelper<TValue>.ReadOnlyArray;
         }
 
         /// <inheritdoc />
@@ -149,19 +166,24 @@ namespace Elvex.Toolbox.Patterns.Strategy
         {
             await EnsureProviderIsInitialized();
 
-            this._dataCacheLock.EnterReadLock();
-            try
+            return await ExecWithRetry<TValue>(() =>
             {
-                var result = this._cachedData.Where(kv => filter(kv.Value))
-                                             .Select(kv => kv.Value)
-                                             .FirstOrDefault();
+                this._dataCacheLock.EnterReadLock();
+                try
+                {
+                    var result = this._cachedData.Where(kv => filter(kv.Value))
+                                                 .Select(kv => kv.Value)
+                                                 .FirstOrDefault();
 
-                return result;
-            }
-            finally
-            {
-                this._dataCacheLock.ExitReadLock();
-            }
+                    return result;
+                }
+                finally
+                {
+                    this._dataCacheLock.ExitReadLock();
+                }
+            },
+            r => r is null,
+            token);
         }
 
         /// <inheritdoc />
@@ -169,20 +191,25 @@ namespace Elvex.Toolbox.Patterns.Strategy
         {
             await EnsureProviderIsInitialized();
 
-            this._dataCacheLock.EnterReadLock();
-            try
+            return await ExecWithRetry<IReadOnlyCollection<TValue>>(() =>
             {
-                var results = keys.Distinct()
-                                  .Where(k => this._cachedData.ContainsKey(k))
-                                  .Select(k => this._cachedData[k])
-                                  .ToReadOnly();
+                this._dataCacheLock.EnterReadLock();
+                try
+                {
+                    var results = keys.Distinct()
+                                      .Where(k => this._cachedData.ContainsKey(k))
+                                      .Select(k => this._cachedData[k])
+                                      .ToReadOnly();
 
-                return results;
-            }
-            finally
-            {
-                this._dataCacheLock.ExitReadLock();
-            }
+                    return results;
+                }
+                finally
+                {
+                    this._dataCacheLock.ExitReadLock();
+                }
+            },
+            r => r is null || r.Count == 0,
+            token) ?? EnumerableHelper<TValue>.ReadOnlyArray;
         }
 
         /// <inheritdoc />
@@ -309,6 +336,58 @@ namespace Elvex.Toolbox.Patterns.Strategy
         protected void RaisedDataChanged(IReadOnlyCollection<TKey> definitionThatChanged)
         {
             DataChanged?.Invoke(this, definitionThatChanged);
+        }
+
+        /// <summary>
+        /// Execute a func with a fallback when failed
+        /// </summary>
+        protected async ValueTask<TResult?> ExecWithRetry<TResult>(Func<TResult?> execFunc, Func<TResult?, bool> failCheck, CancellationToken token)
+        {
+            return await ExecWithRetryAsync(() =>
+            {
+                var result = execFunc();
+                return ValueTask.FromResult<TResult?>(result);
+            },
+            failCheck,
+            token);
+        }
+
+        /// <summary>
+        /// Execute a func with a fallback when failed
+        /// </summary>
+        protected async ValueTask<TResult?> ExecWithRetryAsync<TResult>(Func<ValueTask<TResult?>> execFunc, Func<TResult?, bool> failCheck, CancellationToken token)
+        {
+            Exception? exception = null;
+            TResult? result = default;
+
+            try
+            {
+                result = await execFunc();
+            }
+            catch (Exception ex)
+            {
+                if (!this._supportFallback)
+                    throw;
+
+                exception = ex;
+            }
+
+            if (this._supportFallback && (exception is not null || failCheck(result)))
+            {
+                await FallbackOdRetryFailedAsync(token);
+
+                result = await execFunc();
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Call when a result failed to try to fix
+        /// </summary>
+        protected virtual Task FallbackOdRetryFailedAsync(CancellationToken token)
+        {
+            return Task.CompletedTask;
         }
 
         #endregion
