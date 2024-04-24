@@ -154,8 +154,23 @@ namespace Elvex.Toolbox.Services
         public ValueTask<bool> Delete(Uri file)
         {
             var exists = Exists(file);
-            File.Delete(file.OriginalString);
+            if (exists)
+                File.Delete(file.OriginalString);
             return ValueTask.FromResult(exists);
+        }
+
+        /// <summary>
+        /// Deletes the specified folder
+        /// </summary>
+        public ValueTask<bool> DeleteFolder(Uri folder, bool recurive = true)
+        {
+            if (Directory.Exists(folder.LocalPath))
+            {
+                Directory.Delete(folder.LocalPath, recurive);
+                return ValueTask.FromResult(true);
+            }
+
+            return ValueTask.FromResult(false);
         }
 
         /// <inheritdoc />

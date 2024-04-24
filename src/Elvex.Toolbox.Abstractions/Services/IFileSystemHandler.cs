@@ -66,6 +66,11 @@ namespace Elvex.Toolbox.Abstractions.Services
         ValueTask<bool> Delete(Uri file);
 
         /// <summary>
+        /// Deletes the specified folder
+        /// </summary>
+        ValueTask<bool> DeleteFolder(Uri folder, bool recursive = true);
+
+        /// <summary>
         /// Gets a folder where temporary data could be write
         /// </summary>
         ValueTask<string> GetTemporaryFolderAsync(bool global, CancellationToken token);

@@ -20,21 +20,13 @@ namespace Elvex.Toolbox.Services
     /// Proxy pilot about a external execution process
     /// </summary>
     /// <seealso cref="IExternalProcess" />
-    internal sealed class ExternalProcess : SafeDisposable, IExternalProcess
+    internal sealed class ExternalProcess : ExternalBaseProcess, IExternalProcess
     {
         #region Fields
 
-        private readonly CancellationToken _cancellationToken;
         private readonly ProcessStartInfo _info;
-
-        private readonly Queue<string> _standardOutputLogger;
-        private readonly Subject<string> _standardOutput;
-
-        private readonly Queue<string> _errorOutputLogger;
-        private readonly Subject<string> _errorOutput;
-
+        
         private Process? _process;
-        private Task? _processTask;
 
         #endregion
 
@@ -46,6 +38,7 @@ namespace Elvex.Toolbox.Services
         public ExternalProcess(ProcessStartInfo info,
                                IReadOnlyCollection<string> arguments,
                                CancellationToken cancellationToken)
+            : base(arguments, cancellationToken)
         {
             info.RedirectStandardOutput = true;
             info.RedirectStandardError = true;
@@ -55,42 +48,6 @@ namespace Elvex.Toolbox.Services
             info.UseShellExecute = false;
 
             this._info = info;
-            this._cancellationToken = cancellationToken;
-
-            this.Arguments = arguments;
-
-            // Standard output
-            this._standardOutputLogger = new Queue<string>();
-            this._standardOutput = new Subject<string>();
-            RegisterDisposableDependency(this._standardOutput);
-
-            var defaultRecordToken = this._standardOutput.Subscribe((n) => this._standardOutputLogger.Enqueue(n));
-            RegisterDisposableDependency(defaultRecordToken);
-
-            var standardOutputConnectObservable = this._standardOutput.ObserveOn(TaskPoolScheduler.Default)
-                                                                      .Publish();
-
-            var standardOutputConnectToken = standardOutputConnectObservable.Connect();
-            RegisterDisposableDependency(standardOutputConnectToken);
-
-            this.StandardOutputObservable = standardOutputConnectObservable;
-
-            // Error output
-            this._errorOutputLogger = new Queue<string>();
-
-            this._errorOutput = new Subject<string>();
-            RegisterDisposableDependency(this._errorOutput);
-
-            var defaultErrorRecordToken = this._errorOutput.Subscribe((n) => this._errorOutputLogger.Enqueue(n));
-            RegisterDisposableDependency(defaultErrorRecordToken);
-
-            var errorOutputConnectObservable = this._errorOutput.ObserveOn(TaskPoolScheduler.Default)
-                                                                   .Publish();
-
-            var errorOutputConnectToken = errorOutputConnectObservable.Connect();
-            RegisterDisposableDependency(errorOutputConnectToken);
-
-            this.ErrorOutputObservable = errorOutputConnectObservable;
         }
 
         #endregion
@@ -98,43 +55,49 @@ namespace Elvex.Toolbox.Services
         #region Properties
 
         /// <inheritdoc />
-        public string Executable
+        public override string Executable
         {
             get { return this._info.FileName; }
         }
-
-        /// <inheritdoc />
-        public IReadOnlyCollection<string> Arguments { get; }
-
-        /// <inheritdoc />
-        public IObservable<string> StandardOutputObservable { get; }
-
-        /// <inheritdoc />
-        public IReadOnlyCollection<string> StandardOutput
-        {
-            get { return this._standardOutputLogger; }
-        }
-
-        /// <inheritdoc />
-        public IObservable<string> ErrorOutputObservable { get; }
-
-        /// <inheritdoc />
-        public IReadOnlyCollection<string> ErrorOutput
-        {
-            get { return this._errorOutputLogger; }
-        }
-
-        /// <inheritdoc />
-        public int? ExitCode { get; private set; }
 
         #endregion
 
         #region Methods
 
+        /// <inheritdoc />
+        public override Task KillAsync(CancellationToken cancellationToken)
+        {
+            Process? process;
+            lock (this._info)
+            {
+                process = this._process;
+            }
+
+            if (process == null && this.ExitCode == null)
+                throw new InvalidOperationException("Run process first");
+
+            if (process == null)
+                return Task.CompletedTask;
+
+            return Task.Run(() => process.Kill(true), cancellationToken);
+        }
+
+        /// <inheritdoc />
+        public override string ToDebugDisplayName()
+        {
+            return this._info?.ToString() ?? this.Executable;
+        }
+
+        /// <inheritdoc />
+        protected override void OnDisposeThreadSafeBegin()
+        {
+            this._process?.Kill(true);
+        }
+
         /// <summary>
         /// Start configured process
         /// </summary>
-        public Task RunAsync()
+        protected override Task OnRunAsync(CancellationToken cancellationToken)
         {
             try
             {
@@ -164,13 +127,15 @@ namespace Elvex.Toolbox.Services
                     this._process.BeginOutputReadLine();
                     this._process.BeginErrorReadLine();
 
-                    var processTask = this._process.WaitForExitAsync(this._cancellationToken);
+                    var processTask = this._process.WaitForExitAsync(cancellationToken);
 
-                    this._processTask = processTask.ContinueWith(t =>
+                    processTask = processTask.ContinueWith(t =>
                     {
                         this.ExitCode = this._process.ExitCode;
                         this._process = null;
                     });
+
+                    base.SetProcessWaitingTask(processTask);
                 }
             }
             catch (Exception ex)
@@ -182,42 +147,12 @@ namespace Elvex.Toolbox.Services
             return Task.CompletedTask;
         }
 
-        /// <inheritdoc />
-        public Task GetAwaiterTask()
-        {
-            lock (this._info)
-            {
-                return this._processTask ?? throw new InvalidOperationException("Run process first");
-            }
-        }
-
-        /// <inheritdoc />
-        public Task KillAsync(CancellationToken cancellationToken)
-        {
-            Process? process;
-            lock (this._info)
-            {
-                process = this._process;
-            }
-
-            if (process == null && this.ExitCode == null)
-                throw new InvalidOperationException("Run process first");
-
-            if (process == null)
-                return Task.CompletedTask;
-
-            return Task.Run(() => process.Kill(true), cancellationToken);
-        }
-
         /// <summary>
         /// Handles the OutputDataReceived event of the Process control.
         /// </summary>
         private void Process_OutputDataReceived(object sender, DataReceivedEventArgs e)
         {
-            if (e.Data == null)
-                return;
-
-            this._standardOutput.OnNext(e.Data);
+            base.ProcessOutputDataReceived(e?.Data);
         }
 
         /// <summary>
@@ -225,23 +160,7 @@ namespace Elvex.Toolbox.Services
         /// </summary>
         private void Process_ErrorDataReceived(object sender, DataReceivedEventArgs e)
         {
-            if (e.Data == null)
-                return;
-
-            this._errorOutput.OnNext(e.Data);
-        }
-
-        /// <summary>
-        /// Used to kill dependency process
-        /// </summary>
-        protected override void DisposeBegin()
-        {
-            lock (this._info)
-            {
-                this._process?.Kill(true);
-            }
-
-            base.DisposeBegin();
+            base.ProcessErrorDataReceived(e?.Data);
         }
 
         #endregion
