@@ -64,7 +64,6 @@ namespace Elvex.Toolbox.UnitTests.Extensions
 
         public record class HierachyRootClass(ParentClass? Child);
 
-
         private static string SampleValueStaticProp { get; }
 
         public record class SimpleObj();
@@ -541,6 +540,24 @@ namespace Elvex.Toolbox.UnitTests.Extensions
                                                                                                                                            });
 
             MemberInit_Tester(expr, new ExpressioSimpleSampleObject() { uid = Guid.NewGuid() });
+        }
+
+        [Fact]
+        public void Replace_Paramerter()
+        {
+            Expression<Func<ParentClass, bool>> source = p => p is ChildClassA && string.IsNullOrEmpty(((ChildClassA)p).Name);
+
+            var origin = source.Compile();
+            Check.ThatCode(() => origin(new ChildClassA(string.Empty))).WhichResult().IsTrue();
+            Check.ThatCode(() => origin(new ChildClassA("test"))).WhichResult().IsFalse();
+            Check.ThatCode(() => origin(new ChildClassB(string.Empty))).WhichResult().IsFalse();
+
+            var reroot = source.ReplaceParameter<ParentClass, HierachyRootClass, bool>(h => h.Child!);
+
+            var rerootFunc = reroot.Compile();
+            Check.ThatCode(() => rerootFunc(new HierachyRootClass(new ChildClassA(string.Empty)))).WhichResult().IsTrue();
+            Check.ThatCode(() => rerootFunc(new HierachyRootClass(new ChildClassA("test")))).WhichResult().IsFalse();
+            Check.ThatCode(() => rerootFunc(new HierachyRootClass(new ChildClassB(string.Empty)))).WhichResult().IsFalse();
         }
 
         #region Tools
