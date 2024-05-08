@@ -21,6 +21,11 @@ namespace Elvex.Toolbox.Core.UnitTests.Extensions
         #region Nested
 
         public record struct Container(string strId);
+
+        public record class Level1(string StrId);
+
+        public record class Root(Level1 Lvl);
+
         public record class EmptyContainer();
 
         #endregion
@@ -75,6 +80,38 @@ namespace Elvex.Toolbox.Core.UnitTests.Extensions
             Check.That(access.TargetType).IsNotNull().And.IsEqualTo(typeof(int).GetAbstractType());
 
             Check.That(access.ChainCall).IsNotNull().And.IsEqualTo("o." + nameof(string.Length));
+        }
+
+        [Fact]
+        public void CreateAccess_ChainCall_Multiple()
+        {
+            Expression<Func<Root, string>> func = (Root o) => o.Lvl.StrId;
+
+            var access = func.CreateAccess();
+
+            Check.That(access).IsNotNull();
+            Check.That(access.DirectObject).IsNull();
+            Check.That(access.MemberInit).IsNull();
+            Check.That(access.TargetType).IsNotNull().And.IsEqualTo(typeof(string).GetAbstractType());
+
+            Check.That(access.ChainCall).IsNotNull().And.IsEqualTo("o." + nameof(Root.Lvl) + "." + nameof(Level1.StrId));
+        }
+
+        [Fact]
+        public void CreateAccess_ChainCall_Multiple_Serialization()
+        {
+            Expression<Func<Root, string>> func = (Root o) => o.Lvl.StrId;
+
+            var access = func.CreateAccess();
+
+            SerializationTester.SerializeTester(access);
+
+            Check.That(access).IsNotNull();
+            Check.That(access.DirectObject).IsNull();
+            Check.That(access.MemberInit).IsNull();
+            Check.That(access.TargetType).IsNotNull().And.IsEqualTo(typeof(string).GetAbstractType());
+
+            Check.That(access.ChainCall).IsNotNull().And.IsEqualTo("o." + nameof(Root.Lvl) + "." + nameof(Level1.StrId));
         }
 
         [Fact]

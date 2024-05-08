@@ -24,7 +24,7 @@
                 <Setter Property="Background" Value="{DynamicResource AccentBrush}" />
                 <Setter Property="RenderTransform">
                     <Setter.Value>
-                        <ScaleTransform ScaleX="1.1" ScaleY="1.1" />
+                        <ScaleTransform ScaleX="1.01" ScaleY="1.01" />
                     </Setter.Value>
                 </Setter>
             </Trigger>
@@ -40,7 +40,7 @@
 
     <Style x:Key="HorizontalGridSplitterStyle" TargetType="{x:Type GridSplitter}" BasedOn="{StaticResource DefaultGridSplitterStyle}">
         <Setter Property="Height" Value="{DynamicResource GridSplitSize}" />
-        <Setter Property="Margin" Value="{DynamicResource DefaultTopBottomMargin}" />
+        <Setter Property="Margin" Value="{DynamicResource DefaultLeftRightMargin}" />
         <Setter Property="HorizontalAlignment" Value="Stretch" />
         <Setter Property="VerticalAlignment" Value="Center" />
     </Style>

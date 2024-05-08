@@ -155,6 +155,39 @@ namespace System
         /// </summary>
         public static object? GetValueFromPropertyOrField(this Type type,
                                                           object? inst,
+                                                          MemberInfo member,
+                                                          out Type fieldType)
+        {
+            ArgumentNullException.ThrowIfNull(member);
+
+            if (member is PropertyInfo prop)
+            {
+                fieldType = prop.PropertyType;
+
+                var isStatic = prop.GetMethod?.IsStatic ?? false;
+
+                return (isStatic || inst is not null) 
+                            ? prop.GetValue(inst) 
+                            : (object?)null;
+            }
+
+            if (member is FieldInfo info)
+            {
+                fieldType = info.FieldType;
+
+                return (info.IsStatic || inst is not null)
+                            ? info.GetValue(inst)
+                            : (object?)null;
+            }
+
+            throw new NotSupportedException("Could not extract value from " + member);
+        }
+
+        /// <summary>
+        /// Gets the value from property or field.
+        /// </summary>
+        public static object? GetValueFromPropertyOrField(this Type type,
+                                                          object? inst,
                                                           string name,
                                                           out Type fieldType,
                                                           BindingFlags flags = BindingFlags.Public | BindingFlags.Instance)
@@ -165,19 +198,7 @@ namespace System
 
             ArgumentNullException.ThrowIfNull(member);
 
-            if (member is PropertyInfo prop)
-            {
-                fieldType = prop.PropertyType;
-                return prop.GetValue(inst);
-            }
-
-            if (member is FieldInfo info)
-            {
-                fieldType = info.FieldType;
-                return info.GetValue(inst);
-            }
-
-            throw new NotSupportedException("Could not extract value from " + member);
+            return GetValueFromPropertyOrField(type, inst, member, out fieldType);
         }
 
         #endregion

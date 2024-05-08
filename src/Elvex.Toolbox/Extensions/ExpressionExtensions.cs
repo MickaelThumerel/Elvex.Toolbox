@@ -17,6 +17,7 @@ namespace System.Linq.Expressions
     using System.Diagnostics;
     using System.Linq;
     using System.Reflection;
+    using System.Runtime.CompilerServices;
 
     /// <summary>
     /// Extension around expression
@@ -156,7 +157,7 @@ namespace System.Linq.Expressions
             else if (nodeType == ExpressionType.MemberAccess)
             {
                 var memberExpr = (MemberExpression)lambdaAccessExpression.Body;
-                if (memberExpr.Expression is ParameterExpression)
+                if (IsParameterSimpleChainCall(memberExpr))
                 {
                     callChain = DynamicCallHelper.GetCallChain(lambdaAccessExpression.Body)!;
                 }
@@ -204,9 +205,8 @@ namespace System.Linq.Expressions
             if (member.Expression is ConstantExpression context)
             {
                 var cstValue = context.Type.GetValueFromPropertyOrField(context.Value,
-                                                                        member.Member.Name,
-                                                                        out objectType,
-                                                                        BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance);
+                                                                        member.Member,
+                                                                        out objectType);
                 return cstValue;
             }
 
@@ -217,9 +217,8 @@ namespace System.Linq.Expressions
                 ArgumentNullException.ThrowIfNull(objectType);
 
                 var cstValue = objectType!.GetValueFromPropertyOrField(contextInst,
-                                                                       member.Member.Name,
-                                                                       out objectType,
-                                                                       BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance);
+                                                                       member.Member,
+                                                                       out objectType);
                 return cstValue;
             }
 
@@ -228,9 +227,8 @@ namespace System.Linq.Expressions
                 Debug.Assert(member.Expression is null);
 
                 var cstValue = member.Member.DeclaringType!.GetValueFromPropertyOrField(null,
-                                                                                        member.Member.Name,
-                                                                                        out objectType,
-                                                                                        BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Static);
+                                                                                        member.Member,
+                                                                                        out objectType);
                 return cstValue;
             }
 
@@ -615,7 +613,59 @@ namespace System.Linq.Expressions
             throw new NotImplementedException("Math operator not managed " + expressionType);
         }
 
+        /// <summary>
+        /// Replaces the parameter of the lambda expression.
+        /// </summary>
+        /// <remarks>
+        ///     Usefull to keep a filter lambda but to apply on a parent level
+        /// </remarks>
+        public static Expression<Func<TNewParamter, TOutput>> ReplaceParameter<TOldParameter, TNewParamter, TOutput>(this Expression<Func<TOldParameter, TOutput>> source, Expression<Func<TNewParamter, TOldParameter>> replace)
+        {
+            var newLambdaBody = ReplaceParameter(source.Body, source.Parameters.First(), replace.Body);
+            return Expression.Lambda<Func<TNewParamter, TOutput>>(newLambdaBody, replace.Parameters.First());
+        }
+
+        /// <summary>
+        /// Replaces the parameter of the lambda expression.
+        /// </summary>
+        /// <remarks>
+        ///     Usefull to keep a filter lambda but to apply on a parent level
+        /// </remarks>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Expression ReplaceParameter(this Expression source, ParameterExpression sourceParameter, Expression replace)
+        {
+            return ReplaceParameter(source, new Dictionary<ParameterExpression, Expression>()
+            {
+                { sourceParameter, replace }
+            });
+        }
+
+        /// <summary>
+        /// Replaces the parameter of the lambda expression.
+        /// </summary>
+        /// <remarks>
+        ///     Usefull to keep a filter lambda but to apply on a parent level
+        /// </remarks>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Expression ReplaceParameter(this Expression source, Dictionary<ParameterExpression, Expression> map)
+        {
+            return ExpressionParameterRebinder.ReplaceParameters(map, source);
+        }
+
         #region Tools
+
+        /// <summary>
+        /// Determines whether [is parameter simple chain call] [the specified member expr].
+        /// </summary>
+        private static bool IsParameterSimpleChainCall(Expression? memberExpr)
+        {
+            if (memberExpr is null)
+                return false;
+
+            if (memberExpr is MemberExpression member)
+                return IsParameterSimpleChainCall(member.Expression);
+            return memberExpr is ParameterExpression;
+        }
 
         /// <summary>
         /// Converts back <see cref="ConditionExpressionDefinition"/> to executable <typeparamref name="TDelegate"/>
