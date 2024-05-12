@@ -6,4 +6,9 @@ using BenchmarkDotNet.Running;
 
 using Elvex.Toolbox.Benchmark.Sandbox;
 
-BenchmarkRunner.Run<MemberInitializationBenchmark>();
+BenchmarkRunner.Run<StringSplitOptiBenchmark>();
+
+//var inst = new StringSplitOptiBenchmark();
+//inst.ClassicSplit();
+//inst.OptiSplit();
+//inst.LessOptiSplit();

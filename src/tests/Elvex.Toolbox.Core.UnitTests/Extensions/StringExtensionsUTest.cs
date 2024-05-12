@@ -4,9 +4,12 @@
 
 namespace Elvex.Toolbox.UnitTests.Extensions
 {
+    using Elvex.Toolbox.Models;
+
     using NFluent;
 
     using System;
+    using System.Collections;
 
     /// <summary>
     /// Test for <see cref="StringExtensions"/>
@@ -35,7 +38,6 @@ namespace Elvex.Toolbox.UnitTests.Extensions
                     StringSplitOptions.TrimEntries,
                     new[] { "<<", ">>", ",", " ", "<" },
                     "List`3", "int", "double", "List", "string", "double", "float")]
-
 
         [InlineData("<Split muti sentence. To ensure ? that all the sentence are split ... Correctly !>",
                     true,
@@ -92,6 +94,127 @@ namespace Elvex.Toolbox.UnitTests.Extensions
                             .CountIs(expectedResults.Length)
                             .And
                             .ContainsExactly(expectedResults);
+        }
+
+        [Theory]
+        [InlineData("List", false, StringSplitOptions.RemoveEmptyEntries, new[] { "<<", ">>" }, new string[0], "List")]
+        [InlineData("List<<int>>", false, StringSplitOptions.RemoveEmptyEntries, new[] { "<<", ">>" }, new string[0], "List", "int")]
+        [InlineData("List<<int>>", true, StringSplitOptions.RemoveEmptyEntries, new[] { "<<", ">>" }, new string[0], "List<<", "int>>")]
+        [InlineData("<<List<<int>>", true, StringSplitOptions.RemoveEmptyEntries, new[] { "<<", ">>" }, new string[0], "<<", "List<<", "int>>")]
+
+        [InlineData("    List`3<<int, double, List<<string, double, float>>   >>",
+                    true,
+                    StringSplitOptions.RemoveEmptyEntries,
+                    new[] { "<<", ">>", ",", " " },
+                    new string[0],
+                    "List`3<<", "int,", "double,", "List<<", "string,", "double,", "float>>", ">>")]
+
+        [InlineData("    List`3<<int, double, List<< <string, double, float>>   >>",
+                    true,
+                    StringSplitOptions.TrimEntries,
+                    new[] { "<<", ">>", ",", " ", "<" },
+                    new string[0],
+                    "List`3<<", "int,", "double,", "List<<", "<", "string,", "double,", "float>>", ">>")]
+
+        [InlineData("    List`3<<int, double, List<< <string, double, float>>   >>",
+                    false,
+                    StringSplitOptions.TrimEntries,
+                    new[] { "<<", ">>", ",", " ", "<" },
+                    new string[0],
+                    "List`3", "int", "double", "List", "string", "double", "float")]
+
+        [InlineData("<Split muti sentence. To ensure ? that all the sentence are split ... Correctly !>",
+                    true,
+                    StringSplitOptions.TrimEntries,
+                    new[] { "...", "<", ">", ".", "!", "?" },
+                    new string[0],
+                    "<", "Split muti sentence.", "To ensure ?", "that all the sentence are split ...", "Correctly !", ">")]
+
+        public void SplitByMultipleSeparatorsAttachedContext(string source, bool includeSeparator, StringSplitOptions options, string[] separators, string[] excluded, params string[] expectedResults)
+        {
+            var ctx = StringIndexedContext.Create(separators ?? EnumerableHelper<string>.ReadOnlyArray,
+                                                  excluded ?? EnumerableHelper<string>.ReadOnlyArray);
+
+            var args = source.OptiSplit(includeSeparator ? Models.StringIncludeSeparatorMode.AttachedToPrevious : Models.StringIncludeSeparatorMode.None,
+                                        options,
+                                        ctx);
+
+            Check.That(args).IsNotNull()
+                            .And
+                            .CountIs(expectedResults.Length)
+                            .And
+                            .ContainsExactly(expectedResults);
+        }
+
+        [Theory]
+        [InlineData("List<<<Remain<<After", false, StringSplitOptions.RemoveEmptyEntries, new[] { "<<" }, new [] { "<<<" }, "List<<<Remain", "After")]
+        [InlineData("Lorem ipsum?Test Simple.Filter (string, Etc. next.)!A la con", false, StringSplitOptions.RemoveEmptyEntries, new[] { ".", "?", "!", ":" }, new [] { ".)", "Etc." }, "Lorem ipsum", "Test Simple", "Filter (string, Etc. next.)", "A la con")]
+        public void SplitByMultipleSeparatorsAttachedContextWithExlude(string source, bool includeSeparator, StringSplitOptions options, string[] separators, string[] excluded, params string[] expectedResults)
+        {
+            var ctx = StringIndexedContext.Create(separators ?? EnumerableHelper<string>.ReadOnlyArray,
+                                                  excluded ?? EnumerableHelper<string>.ReadOnlyArray);
+
+            var args = source.OptiSplit(includeSeparator ? Models.StringIncludeSeparatorMode.AttachedToPrevious : Models.StringIncludeSeparatorMode.None,
+                                        options,
+                                        ctx);
+
+            Check.That(args).IsNotNull()
+                            .And
+                            .CountIs(expectedResults.Length)
+                            .And
+                            .ContainsExactly(expectedResults);
+        }
+
+        [Theory]
+        [InlineData("Test", false, StringSplitOptions.RemoveEmptyEntries, new[] { "TestALaCon" }, new string[0], "Test")]
+        [InlineData("Test", false, StringSplitOptions.RemoveEmptyEntries, new string[0], new[] { "Test" }, "Test")]
+        public void SplitByMultipleSeparatorsExt(string source, bool includeSeparator, StringSplitOptions options, string[] separators, string[] excluded, params string[] expectedResults)
+        {
+            var ctx = StringIndexedContext.Create(separators ?? EnumerableHelper<string>.ReadOnlyArray,
+                                                  excluded ?? EnumerableHelper<string>.ReadOnlyArray);
+
+            var args = source.OptiSplit(includeSeparator ? Models.StringIncludeSeparatorMode.AttachedToPrevious : Models.StringIncludeSeparatorMode.None,
+                                        options,
+                                        ctx);
+
+            Check.That(args).IsNotNull()
+                            .And
+                            .CountIs(expectedResults.Length)
+                            .And
+                            .ContainsExactly(expectedResults);
+        }
+
+        [Theory]
+        [InlineData(new [] { "a", "abc", "bc", "c", "cratos", "cr" }, new [] { "criter", "abcd" })]
+        public void SplitContext(string[] separators, string[] excluded)
+        {
+            var ctx = StringIndexedContext.Create(separators, excluded);
+
+            foreach (var s in separators)
+            {
+                var founded = ctx.Search(s, 0, out var include, out var deep);
+                
+                Check.That(founded).IsTrue();
+
+                Check.That(include).IsNotNull();
+                Check.That(include!.Value).IsTrue();
+
+                Check.That(deep).IsNotNull();
+                Check.That(deep!.Value).IsEqualTo(s.Length);
+            }
+
+            foreach (var s in excluded)
+            {
+                var founded = ctx.Search(s, 0, out var include, out var deep);
+
+                Check.That(founded).IsTrue();
+
+                Check.That(include).IsNotNull();
+                Check.That(include!.Value).IsFalse();
+
+                Check.That(deep).IsNotNull();
+                Check.That(deep!.Value).IsEqualTo(s.Length);
+            }
         }
     }
 }
