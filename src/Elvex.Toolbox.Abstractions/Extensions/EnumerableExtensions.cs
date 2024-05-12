@@ -31,10 +31,23 @@ namespace System.Collections.Generic
         /// <remarks>
         ///     Allow algorithme that instanciate the collection on if needed
         /// </remarks>
-        public static TCollection AddRangeOnNull<TCollection, TItem>(this TCollection? collection, IEnumerable<TItem> items)
+        public static TCollection AddRangeOnNull<TCollection, TItem>(this TCollection? collection, IEnumerable<TItem> items, int? presetSize = null)
             where TCollection : ICollection<TItem>, new()
         {
-            collection ??= new TCollection();
+            if (collection is null && presetSize is not null)
+            {
+                collection = (TCollection)Activator.CreateInstance(typeof(TCollection), new object[] { (int)presetSize.Value })!;
+            }
+            else
+            {
+                collection ??= new TCollection();
+            }
+
+            if (collection is List<TItem> collectionList)
+            {
+                collectionList.AddRange(items);
+                return collection;
+            }
 
             foreach (var item in items)
                 collection.Add(item);
