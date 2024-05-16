@@ -9,6 +9,7 @@ namespace Elvex.Toolbox.WPF.UI.Controls
 
     using System.Windows;
     using System.Windows.Input;
+    using System.Windows.Media;
 
     /// <summary>
     /// Define a window without border and without distinction between top bar an menu
@@ -24,6 +25,12 @@ namespace Elvex.Toolbox.WPF.UI.Controls
                                                                                                typeof(object),
                                                                                                typeof(BorderLessWindow),
                                                                                                new PropertyMetadata(null));
+
+        public static readonly DependencyProperty HeaderBackgroundProperty = DependencyProperty.Register(nameof(HeaderBackground),
+                                                                                                         typeof(Brush),
+                                                                                                         typeof(BorderLessWindow),
+                                                                                                         new PropertyMetadata(null));
+
 
         private static readonly DependencyPropertyKey s_minimizeCommandPropertyKey = DependencyProperty.RegisterReadOnly(nameof(MinimizeCommand),
                                                                                                                          typeof(ICommand),
@@ -93,6 +100,15 @@ namespace Elvex.Toolbox.WPF.UI.Controls
         {
             get { return (object)GetValue(HeaderProperty); }
             set { SetValue(HeaderProperty, value); }
+        }
+
+        /// <summary>
+        /// Gets or sets the header background.
+        /// </summary>
+        public Brush HeaderBackground
+        {
+            get { return (Brush)GetValue(HeaderBackgroundProperty); }
+            set { SetValue(HeaderBackgroundProperty, value); }
         }
 
         #endregion

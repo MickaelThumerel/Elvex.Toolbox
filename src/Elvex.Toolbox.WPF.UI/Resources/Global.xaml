@@ -18,6 +18,10 @@
         <ResourceDictionary Source="Styles/TreeViewStyles.xaml" />
         <ResourceDictionary Source="Styles/ComboBoxStyles.xaml" />
         <ResourceDictionary Source="Styles/ExpanderStyles.xaml" />
+        <ResourceDictionary Source="Styles/MenuStyles.xaml" />
+        <ResourceDictionary Source="Styles/CheckBoxStyles.xaml" />
+        <ResourceDictionary Source="Styles/ProgressBarStyles.xaml" />
+        <ResourceDictionary Source="Styles/DataGridStyles.xaml" />
 
     </ResourceDictionary.MergedDictionaries>
 
