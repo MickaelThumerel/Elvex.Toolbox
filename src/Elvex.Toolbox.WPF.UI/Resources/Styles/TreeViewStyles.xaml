@@ -9,6 +9,7 @@
         <Setter Property="SnapsToDevicePixels" Value="True" />
         <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Auto" />
         <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto" />
+        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="TreeView">
@@ -50,9 +51,11 @@
                             <RowDefinition />
                         </Grid.RowDefinitions>
 
+                        <Border x:Name="BackBorder" Grid.ColumnSpan="1" Grid.Column="1" />
+
                         <ToggleButton x:Name="Expander"
                                       Style="{DynamicResource AddMinusToggleButton}"
-                                      Foreground="{TemplateBinding Foreground}"
+                                      Foreground="{DynamicResource ContrastAccentBrush}"
                                       ClickMode="Press"
                                       IsChecked="{Binding IsExpanded, RelativeSource={RelativeSource TemplatedParent}}"/>
 
@@ -64,6 +67,7 @@
 
                             <ContentPresenter x:Name="PART_Header"
                                               ContentSource="Header"
+                                              TextElement.Foreground="{DynamicResource MainForegroundBrush}"
                                               HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"/>
 
                         </Border>
@@ -77,12 +81,17 @@
                     <ControlTemplate.Triggers>
 
                         <Trigger Property="IsSelected" Value="True">
-                            <Setter Property="Background" Value="{DynamicResource LightAccentBrush}" />
-                            <Setter Property="Foreground" Value="{DynamicResource MainForegroundBrush}" />
+                            <Setter Property="Background" TargetName="BackBorder" Value="{DynamicResource LightComplementaryBrush}" />
+                            <Setter Property="Foreground" TargetName="Expander" Value="{DynamicResource AccentBrush}" />
                         </Trigger>
 
                         <Trigger Property="HasItems" Value="false">
                             <Setter TargetName="Expander" Property="Visibility" Value="Hidden" />
+                        </Trigger>
+
+                        <Trigger Property="HasItems" Value="true">
+                            <Setter TargetName="BackBorder" Property="Grid.Column" Value="0" />
+                            <Setter TargetName="BackBorder" Property="Grid.ColumnSpan" Value="2" />
                         </Trigger>
 
                         <MultiTrigger>
@@ -107,7 +116,7 @@
 
         <Style.Triggers>
             <Trigger Property="IsEnabled" Value="False">
-                <Setter Property="Opacity" Value="{StaticResource DisabledOpacity}" />
+                <Setter Property="Opacity" Value="{DynamicResource DisabledOpacity}" />
             </Trigger>
         </Style.Triggers>
     </Style>

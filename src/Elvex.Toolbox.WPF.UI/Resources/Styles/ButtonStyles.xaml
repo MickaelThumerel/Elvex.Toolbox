@@ -17,6 +17,7 @@
     <cnv:BoolToVisibilityConveter x:Key="ButtonBoolToVisibilityConverter" />
 
     <Style x:Key="DefaultButtonFlatStyle" TargetType="Button">
+        <Setter Property="TextElement.Foreground" Value="{DynamicResource MainForegroundBrush}" />
         <Setter Property="Margin" Value="{DynamicResource DefaultMargin}" />
         <Setter Property="Padding" Value="{DynamicResource GoldenMargin}" />
 
@@ -25,7 +26,6 @@
 
         <Setter Property="BorderThickness" Value="1" />
 
-        <Setter Property="Foreground" Value="{DynamicResource MainForegroundBrush}" />
         <Setter Property="VerticalAlignment" Value="Center" />
         <Setter Property="VerticalContentAlignment" Value="Center" />
 
@@ -52,8 +52,8 @@
             </Trigger>
 
             <Trigger Property="IsMouseOver" Value="True">
-                <Setter Property="Background" Value="{DynamicResource ComplementaryBrush}" />
-                <Setter Property="BorderBrush" Value="{DynamicResource LightestBackgroundBrush}" />
+                <Setter Property="Background" Value="{DynamicResource LightComplementaryBrush}" />
+                <Setter Property="BorderBrush" Value="{DynamicResource ComplementaryBrush}" />
             </Trigger>
 
             <Trigger Property="IsPressed" Value="True">
@@ -73,6 +73,7 @@
         <Setter Property="Padding" Value="{DynamicResource SmallMargin}" />
         <Setter Property="IconBrush" Value="{DynamicResource AccentBrush}" />
         <Setter Property="IconStyle" Value="{DynamicResource IconSmallPathStyle}" />
+        <Setter Property="TextElement.Foreground" Value="{DynamicResource MainForegroundBrush}" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type ctrl:ButtonPath}">
@@ -108,7 +109,7 @@
         <Setter Property="BorderThickness" Value="0" />
         <Setter Property="BorderBrush" Value="{DynamicResource MainBackgroundBrush}" />
         <Setter Property="Background" Value="Transparent" />
-        <Setter Property="Foreground" Value="{DynamicResource MainForegroundBrush}" />
+        <Setter Property="TextElement.Foreground" Value="{DynamicResource MainForegroundBrush}" />
         <Setter Property="Padding" Value="{DynamicResource GoldenMargin}" />
         <Setter Property="Margin" Value="{DynamicResource DefaultMargin}" />
 
@@ -153,7 +154,7 @@
             </Trigger>
 
             <Trigger Property="IsEnabled" Value="False">
-                <Setter Property="Opacity" Value="{StaticResource DisabledOpacity}" />
+                <Setter Property="Opacity" Value="{DynamicResource DisabledOpacity}" />
             </Trigger>
 
         </Style.Triggers>
@@ -172,7 +173,7 @@
     </Style>
 
     <Style x:Key="ImageFlatToggleButton" TargetType="{x:Type ToggleButton}" BasedOn="{StaticResource DefaultFlatToggleButton}">
-        <Setter Property="Padding" Value="{StaticResource DefaultMargin}" />
+        <Setter Property="Padding" Value="{DynamicResource DefaultMargin}" />
         <Style.Triggers>
             <Trigger Property="IsChecked" Value="True">
                 <Setter Property="Background" Value="{DynamicResource AccentBrush}" />
@@ -208,9 +209,10 @@
     </Style>
 
     <Style x:Key="SlideToggleButtonStyle" TargetType="{x:Type ToggleButton}" BasedOn="{StaticResource {x:Type ToggleButton}}">
+        <Setter Property="TextElement.Foreground" Value="{DynamicResource MainForegroundBrush}" />
         <Setter Property="Padding" Value="{DynamicResource DefaultMargin}" />
         <Setter Property="Background" Value="{DynamicResource AccentBrush}" />
-        <Setter Property="BorderBrush" Value="{DynamicResource MainBorderBrush}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource LightBorderBrush}" />
         <Setter Property="VerticalAlignment" Value="Center" />
         <Setter Property="BorderThickness" Value="2" />
         <Setter Property="Template">

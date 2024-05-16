@@ -5,7 +5,8 @@
         <Setter Property="Background" Value="{DynamicResource DarkBackgroundBrush}" />
         <Setter Property="BorderBrush" Value="{DynamicResource LightBackgroundBrush}" />
         <Setter Property="BorderThickness" Value="1" />
-
+        <Setter Property="Padding" Value="{DynamicResource DefaultMargin}" />
+        <Setter Property="TextElement.Foreground" Value="{DynamicResource MainForegroundBrush}" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type Expander}">
@@ -32,7 +33,7 @@
                                           HorizontalAlignment="Center"
                                           VerticalAlignment="Center"
                                           Background="Transparent"
-                                          Margin="{DynamicResource DefaultMargin}">
+                                          Margin="{TemplateBinding Padding}">
 
                                 <ToggleButton.Template>
                                     <ControlTemplate TargetType="ToggleButton">
@@ -70,20 +71,17 @@
                             </ToggleButton>
 
                             <ContentControl Content="{TemplateBinding Header}"
+                                            TextElement.Foreground="{DynamicResource MainForegroundBrush}"
                                             ContentTemplate="{TemplateBinding HeaderTemplate}"
                                             ContentTemplateSelector="{TemplateBinding HeaderTemplateSelector}"
-                                            Margin="{DynamicResource DefaultMargin}"
+                                            Margin="{TemplateBinding Padding}"
                                             x:Name="header" />
 
                             <ContentControl Content="{TemplateBinding Content}"
                                             ContentTemplate="{TemplateBinding ContentTemplate}"
                                             ContentTemplateSelector="{TemplateBinding ContentTemplateSelector}"
-                                            Margin="{DynamicResource DefaultMargin}"
-                                            x:Name="content">
-                                <!--<ContentControl.LayoutTransform>
-                                    <ScaleTransform />
-                                </ContentControl.LayoutTransform>-->
-                            </ContentControl>
+                                            Margin="{TemplateBinding Padding}"
+                                            x:Name="content" />
 
                         </Grid>
                     </Border>
@@ -133,20 +131,6 @@
 
                         <Trigger Property="IsExpanded" Value="True">
                             <Setter Property="Visibility" TargetName="content" Value="Visible" />
-
-                            <!--<Trigger.EnterActions>
-                                <BeginStoryboard>
-                                    <Storyboard>
-                                        <DoubleAnimation Storyboard.TargetName="content"
-                                                         Storyboard.TargetProperty="(LayoutTransform).(ScaleTransform.ScaleY)"
-                                                         From="0" To="1"
-                                                         FillBehavior="HoldEnd"
-                                                         Duration="0:0:0.10"
-                                                         BeginTime="0:0:0"/>
-                                    </Storyboard>
-                                </BeginStoryboard>
-                            </Trigger.EnterActions>-->
-
                         </Trigger>
 
                         <Trigger Property="IsExpanded" Value="False">

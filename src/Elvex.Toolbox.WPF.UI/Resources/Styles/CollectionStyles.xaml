@@ -25,18 +25,127 @@
 
     <Style BasedOn="{StaticResource DefaultListBoxStyle}" TargetType="ListBox" />
 
-    <Style x:Key="DefaultListBoxItemStyle" TargetType="ListBoxItem">
+    <Style x:Key="DefaultListBoxItemStyle" TargetType="{x:Type ListBoxItem}">
         <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
         <Setter Property="Padding" Value="0" />
+        <Setter Property="Template" >
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type ListBoxItem}">
+                    <Border x:Name="Bd" BorderBrush="{TemplateBinding BorderBrush}" 
+                            BorderThickness="{TemplateBinding BorderThickness}" 
+                            Background="{TemplateBinding Background}" 
+                            Padding="{TemplateBinding Padding}" 
+                            SnapsToDevicePixels="true">
+
+                        <Grid>
+                            <Border x:Name="SelectBd" />
+
+                            <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" 
+                                              SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" 
+                                              VerticalAlignment="{TemplateBinding VerticalContentAlignment}" />
+                        </Grid>
+
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsSelected" Value="true">
+                            <Setter Property="Background" TargetName="SelectBd" Value="{DynamicResource LightComplementaryBrush}" />
+                            <Setter Property="BorderBrush" TargetName="SelectBd" Value="{DynamicResource MainBordrBrush}" />
+                            <Setter Property="BorderThickness" TargetName="SelectBd" Value="1" />
+                        </Trigger>
+
+                        <Trigger Property="IsMouseOver" Value="true">
+                            <Setter Property="Background" TargetName="SelectBd" Value="{DynamicResource LightAccentBrush}" />
+                            <Setter Property="BorderBrush" TargetName="SelectBd" Value="{DynamicResource MainBordrBrush}" />
+                            <Setter Property="BorderThickness" TargetName="SelectBd" Value="1" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
     </Style>
 
     <Style BasedOn="{StaticResource DefaultListBoxItemStyle}" TargetType="ListBoxItem" />
 
-    <Style x:Key="DefaultListViewItemStyle" TargetType="ListViewItem">
+    <Style x:Key="DefaultListViewItemStyle" TargetType="{x:Type ListViewItem}">
         <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
         <Setter Property="Padding" Value="0" />
+        <Setter Property="Template" >
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type ListViewItem}">
+                    <Border x:Name="Bd" BorderBrush="{TemplateBinding BorderBrush}" 
+                            BorderThickness="{TemplateBinding BorderThickness}" 
+                            Background="{TemplateBinding Background}" 
+                            Padding="{TemplateBinding Padding}" 
+                            SnapsToDevicePixels="true">
+
+                        <Grid>
+                            <Border x:Name="SelectBd" />
+
+                            <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" 
+                                              SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" 
+                                              VerticalAlignment="{TemplateBinding VerticalContentAlignment}" />
+                        </Grid>
+                        
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsSelected" Value="true">
+                            <Setter Property="Background" TargetName="SelectBd" Value="{DynamicResource LightComplementaryBrush}" />
+                            <Setter Property="BorderBrush" TargetName="SelectBd" Value="{DynamicResource MainBordrBrush}" />
+                            <Setter Property="BorderThickness" TargetName="SelectBd" Value="1" />
+                        </Trigger>
+
+                        <Trigger Property="IsMouseOver" Value="true">
+                            <Setter Property="Background" TargetName="SelectBd" Value="{DynamicResource LightAccentBrush}" />
+                            <Setter Property="BorderBrush" TargetName="SelectBd" Value="{DynamicResource MainBordrBrush}" />
+                            <Setter Property="BorderThickness" TargetName="SelectBd" Value="1" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
     </Style>
 
     <Style BasedOn="{StaticResource DefaultListViewItemStyle}" TargetType="ListViewItem" />
+
+    <Style x:Key="DefaultComboBoxItemStyle" TargetType="{x:Type ComboBoxItem}">
+        <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="Template" >
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type ComboBoxItem}">
+                    <Border x:Name="Bd" BorderBrush="{TemplateBinding BorderBrush}" 
+                            BorderThickness="{TemplateBinding BorderThickness}" 
+                            Background="{TemplateBinding Background}" 
+                            Padding="{TemplateBinding Padding}" 
+                            SnapsToDevicePixels="true">
+
+                        <Grid>
+                            <Border x:Name="SelectBd" />
+
+                            <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" 
+                                              SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" 
+                                              VerticalAlignment="{TemplateBinding VerticalContentAlignment}" />
+                        </Grid>
+
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsSelected" Value="true">
+                            <Setter Property="Background" TargetName="SelectBd" Value="{DynamicResource LightComplementaryBrush}" />
+                            <Setter Property="BorderBrush" TargetName="SelectBd" Value="{DynamicResource MainBordrBrush}" />
+                            <Setter Property="BorderThickness" TargetName="SelectBd" Value="1" />
+                        </Trigger>
+
+                        <Trigger Property="IsMouseOver" Value="true">
+                            <Setter Property="Background" TargetName="SelectBd" Value="{DynamicResource LightAccentBrush}" />
+                            <Setter Property="BorderBrush" TargetName="SelectBd" Value="{DynamicResource MainBordrBrush}" />
+                            <Setter Property="BorderThickness" TargetName="SelectBd" Value="1" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style BasedOn="{StaticResource DefaultComboBoxItemStyle}" TargetType="{x:Type ComboBoxItem}" />
 
 </ResourceDictionary>
