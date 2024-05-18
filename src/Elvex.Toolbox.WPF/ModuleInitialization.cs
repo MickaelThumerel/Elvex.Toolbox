@@ -5,9 +5,12 @@
 namespace Elvex.Toolbox.WPF
 {
     using Elvex.Toolbox.WPF.Abstractions;
+    using Elvex.Toolbox.WPF.Abstractions.Services;
     using Elvex.Toolbox.WPF.Builders;
+    using Elvex.Toolbox.WPF.Services;
 
     using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Extensions.DependencyInjection.Extensions;
 
     using System;
 
@@ -37,6 +40,18 @@ namespace Elvex.Toolbox.WPF
 
             var service = new ServiceViewBuilder(services);
             builders?.Invoke(service);
+        }
+
+        /// <summary>
+        /// Setups the globalization resources.
+        /// </summary>
+        public static IServiceCollection SetupGlobalizationResources(this IServiceCollection services, Action<IGlobalizationStringResourceBuilder> resourceBuilder)
+        {
+            services.TryAddSingleton<IGlobalizationStringResourceProvider, GlobalizationStringResourceProvider>();
+
+            var inst = new GlobalizationStringResourceBuilder(services);
+            resourceBuilder(inst);
+            return services;
         }
     }
 }
