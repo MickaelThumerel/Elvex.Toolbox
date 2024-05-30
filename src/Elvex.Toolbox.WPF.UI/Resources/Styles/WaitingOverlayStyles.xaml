@@ -6,7 +6,7 @@
     <cnv:BoolToVisibilityConveter x:Key="WaitingOverlayBoolToVisibilityConverter" />
 
     <Style x:Key="DefaultWaitingOverlayStyle" TargetType="{x:Type ctrl:WaitingOverlay}">
-        <Setter Property="Background" Value="{DynamicResource DisabledOverlayBrush}" />
+        <Setter Property="Background" Value="{DynamicResource TransparentComplementaryBackgroundBrush}" />
         <Setter Property="VerticalAlignment" Value="Stretch" />
         <Setter Property="HorizontalAlignment" Value="Stretch" />
         <Setter Property="VerticalContentAlignment" Value="Stretch" />

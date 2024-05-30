@@ -4,7 +4,7 @@
 
     <Style x:Key="DefaultWaitingRingStyle" TargetType="{x:Type ctrl:WaitingRing}">
         <Setter Property="Foreground" Value="{DynamicResource AccentBrush}" />
-        <Setter Property="Background" Value="{DynamicResource ComplementaryBrush}" />
+        <Setter Property="Background" Value="Transparent" />
         <Setter Property="MaxWidth" Value="150" />
         <Setter Property="MaxHeight" Value="150" />
         <Setter Property="Template">

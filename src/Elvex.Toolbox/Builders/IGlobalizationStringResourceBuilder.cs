@@ -2,7 +2,7 @@
 // The Elvexoft licenses this file to you under the MIT license.
 // Produce by Elvexoft & community
 
-namespace Elvex.Toolbox.WPF.Builders
+namespace Elvex.Toolbox.Builders
 {
     /// <summary>
     /// Builder used to setup Globalization resources

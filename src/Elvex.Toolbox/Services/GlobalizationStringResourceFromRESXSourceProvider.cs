@@ -2,9 +2,9 @@
 // This file is licenses to you under the MIT license.
 // Produce by nexai, elvexoft & community (cf. docs/Teams.md)
 
-namespace Elvex.Toolbox.WPF.Services
+namespace Elvex.Toolbox.Services
 {
-    using Elvex.Toolbox.WPF.Abstractions.Services;
+    using Elvex.Toolbox.Abstractions.Services;
 
     using System.Globalization;
     using System.Reflection;
@@ -47,12 +47,21 @@ namespace Elvex.Toolbox.WPF.Services
         {
             value = string.Empty;
 
-            var result = s_manager.GetString(name, cultureInfo);
-
-            if (!string.IsNullOrEmpty(result))
+            try
             {
-                value = result;
-                return true;
+
+                var result = s_manager.GetResourceSet(cultureInfo, true, true)?.GetString(name) ?? null;
+
+                if (!string.IsNullOrEmpty(result))
+                {
+                    value = result;
+                    return true;
+                }
+
+            }
+            catch (MissingManifestResourceException _)
+            {
+
             }
 
             return false;

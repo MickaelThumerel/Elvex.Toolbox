@@ -7,7 +7,8 @@
              xmlns:elvex="http://elvex.toolbox.ui/"
              mc:Ignorable="d" 
              d:DesignHeight="800" d:DesignWidth="800">
-    <Grid>
+    <Grid Background="{DynamicResource ContrastMainBackgroundBrush}">
+
         <Grid.RowDefinitions>
             <RowDefinition />
             <RowDefinition Height="{StaticResource DefaultGridSeparator}" />
@@ -21,11 +22,12 @@
                 <ColumnDefinition Width="300" />
             </Grid.ColumnDefinitions>
 
-            <Canvas Background="{StaticResource TileBackgroundBrush}" />
+            <Canvas Background="{StaticResource SmallGridBrush}" />
+            <Canvas Background="{StaticResource LargeGridBrush}" />
 
             <GridSplitter Grid.Column="1" Style="{StaticResource VeritcalGridSplitterStyle}" />
 
-            <Grid Grid.Column="2">
+            <Grid Grid.Column="2" Background="{DynamicResource MainBackgroundBrush}">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="auto" />
                     <RowDefinition Height="auto" />
@@ -42,13 +44,13 @@
                 <Separator Grid.Row="1" Style="{StaticResource HorizontalSeparatorStyle}"/>
 
                 <StackPanel Grid.Row="2" Margin="{StaticResource DefaultMargin}" HorizontalAlignment="Right" Orientation="Horizontal">
-                    <elvex:ButtonPath IconBrush="{StaticResource ComplementaryBrush}" IconPath="{StaticResource ArchiveIconSource}"
+                    <elvex:ButtonPath IconBrush="{DynamicResource ComplementaryBrush}" IconPath="{StaticResource ArchiveIconSource}"
                                       Content="Test"/>
-                    <elvex:ButtonPath IconBrush="{StaticResource ContrastAccentBrush}" IconPath="{StaticResource ArchiveIconSource}"
+                    <elvex:ButtonPath IconBrush="{DynamicResource ContrastAccentBrush}" IconPath="{StaticResource ArchiveIconSource}"
                                       Content="Test 2"/>
-                    <elvex:ButtonPath IconBrush="{StaticResource FailedBrush}" IconPath="{StaticResource ArchiveIconSource}" />
-                    <elvex:ButtonPath IconBrush="{StaticResource SucessBrush}" IconPath="{StaticResource AttachIconSource}" />
-                    <elvex:ButtonPath IconBrush="{StaticResource WarningBrush}" IconPath="{StaticResource ArchiveIconSource}" />
+                    <elvex:ButtonPath IconBrush="{DynamicResource FailedBrush}" IconPath="{StaticResource ArchiveIconSource}" />
+                    <elvex:ButtonPath IconBrush="{DynamicResource SucessBrush}" IconPath="{StaticResource AttachIconSource}" />
+                    <elvex:ButtonPath IconBrush="{DynamicResource WarningBrush}" IconPath="{StaticResource ArchiveIconSource}" />
                 </StackPanel>
 
                 <ItemsControl Grid.Row="3" Margin="{StaticResource DefaultMargin}">
@@ -56,7 +58,7 @@
                         <Expander Header="Header1">
                             <Border Margin="{DynamicResource NegateDefaultMargin}"
                                     Background="{DynamicResource LightBackgroundBrush}">
-                                
+
                                 <Grid Margin="{DynamicResource DefaultMargin}">
                                     <Grid.RowDefinitions>
                                         <RowDefinition />
@@ -71,8 +73,7 @@
                                     </Grid.ColumnDefinitions>
 
                                     <TextBlock Text="Val 1" />
-                                    <ComboBox Grid.Column="1" Margin="{StaticResource DefaultMargin}"
-                                          IsEditable="True">
+                                    <ComboBox Grid.Column="1" Margin="{StaticResource DefaultMargin}">
                                         <ComboBoxItem Name="cbi1">Item1</ComboBoxItem>
                                         <ComboBoxItem Name="cbi2">Item2</ComboBoxItem>
                                         <ComboBoxItem Name="cbi3">Item3</ComboBoxItem>
@@ -105,15 +106,15 @@
 
         <GridSplitter Grid.Row="1" Style="{StaticResource HorizontalGridSplitterStyle}" />
 
-        <TabControl Grid.Row="2" Margin="{StaticResource DefaultMargin}">
+        <TabControl Grid.Row="2" Margin="{DynamicResource DefaultTopMargin}">
             <TabItem Header="Option 1" IsSelected="True">
                 <StackPanel TextElement.Foreground="{DynamicResource MainForegroundBrush}">
                     <TextBlock Text="view 1" />
                     <ProgressBar HorizontalAlignment="Left"  Value="25" Width="200" />
                     <ProgressBar HorizontalAlignment="Left"  Value="25" Width="200" IsIndeterminate="True" />
                     <elvex:WaitingRing HorizontalAlignment="Left"
-                                       Width="75"
-                                       Height="75"/>
+                                       Width="55"
+                                       Height="55"/>
 
                     <RadioButton Content="toto" IsChecked="True" GroupName="Main" />
                     <RadioButton Content="toto 1" GroupName="Main" />

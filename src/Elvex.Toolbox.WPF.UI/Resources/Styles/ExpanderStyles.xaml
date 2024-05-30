@@ -2,8 +2,8 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
     <Style x:Key="DefaultExpanderStyle" TargetType="{x:Type Expander}">
-        <Setter Property="Background" Value="{DynamicResource DarkBackgroundBrush}" />
-        <Setter Property="BorderBrush" Value="{DynamicResource LightBackgroundBrush}" />
+        <Setter Property="Background" Value="{DynamicResource HeaderBackgroundBrush}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource MainBorderBrush}" />
         <Setter Property="BorderThickness" Value="1" />
         <Setter Property="Padding" Value="{DynamicResource DefaultMargin}" />
         <Setter Property="TextElement.Foreground" Value="{DynamicResource MainForegroundBrush}" />

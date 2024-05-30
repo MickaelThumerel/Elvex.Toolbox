@@ -102,7 +102,7 @@ namespace Elvex.Toolbox.WPF.UI.Helpers
             if (content is null)
                 return;
 
-            var adorner = new AdornerContentPresenter(content, new WaitingOverlay());
+            var adorner = new AdornerContentPresenter<WaitingOverlay>(content);
             adornerLayer.Add(adorner);
         }
 

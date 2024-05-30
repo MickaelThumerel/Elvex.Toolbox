@@ -11,10 +11,11 @@
     <cnv:BoolToVisibilityConveter x:Key="CheckboxBoolToHiddenVisibilityConverter" UseHidden="True"  />
 
     <Style x:Key="DefaultCheckBoxStyle" TargetType="{x:Type CheckBox}">
-        <Setter Property="BorderBrush" Value="{DynamicResource LightBorder}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource MainBorderBrush}" />
         <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="OpacityMask" Value="{DynamicResource NormalMaskBrush}" />
         <Setter Property="TextElement.Foreground" Value="{DynamicResource MainForegroundBrush}" />
-        <Setter Property="Background" Value="{DynamicResource MainBackgroundBrush}" />
+        <Setter Property="Background" Value="{DynamicResource ComplementaryBackgroundBrush}" />
         <Setter Property="VerticalContentAlignment" Value="Center"/>
         <Setter Property="VerticalAlignment" Value="Center" />
         <Setter Property="Template">
@@ -48,6 +49,11 @@
                                           Visibility="{TemplateBinding Content, Converter={StaticResource CheckboxCollapsedIfNullConverter}}"
                                           VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
                     </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="true">
+                            <Setter Property="OpacityMask" Value="{DynamicResource HighlightMaskBrush}" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
@@ -56,10 +62,11 @@
     <Style BasedOn="{StaticResource DefaultCheckBoxStyle}" TargetType="{x:Type CheckBox}" />
 
     <Style x:Key="DefaultRadioButtonStyle" TargetType="{x:Type RadioButton}">
-        <Setter Property="BorderBrush" Value="{DynamicResource LightBorder}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource MainBorderBrush}" />
         <Setter Property="BorderThickness" Value="{DynamicResource DefaultBorderThickness}" />
         <Setter Property="TextElement.Foreground" Value="{DynamicResource MainForegroundBrush}" />
-        <Setter Property="Background" Value="{DynamicResource MainBackgroundBrush}" />
+        <Setter Property="Background" Value="{DynamicResource ComplementaryBackgroundBrush}" />
+        <Setter Property="OpacityMask" Value="{DynamicResource NormalMaskBrush}" />
         <Setter Property="VerticalContentAlignment" Value="Center"/>
         <Setter Property="VerticalAlignment" Value="Center" />
         <Setter Property="Template">
@@ -72,11 +79,10 @@
                         </Grid.ColumnDefinitions>
 
                         <Grid x:Name="CheckArea" VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
-                              Background="{TemplateBinding Background}"
                               Margin="{DynamicResource SmallTopBottomMargin}">
 
                             <Ellipse x:Name="BackgroundCircle"
-                                     Fill="{DynamicResource LightBackgroundBrush}"
+                                     Fill="{TemplateBinding Background}"
                                      Height="{DynamicResource IconSmallestSize}"
                                      Width="{DynamicResource IconSmallestSize}"
                                      Stroke="{TemplateBinding BorderBrush}"
@@ -97,6 +103,11 @@
                                           Visibility="{TemplateBinding Content, Converter={StaticResource CheckboxCollapsedIfNullConverter}}"
                                           VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
                     </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="true">
+                            <Setter Property="OpacityMask" Value="{DynamicResource HighlightMaskBrush}" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>

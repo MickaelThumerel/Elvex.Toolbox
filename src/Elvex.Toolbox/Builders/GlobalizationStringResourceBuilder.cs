@@ -2,10 +2,10 @@
 // The Elvexoft licenses this file to you under the MIT license.
 // Produce by Elvexoft & community
 
-namespace Elvex.Toolbox.WPF.Builders
+namespace Elvex.Toolbox.Builders
 {
-    using Elvex.Toolbox.WPF.Abstractions.Services;
-    using Elvex.Toolbox.WPF.Services;
+    using Elvex.Toolbox.Abstractions.Services;
+    using Elvex.Toolbox.Services;
 
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.DependencyInjection.Extensions;

@@ -9,7 +9,7 @@
                         Style="{StaticResource FlatWindowStyle}"
                         Title="MainWindow" Height="450" Width="800"
                         WindowState="Maximized"
-                        HeaderBackground="{StaticResource LightBackgroundBrush}">
+                        HeaderBackground="{StaticResource MenuBackgroundBrush}">
 
     <elvex:BorderLessWindow.Resources>
         <DataTemplate x:Key="HeaderPane">
@@ -31,7 +31,7 @@
                     <MenuItem Header="Open" />
                     <MenuItem Header="Save as ...">
                         <MenuItem Header="*.txt" />
-                        <MenuItem Header="*.json" />
+                        <MenuItem Header="*.json" IsEnabled="False" />
                         <MenuItem Header="*.xlsx" />
                     </MenuItem>
                     <Separator />
@@ -42,8 +42,22 @@
             <StackPanel Grid.Column="2" Orientation="Horizontal" Margin="{StaticResource DefaultRightMargin}" 
                         VerticalAlignment="Center">
 
-                <elvex:ButtonPath IconPath="{StaticResource UserIconSource}"
-                                  Content="Mickael T."/>
+                <elvex:TogglePopup Margin="{DynamicResource DefaultMargin}"
+                                   BorderBrush="{DynamicResource MainBorderBrush}"
+                                   BorderThickness="{DynamicResource DefaultBorderThickness}">
+                    
+                    <elvex:TogglePopup.Header>
+                        <StackPanel Orientation="Horizontal">
+                            <Path Data="{StaticResource UserIconSource}" />
+                            <TextBlock Text="Mickae T." />
+                        </StackPanel>
+                    </elvex:TogglePopup.Header>
+
+                    <Grid Height="550" Width="350">
+                        <views:SideMenu Margin="{DynamicResource DefaultMargin}" />
+                    </Grid>
+
+                </elvex:TogglePopup>
 
             </StackPanel>
         </Grid>
@@ -84,15 +98,16 @@
 
                             <LayoutDocument Title="Document 2" ContentId="document2" />
 
-
                         </LayoutDocumentPane>
                     </LayoutDocumentPaneGroup>
                     
                     <LayoutAnchorablePaneGroup DockWidth="350">
                         <LayoutAnchorablePane>
 
-                            <LayoutAnchorable Title="Tool Window 1" ContentId="toolWindow1" />
-                            
+                            <LayoutAnchorable Title="Tool Window 1" ContentId="toolWindow1">
+                                <views:LogView />
+                            </LayoutAnchorable>
+
                         </LayoutAnchorablePane>
                     </LayoutAnchorablePaneGroup>
                 </LayoutPanel>
@@ -114,7 +129,7 @@
         <!-- Bottom Info bar -->
         <Border Grid.Row="2" 
                 MinHeight="{DynamicResource IconDefaultSize}"
-                Background="{DynamicResource LightBackgroundBrush}">
+                Background="{DynamicResource ComplementaryBackgroundBrush}">
 
             <Grid Margin="{DynamicResource DefaultMargin}">
                 <Grid.ColumnDefinitions>
@@ -123,7 +138,8 @@
                     <ColumnDefinition Width="auto" />
                 </Grid.ColumnDefinitions>
 
-                <ProgressBar Grid.Column="2" Width="100" VerticalAlignment="Center" Height="8" IsIndeterminate="True" />
+                <ProgressBar Grid.Column="2" Width="100" VerticalAlignment="Center" Height="8" IsIndeterminate="True"
+                             BorderBrush="{DynamicResource ContrastBorderBrush}"/>
             </Grid>
 
         </Border>

@@ -6,7 +6,7 @@
         <Setter Property="WindowStyle" Value="None"/>
         <Setter Property="ResizeMode" Value="CanResizeWithGrip"/>
         <Setter Property="Background" Value="{DynamicResource MainBackgroundBrush}"/>
-        <Setter Property="BorderBrush" Value="{DynamicResource LightBackgroundBrush}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource MainBorderBrush}"/>
         <Setter Property="HeaderBackground" Value="Transparent" />
         <Setter Property="BorderThickness" Value="1"/>
         <Setter Property="TextElement.Foreground" Value="{DynamicResource MainForegroundBrush}" />
