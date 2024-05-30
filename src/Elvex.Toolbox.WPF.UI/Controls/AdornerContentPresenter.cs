@@ -13,39 +13,37 @@ namespace Elvex.Toolbox.WPF.UI.Controls
     /// Adorner use to display content
     /// </summary>
     /// <seealso cref="System.Windows.Documents.Adorner" />
-    public sealed class AdornerContentPresenter : Adorner
+    public sealed class AdornerContentPresenter<TAdornerDisplayControl> : Adorner
+            where TAdornerDisplayControl : Control
     {
         #region Fields
 
-        private readonly VisualCollection _visuals;
         private readonly ContentPresenter _contentPresenter;
+        private readonly VisualCollection _visuals;
 
         #endregion
 
         #region Ctor
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="AdornerContentPresenter"/> class.
+        /// Initializes a new instance of the <see cref="ContentControlAdorner{TAdornerDisplayControl}"/> class.
         /// </summary>
         public AdornerContentPresenter(UIElement adornedElement)
-          : base(adornedElement)
+          : this(adornedElement, Activator.CreateInstance<TAdornerDisplayControl>())
         {
-            this._visuals = new VisualCollection(this);
-            this._contentPresenter = new ContentPresenter()
-            {
-                HorizontalAlignment = HorizontalAlignment.Stretch,
-                VerticalAlignment = VerticalAlignment.Stretch,
-            };
 
-            this._visuals.Add(this._contentPresenter);
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="AdornerContentPresenter"/> class.
+        /// Initializes a new instance of the <see cref="ContentControlAdorner{TAdornerDisplayControl}"/> class.
         /// </summary>
-        public AdornerContentPresenter(UIElement adornedElement, Visual content)
-          : this(adornedElement)
+        public AdornerContentPresenter(UIElement adornedElement, TAdornerDisplayControl content)
+          : base(adornedElement)
         {
+            this._visuals = new VisualCollection(this);
+            this._contentPresenter = new ContentPresenter();
+            this._visuals.Add(_contentPresenter);
+
             this.Content = content;
         }
 
@@ -62,19 +60,24 @@ namespace Elvex.Toolbox.WPF.UI.Controls
             set { this._contentPresenter.Content = value; }
         }
 
+        /// <inheritdoc />
+        protected override int VisualChildrenCount
+        {
+            get { return _visuals.Count; }
+        }
+
         #endregion
 
         #region Methods
 
         /// <inheritdoc />
-        //protected override Size MeasureOverride(Size constraint)
-        //{
-        //    if (double.IsInfinity(constraint.Width) || double.IsInfinity(constraint.Height))
-        //    {
-        //        this.DesiredSize;
-        //    }
-        //    return constraint;
-        //}
+        protected override Size MeasureOverride(Size constraint)
+        {
+            this._contentPresenter.Measure(constraint);
+            this.AdornedElement.Measure(constraint);
+            //return this.AdornedElement.DesiredSize;
+            return base.MeasureOverride(constraint);
+        }
 
         /// <inheritdoc />
         protected override Size ArrangeOverride(Size finalSize)
@@ -89,13 +92,6 @@ namespace Elvex.Toolbox.WPF.UI.Controls
             return this._visuals[index];
         }
 
-        /// <inheritdoc />
-        protected override int VisualChildrenCount
-        {
-            get { return this._visuals.Count; }
-        }
-
         #endregion
-
     }
 }

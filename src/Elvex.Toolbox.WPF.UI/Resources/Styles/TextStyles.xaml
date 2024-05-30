@@ -4,18 +4,29 @@
     <Style TargetType="TextElement">
         <Setter Property="Foreground" Value="{DynamicResource MainForegroundBrush}" />
     </Style>
-    
+
     <!-- Text Box -->
-    
+
     <Style x:Key="DefaultTextBoxStyle" TargetType="TextBox">
         <Setter Property="CaretBrush" Value="{DynamicResource AccentBrush}" />
-        <Setter Property="Background" Value="{DynamicResource DarkBackgroundBrush}" />
+        <Setter Property="Background" Value="{DynamicResource ContrastMainBackgroundBrush}" />
+        <Setter Property="Foreground" Value="{DynamicResource MainForegroundBrush}" />
+        <Setter Property="OpacityMask" Value="{DynamicResource NormalMaskBrush}" />
         <Setter Property="BorderThickness" Value="1" />
-        <Setter Property="BorderBrush" Value="{DynamicResource ComplementaryBrush}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource MainBorderBrush}" />
         <Setter Property="VerticalAlignment" Value="Center" />
         <Setter Property="Padding" Value="{DynamicResource DefaultMargin}" />
         <Setter Property="FontSize" Value="{DynamicResource DefaultFontSize}" />
         <Setter Property="FontFamily" Value="{DynamicResource DefaultUniformFontFamily}" />
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="true">
+                <Setter Property="OpacityMask" Value="{DynamicResource HighlightMaskBrush}" />
+            </Trigger>
+
+            <Trigger Property="IsFocused" Value="true">
+                <Setter Property="OpacityMask" Value="{DynamicResource HighlightMaskBrush}" />
+            </Trigger>
+        </Style.Triggers>
     </Style>
 
     <Style BasedOn="{StaticResource DefaultTextBoxStyle}" TargetType="TextBox" />
@@ -24,6 +35,7 @@
     <Style x:Key="DefaultTextBlockStyle" TargetType="TextBlock">
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="VerticalAlignment" Value="Center" />
+        <!--<Setter Property="OpacityMask" Value="{DynamicResource NormalMaskBrush}" />-->
         <Setter Property="Padding" Value="{DynamicResource DefaultMargin}" />
         <Setter Property="FontSize" Value="{DynamicResource DefaultFontSize}" />
         <Setter Property="FontFamily" Value="{DynamicResource DefaultUniformFontFamily}" />

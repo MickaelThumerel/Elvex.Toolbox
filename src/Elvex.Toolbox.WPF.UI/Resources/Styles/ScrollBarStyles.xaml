@@ -5,20 +5,27 @@
         <Setter Property="SnapsToDevicePixels" Value="True" />
         <Setter Property="OverridesDefaultStyle" Value="true" />
         <Setter Property="Focusable" Value="false" />
+        <Setter Property="OpacityMask" Value="{DynamicResource NormalMaskBrush}" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type RepeatButton}">
 
-                    <Path x:Name="Arrow"
-                          HorizontalAlignment="Center"
-                          VerticalAlignment="Center"
-                          Data="{Binding Content, RelativeSource={RelativeSource TemplatedParent}}" 
-                          Fill="{DynamicResource LightAccentBrush}"
-                          Margin="2"/>
-
+                    <Border BorderBrush="{TemplateBinding BorderBrush}"
+                            Background="{TemplateBinding Background}"
+                            BorderThickness="{TemplateBinding BorderThickness}">
+                        
+                        <Path x:Name="Arrow"
+                              HorizontalAlignment="Center"
+                              VerticalAlignment="Center"
+                              Data="{Binding Content, RelativeSource={RelativeSource TemplatedParent}}" 
+                              Fill="{DynamicResource ComplementaryBackgroundBrush}"
+                              Margin="2"/>
+                        
+                    </Border>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
                             <Setter Property="Fill" TargetName="Arrow" Value="{DynamicResource AccentBrush}" />
+                            <Setter Property="Background" Value="{DynamicResource ComplementaryBackgroundBrush}" />
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
@@ -45,19 +52,21 @@
         <Setter Property="OverridesDefaultStyle" Value="true" />
         <Setter Property="IsTabStop" Value="false" />
         <Setter Property="Focusable" Value="false" />
+        <Setter Property="Background" Value="{DynamicResource AccentBrush}" />
+        <Setter Property="OpacityMask" Value="{DynamicResource NormalMaskBrush}" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type Thumb}">
 
                     <Border CornerRadius="0"
                             x:Name="Thumb"
-                            Background="{DynamicResource LightAccentBrush}"
+                            Background="{TemplateBinding Background}"
                             BorderBrush="{TemplateBinding BorderBrush}"
                             BorderThickness="1" />
                     
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
-                            <Setter Property="Background" TargetName="Thumb" Value="{DynamicResource AccentBrush}" />
+                            <Setter Property="OpacityMask" Value="{DynamicResource HighlightMaskBrush}" />
                         </Trigger>
                     </ControlTemplate.Triggers>
                     
@@ -67,7 +76,7 @@
     </Style>
 
     <ControlTemplate x:Key="VerticalScrollBar" TargetType="{x:Type ScrollBar}">
-        <Grid Background="{DynamicResource LightBackgroundBrush}">
+        <Grid Background="{DynamicResource ContrastMainBackgroundBrush}">
             <Grid.RowDefinitions>
                 <RowDefinition MaxHeight="10" />
                 <RowDefinition Height="0.00001*" />
@@ -108,7 +117,7 @@
     </ControlTemplate>
 
     <ControlTemplate x:Key="HorizontalScrollBar" TargetType="{x:Type ScrollBar}">
-        <Grid Background="{DynamicResource LightBackgroundBrush}">
+        <Grid Background="{DynamicResource ContrastMainBackgroundBrush}">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition MaxWidth="18" />
                 <ColumnDefinition Width="0.00001*" />
@@ -151,7 +160,7 @@
     <Style x:Key="DefaultScrollBar" TargetType="{x:Type ScrollBar}">
         <Setter Property="SnapsToDevicePixels" Value="True" />
         <Setter Property="OverridesDefaultStyle" Value="true" />
-        <Setter Property="Background" Value="{DynamicResource LightBackgroundBrush}" />
+        <Setter Property="Background" Value="{DynamicResource ContrastMainBackgroundBrush}" />
         <Style.Triggers>
             <Trigger Property="Orientation" Value="Horizontal">
                 <Setter Property="Width" Value="Auto" />

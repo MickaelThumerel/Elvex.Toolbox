@@ -10,6 +10,7 @@ namespace Elvex.Toolbox.Services
     using System.Collections.Generic;
     using System.IO;
     using System.Linq;
+    using System.Reflection;
     using System.Threading;
     using System.Threading.Tasks;
 
@@ -142,7 +143,7 @@ namespace Elvex.Toolbox.Services
         {
             if (global)
             {
-                var globalTempPath = Path.Combine(Path.GetTempPath(), nameof(Democrite));
+                var globalTempPath = Path.Combine(Path.GetTempPath(), nameof(Elvex));
                 return ValueTask.FromResult(globalTempPath);
             }
 

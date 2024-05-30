@@ -4,7 +4,7 @@
     <Style x:Key="DefaultProgressBarStyle" TargetType="{x:Type ProgressBar}">
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="Foreground" Value="{DynamicResource AccentBrush}" />
-        <Setter Property="BorderBrush" Value="{DynamicResource LightBorderBrush}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource MainBorderBrush}" />
         <Setter Property="BorderThickness" Value="{DynamicResource DefaultBorderThickness}" />
         <Setter Property="MinWidth" Value="150" />
         <Setter Property="MinHeight" Value="{DynamicResource SmallSize}" />
@@ -39,9 +39,9 @@
                                 BorderBrush="{TemplateBinding BorderBrush}" />
 
                         <Border x:Name="PART_Indicator"
-                                BorderThickness="{DynamicResource BigBorderThickness}"
                                 HorizontalAlignment="Left"
                                 Background="{TemplateBinding Foreground}"
+                                BorderThickness="{DynamicResource BigBorderThickness}"
                                 Margin="{TemplateBinding BorderThickness}">
 
                             <Grid ClipToBounds="True" x:Name="Animation">

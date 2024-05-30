@@ -41,17 +41,5 @@ namespace Elvex.Toolbox.WPF
             var service = new ServiceViewBuilder(services);
             builders?.Invoke(service);
         }
-
-        /// <summary>
-        /// Setups the globalization resources.
-        /// </summary>
-        public static IServiceCollection SetupGlobalizationResources(this IServiceCollection services, Action<IGlobalizationStringResourceBuilder> resourceBuilder)
-        {
-            services.TryAddSingleton<IGlobalizationStringResourceProvider, GlobalizationStringResourceProvider>();
-
-            var inst = new GlobalizationStringResourceBuilder(services);
-            resourceBuilder(inst);
-            return services;
-        }
     }
 }

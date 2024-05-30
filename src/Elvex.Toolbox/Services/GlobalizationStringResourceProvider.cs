@@ -2,11 +2,11 @@
 // This file is licenses to you under the MIT license.
 // Produce by nexai, elvexoft & community (cf. docs/Teams.md)
 
-namespace Elvex.Toolbox.WPF.Services
+namespace Elvex.Toolbox.Services
 {
     using Elvex.Toolbox.Disposables;
     using Elvex.Toolbox.Patterns.Strategy;
-    using Elvex.Toolbox.WPF.Abstractions.Services;
+    using Elvex.Toolbox.Abstractions.Services;
 
     using System;
     using System.Collections.Generic;
@@ -18,7 +18,7 @@ namespace Elvex.Toolbox.WPF.Services
     /// </summary>
     /// <seealso cref="ProviderStrategyBase{string, string, IStringResourceSourceProvider}" />
     /// <seealso cref="IGlobalizationStringResourceProvider" />
-    internal sealed class GlobalizationStringResourceProvider : SafeDisposable, IGlobalizationStringResourceProvider
+    public sealed class GlobalizationStringResourceProvider : SafeDisposable, IGlobalizationStringResourceProvider
     {
         #region Fields
 
@@ -47,7 +47,7 @@ namespace Elvex.Toolbox.WPF.Services
         #region Methods
 
         /// <inheritdoc />
-        public string GetResource(string name, CultureInfo? forceCultureInfo = null)
+        public string GetResource(string name, CultureInfo? forceCultureInfo = null, bool useCache = true)
         {
             if (string.IsNullOrEmpty(name))
                 return name;
@@ -55,18 +55,21 @@ namespace Elvex.Toolbox.WPF.Services
             var culture = forceCultureInfo ?? CultureInfo.CurrentCulture;
             var cultureKey = culture.ThreeLetterISOLanguageName;
 
-            this._cacheLocker.EnterReadLock();
-            try
+            if (useCache)
             {
-                if (this._stringCache.TryGetValue(cultureKey, out var cacheByLanguage) &&
-                    cacheByLanguage.TryGetValue(name, out var cachedResult))
+                this._cacheLocker.EnterReadLock();
+                try
                 {
-                    return cachedResult ?? name;
+                    if (this._stringCache.TryGetValue(cultureKey, out var cacheByLanguage) &&
+                        cacheByLanguage.TryGetValue(name, out var cachedResult))
+                    {
+                        return cachedResult ?? name;
+                    }
                 }
-            }
-            finally
-            {
-                this._cacheLocker.ExitReadLock();
+                finally
+                {
+                    this._cacheLocker.ExitReadLock();
+                }
             }
 
             bool founded = false;

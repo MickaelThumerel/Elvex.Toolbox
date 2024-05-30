@@ -21,6 +21,7 @@
         <Setter Property="Margin" Value="{DynamicResource DefaultMargin}" />
         <Setter Property="Padding" Value="{DynamicResource GoldenMargin}" />
 
+        <Setter Property="OpacityMask" Value="{DynamicResource NormalMaskBrush}" />
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="BorderBrush" Value="Transparent" />
 
@@ -36,24 +37,29 @@
                             BorderThickness="{TemplateBinding BorderThickness}"
                             Background="{TemplateBinding Background}">
 
-                        <ContentPresenter Margin="{TemplateBinding Padding}"
-                                          VerticalAlignment="{TemplateBinding VerticalContentAlignment}" />
+                        <Grid>
+
+                            <Border x:Name="Bd" />
+                            <ContentPresenter Margin="{TemplateBinding Padding}"
+                                              VerticalAlignment="{TemplateBinding VerticalContentAlignment}" />
+                        </Grid>
 
                     </Border>
+                    <ControlTemplate.Triggers>
+
+                    </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
 
         <Style.Triggers>
-
             <Trigger Property="IsEnabled" Value="False">
-                <Setter Property="Foreground" Value="{DynamicResource DisabledBrush}" />
-                <Setter Property="OpacityMask" Value="{DynamicResource DisabledOverlayBrush}" />
+                <Setter Property="OpacityMask" Value="{DynamicResource DisabledMaskBrush}" />
             </Trigger>
 
             <Trigger Property="IsMouseOver" Value="True">
-                <Setter Property="Background" Value="{DynamicResource LightComplementaryBrush}" />
-                <Setter Property="BorderBrush" Value="{DynamicResource ComplementaryBrush}" />
+                <Setter Property="OpacityMask" Value="{DynamicResource HighlightMaskBrush}" />
+                <Setter Property="Background" Value="{DynamicResource HighlightBackgroundBrush}" />
             </Trigger>
 
             <Trigger Property="IsPressed" Value="True">
@@ -99,20 +105,19 @@
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
-        
+
     </Style>
 
     <Style TargetType="{x:Type ctrl:ButtonPath}" BasedOn="{StaticResource DefaultButtonPathFlatStyle}" />
 
     <Style x:Key="DefaultFlatToggleButtonBase" TargetType="{x:Type ToggleButton}" BasedOn="{StaticResource {x:Type ToggleButton}}">
-
         <Setter Property="BorderThickness" Value="0" />
         <Setter Property="BorderBrush" Value="{DynamicResource MainBackgroundBrush}" />
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="TextElement.Foreground" Value="{DynamicResource MainForegroundBrush}" />
         <Setter Property="Padding" Value="{DynamicResource GoldenMargin}" />
         <Setter Property="Margin" Value="{DynamicResource DefaultMargin}" />
-
+        <Setter Property="OpacityMask" Value="{DynamicResource NormalMaskBrush}" />
         <Setter Property="VerticalContentAlignment" Value="Center" />
         <Setter Property="HorizontalContentAlignment" Value="Center" />
 
@@ -150,27 +155,27 @@
             </Trigger>
 
             <Trigger Property="IsMouseOver" Value="True">
-                <Setter Property="Background" Value="{Binding BorderBrush, RelativeSource={RelativeSource Self}}" />
+                <Setter Property="OpacityMask" Value="{DynamicResource HighlightMaskBrush}" />
+                <Setter Property="Foreground" Value="{DynamicResource ForegroundOnAccentBrush}" />
+                <Setter Property="TextElement.Foreground" Value="{DynamicResource ForegroundOnAccentBrush}" />
+            </Trigger>
+
+            <Trigger Property="IsMouseDirectlyOver" Value="True">
+                <Setter Property="OpacityMask" Value="{DynamicResource HighlightMaskBrush}" />
+                <Setter Property="Foreground" Value="{DynamicResource ForegroundOnAccentBrush}" />
+                <Setter Property="TextElement.Foreground" Value="{DynamicResource ForegroundOnAccentBrush}" />
             </Trigger>
 
             <Trigger Property="IsEnabled" Value="False">
-                <Setter Property="Opacity" Value="{DynamicResource DisabledOpacity}" />
+                <Setter Property="OpacityMask" Value="{DynamicResource DisabledMaskBrush}" />
             </Trigger>
 
         </Style.Triggers>
     </Style>
 
-    <Style x:Key="DefaultFlatToggleButton" TargetType="{x:Type ToggleButton}" BasedOn="{StaticResource DefaultFlatToggleButtonBase}" >
+    <Style x:Key="DefaultFlatToggleButton" TargetType="{x:Type ToggleButton}" BasedOn="{StaticResource DefaultFlatToggleButtonBase}" />
+    <Style TargetType="{x:Type ToggleButton}" BasedOn="{StaticResource DefaultFlatToggleButton}" />
 
-        <Style.Triggers>
-
-            <Trigger Property="IsMouseOver" Value="True">
-                <Setter Property="Background" Value="{DynamicResource LightBackgroundBrush}" />
-            </Trigger>
-
-        </Style.Triggers>
-
-    </Style>
 
     <Style x:Key="ImageFlatToggleButton" TargetType="{x:Type ToggleButton}" BasedOn="{StaticResource DefaultFlatToggleButton}">
         <Setter Property="Padding" Value="{DynamicResource DefaultMargin}" />
@@ -178,14 +183,16 @@
             <Trigger Property="IsChecked" Value="True">
                 <Setter Property="Background" Value="{DynamicResource AccentBrush}" />
                 <Setter Property="Foreground" Value="{DynamicResource ForegroundOnAccentBrush}" />
+                <Setter Property="TextElement.Foreground" Value="{DynamicResource ForegroundOnAccentBrush}" />
             </Trigger>
         </Style.Triggers>
     </Style>
-    
+
     <Style x:Key="AddMinusToggleButton" TargetType="{x:Type ToggleButton}" BasedOn="{StaticResource DefaultFlatToggleButton}">
         <Setter Property="VerticalAlignment" Value="Center" />
         <Setter Property="Margin" Value="{DynamicResource DefaultMargin}" />
         <Setter Property="Foreground" Value="{DynamicResource AccentBrush}" />
+        <Setter Property="OpacityMask" Value="{DynamicResource NormalMaskBrush}" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type ToggleButton}">
@@ -212,7 +219,8 @@
         <Setter Property="TextElement.Foreground" Value="{DynamicResource MainForegroundBrush}" />
         <Setter Property="Padding" Value="{DynamicResource DefaultMargin}" />
         <Setter Property="Background" Value="{DynamicResource AccentBrush}" />
-        <Setter Property="BorderBrush" Value="{DynamicResource LightBorderBrush}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource MainBorderBrush}" />
+        <Setter Property="OpacityMask" Value="{DynamicResource NormalMaskBrush}" />
         <Setter Property="VerticalAlignment" Value="Center" />
         <Setter Property="BorderThickness" Value="2" />
         <Setter Property="Template">
@@ -233,7 +241,7 @@
                               MinWidth="50" 
                               Margin="{TemplateBinding Padding}"
                               VerticalAlignment="Stretch">
-                            
+
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="auto" />
                                 <ColumnDefinition />
@@ -245,7 +253,7 @@
                                     Background="Transparent"
                                     BorderThickness="{TemplateBinding BorderThickness}"
                                     BorderBrush="{TemplateBinding BorderBrush}" />
-                        
+
                             <Ellipse Fill="{TemplateBinding Background}"
                                      StrokeThickness="1"
                                      x:Name="ButtonIcon"
@@ -254,18 +262,19 @@
                         </Grid>
 
                     </Grid>
-                    
+
                     <ControlTemplate.Triggers>
-                        
+
                         <Trigger Property="IsChecked" Value="True">
                             <Setter Property="Grid.Column" Value="2" TargetName="ButtonIcon" />
                             <Setter Property="Background" Value="{Binding Background, RelativeSource={RelativeSource Mode=TemplatedParent}}" TargetName="Container" />
                         </Trigger>
-                        
+
                     </ControlTemplate.Triggers>
-                    
+
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
     </Style>
+
 </ResourceDictionary>

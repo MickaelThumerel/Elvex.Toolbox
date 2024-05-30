@@ -42,15 +42,11 @@
     </Style>
 
     <Style x:Key="DefaultGridSplitterStyle" TargetType="{x:Type GridSplitter}">
-        <Setter Property="Background" Value="{DynamicResource LightAccentBrush}" />
+        <Setter Property="Background" Value="{DynamicResource AccentBrush}" />
+        <Setter Property="OpacityMask" Value="{DynamicResource NormalMaskBrush}" />
         <Style.Triggers>
             <Trigger Property="IsMouseOver" Value="True">
-                <Setter Property="Background" Value="{DynamicResource AccentBrush}" />
-                <Setter Property="RenderTransform">
-                    <Setter.Value>
-                        <ScaleTransform ScaleX="1.01" ScaleY="1.01" />
-                    </Setter.Value>
-                </Setter>
+                <Setter Property="OpacityMask" Value="{DynamicResource HighlightMaskBrush}" />
             </Trigger>
         </Style.Triggers>
     </Style>

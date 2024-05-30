@@ -22,7 +22,8 @@
         <ResourceDictionary Source="Styles/CheckBoxStyles.xaml" />
         <ResourceDictionary Source="Styles/ProgressBarStyles.xaml" />
         <ResourceDictionary Source="Styles/DataGridStyles.xaml" />
-
+        <ResourceDictionary Source="Styles/TogglePopupStyles.xaml" />
+        
     </ResourceDictionary.MergedDictionaries>
 
 </ResourceDictionary>

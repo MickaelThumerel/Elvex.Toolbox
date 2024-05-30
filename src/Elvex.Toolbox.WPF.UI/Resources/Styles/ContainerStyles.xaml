@@ -2,16 +2,16 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
     <Style x:Key="DefaultToolTipStyle" TargetType="{x:Type ToolTip}">
-        <Setter Property="Background" Value="{DynamicResource MainBackgroundBrush}" />
+        <Setter Property="Background" Value="{DynamicResource MenuBackgroundBrush}" />
         <Setter Property="Foreground" Value="{DynamicResource MainForegroundBrush}" />
     </Style>
 
     <Style BasedOn="{StaticResource DefaultToolTipStyle}" TargetType="{x:Type ToolTip}" />
 
     <Style x:Key="DefaultGroupBoxStyle" TargetType="{x:Type GroupBox}">
-        <Setter Property="Background" Value="{DynamicResource DarkBackgroundBrush}" />
-        <Setter Property="BorderBrush" Value="{DynamicResource LightBackgroundBrush}" />
-        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="Background" Value="{DynamicResource HeaderBackgroundBrush}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource MainBorderBrush}" />
+        <Setter Property="BorderThickness" Value="{DynamicResource DefaultBorderThickness}" />
 
         <Setter Property="Template">
             <Setter.Value>
@@ -54,9 +54,10 @@
     <Style BasedOn="{StaticResource DefaultGroupBoxStyle}" TargetType="{x:Type GroupBox}" />
 
     <Style x:Key="DefaultTabItemStyle" TargetType="{x:Type TabItem}">
-        <Setter Property="Background" Value="{DynamicResource LightBackgroundBrush}" />
-        <Setter Property="BorderBrush" Value="{DynamicResource AccentBrush}" />
+        <Setter Property="Background" Value="{DynamicResource UnSelectedTabHeaderBackgroundBrush}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource MainBorderBrush}" />
         <Setter Property="TextElement.Foreground" Value="{DynamicResource MainForegroundBrush}" />
+        <Setter Property="OpacityMask" Value="{DynamicResource NormalMaskBrush}" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type TabItem}">
@@ -78,8 +79,9 @@
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsSelected" Value="True">
                             <Setter Property="Panel.ZIndex" Value="100" />
-                            <Setter Property="Background" Value="{DynamicResource AccentBrush}" />
-                            <Setter Property="Foreground" Value="{DynamicResource ForegroundOnAccentBrush}" />
+                            <Setter Property="OpacityMask" Value="{DynamicResource HighlightMaskBrush}" />
+                            <Setter Property="Background" Value="{DynamicResource SelectedTabHeaderBackgroundBrush}" />
+                            <Setter Property="Foreground" Value="{DynamicResource SelectedTabHeaderForegroundBrush}" />
                         </Trigger>
                         
                         <MultiTrigger>
@@ -88,7 +90,7 @@
                                 <Condition Property="IsMouseOver" Value="True" />
                             </MultiTrigger.Conditions>
 
-                            <Setter Property="Background" Value="{DynamicResource SelectionBackgroundBrush}" />
+                            <Setter Property="OpacityMask" Value="{DynamicResource HighlightMaskBrush}" />
 
                         </MultiTrigger>
                         
@@ -101,8 +103,9 @@
     <Style BasedOn="{StaticResource DefaultTabItemStyle}" TargetType="{x:Type TabItem}" />
 
     <Style x:Key="DefaultTabControlStyle"  TargetType="{x:Type TabControl}">
-        <Setter Property="BorderBrush" Value="{DynamicResource LightBorderBrush}" />
-        <Setter Property="BorderThickness" Value="{DynamicResource DefaultBorderThicknessExceptTop}" />
+        <Setter Property="Background" Value="{DynamicResource MainBackgroundBrush}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource MainBorderBrush}" />
+        <Setter Property="BorderThickness" Value="0" />
         <Setter Property="OverridesDefaultStyle" Value="True" />
         <Setter Property="SnapsToDevicePixels" Value="True" />
         <Setter Property="Template">
@@ -115,18 +118,10 @@
                             <RowDefinition Height="Auto" />
                             <RowDefinition Height="*" />
                         </Grid.RowDefinitions>
-
-                        <TabPanel x:Name="HeaderPanel"
-                                  Grid.Row="0"
-                                  Panel.ZIndex="1"
-                                  Margin="{DynamicResource DefaultRightMargin}"
-                                  IsItemsHost="True"
-                                  KeyboardNavigation.TabIndex="1"
-                                  Background="Transparent" />
                         
                         <Border x:Name="Border"
                                 Grid.Row="2"
-                                Margin="0 -5 0 0"
+                                Margin="0 0 0 0"
                                 
                                 KeyboardNavigation.TabNavigation="Local"
                                 KeyboardNavigation.DirectionalNavigation="Contained"
@@ -145,7 +140,16 @@
                             </Border>
                         </Border>
 
+                        <TabPanel x:Name="HeaderPanel"
+                                  Grid.Row="0"
+                                  Panel.ZIndex="1"
+                                  Margin="{DynamicResource DefaultRightMargin}"
+                                  IsItemsHost="True"
+                                  KeyboardNavigation.TabIndex="1"
+                                  Background="Transparent" />
+
                         <Rectangle Style="{DynamicResource HorizontalBigRectangleSeparatorStyle}" Grid.Row="1"
+                                   Fill="{DynamicResource SelectedTabHeaderBackgroundBrush}"
                                    Margin="0"/>
 
                     </Grid>

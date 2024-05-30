@@ -7,7 +7,8 @@
              xmlns:elvex="http://elvex.toolbox.ui/"
              mc:Ignorable="d" 
              d:DesignHeight="450" 
-             d:DesignWidth="350">
+             d:DesignWidth="350"
+             Background="{DynamicResource MainBackgroundBrush}">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="auto" />
@@ -16,6 +17,7 @@
         </Grid.RowDefinitions>
 
         <StackPanel Orientation="Vertical">
+
             <TextBlock Text="Title" Margin="{StaticResource DefaultMargin}"
                        Style="{StaticResource CategoryTitleStyle}"/>
 
@@ -49,7 +51,7 @@
                     <MenuItem Header="Start" />
                     <MenuItem Header="Other" />
                     <MenuItem Header="Sub">
-                        <MenuItem Header="Lv1 Start" />
+                        <MenuItem Header="Lv1 Start" IsEnabled="False" />
                         <MenuItem Header="Lv1 Other">
                             <MenuItem.Icon>
                                 <Path Data="{StaticResource LayerIconSource}"/>
@@ -68,7 +70,7 @@
             <TreeViewItem Header="Employee1" IsSelected="True">
                 <TreeViewItem Header="Jesper Aaberg"/>
                 <TreeViewItem Header="Employee Number">
-                    <TreeViewItem BorderBrush="{StaticResource ComplementaryBrush}" BorderThickness="2">
+                    <TreeViewItem BorderBrush="{DynamicResource ComplementaryBrush}" BorderThickness="2">
                         <TreeViewItem.Header>
                             <Grid>
                                 <Grid.ColumnDefinitions>
@@ -80,7 +82,7 @@
 
                                 <Path Data="{StaticResource BrushIconSource}" Style="{StaticResource IconSmallPathStyle}" />
                                 <TextBlock Grid.Column="1" Text="PONEY rose" />
-                                
+
                                 <Path Grid.Column="3" Data="{StaticResource BrushIconSource}" 
                                       Style="{StaticResource IconSmallPathStyle}"
                                       Fill="{StaticResource ContrastAccentBrush}"/>

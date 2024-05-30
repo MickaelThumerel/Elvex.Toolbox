@@ -5,7 +5,7 @@
         <Setter Property="Height" Value="{DynamicResource SeparatorSize}" />
         <Setter Property="Margin" Value="{DynamicResource GoldenMargin}" />
 
-        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="BorderThickness" Value="{DynamicResource DefaultBorderThickness}" />
         <Setter Property="BorderBrush" Value="{DynamicResource AccentBrush}" />
 
         <Setter Property="Template">
@@ -61,7 +61,7 @@
 
             <Trigger Property="IsHighlighted" Value="true">
                 <Setter TargetName="Border" Property="BorderBrush" Value="Transparent" />
-                <Setter Property="Background" TargetName="Border" Value="{DynamicResource LightComplementaryBrush}" />
+                <Setter Property="Background" TargetName="Border" Value="{DynamicResource MainBorderBrush}" />
             </Trigger>
 
             <Trigger SourceName="Popup" Property="AllowsTransparency" Value="True">
@@ -69,8 +69,7 @@
             </Trigger>
 
             <Trigger Property="IsEnabled" Value="False">
-                <Setter Property="Foreground" Value="{DynamicResource DisabledBrush}" />
-                <Setter Property="OpacityMask" Value="{DynamicResource DisabledOverlayBrush}" />
+                <Setter Property="OpacityMask" Value="{DynamicResource DisabledMaskBrush}" />
             </Trigger>
 
         </ControlTemplate.Triggers>
@@ -92,13 +91,13 @@
         <ControlTemplate.Triggers>
 
             <Trigger Property="IsHighlighted" Value="true">
-                <Setter Property="Background" TargetName="Border" Value="{DynamicResource LightComplementaryBrush}" />
+                <Setter Property="Background" TargetName="Border" Value="{DynamicResource MainBorderBrush}" />
             </Trigger>
 
             <Trigger Property="IsEnabled" Value="False">
-                <Setter Property="Foreground" Value="{DynamicResource DisabledBrush}" />
-                <Setter Property="OpacityMask" Value="{DynamicResource DisabledOverlayBrush}" />
+                <Setter Property="OpacityMask" Value="{DynamicResource DisabledMaskBrush}" />
             </Trigger>
+            
         </ControlTemplate.Triggers>
     </ControlTemplate>
 
@@ -173,13 +172,12 @@
             </Trigger>
 
             <Trigger Property="IsHighlighted" Value="true">
-                <Setter Property="Background" TargetName="Border" Value="{DynamicResource LightComplementaryBrush}" />
-                <Setter Property="BorderBrush" TargetName="Border" Value="{DynamicResource ComplementaryBrush}" />
+                <Setter Property="Background" TargetName="Border" Value="{DynamicResource TransparentAccentBrush}" />
+                <Setter Property="BorderBrush" TargetName="Border" Value="{DynamicResource TransparentAccentBrush}" />
             </Trigger>
 
             <Trigger Property="IsEnabled" Value="False">
-                <Setter Property="Foreground" Value="{DynamicResource DisabledBrush}" />
-                <Setter Property="OpacityMask" Value="{DynamicResource DisabledOverlayBrush}" />
+                <Setter Property="OpacityMask" Value="{DynamicResource DisabledMaskBrush}" />
             </Trigger>
 
         </ControlTemplate.Triggers>
@@ -256,8 +254,8 @@
             </Trigger>
 
             <Trigger Property="IsHighlighted" Value="true">
-                <Setter Property="Background" TargetName="Border" Value="{DynamicResource LightComplementaryBrush}" />
-                <Setter Property="BorderBrush" TargetName="Border" Value="{DynamicResource ComplementaryBrush}" />
+                <Setter Property="Background" TargetName="Border" Value="{DynamicResource TransparentAccentBrush}" />
+                <Setter Property="BorderBrush" TargetName="Border" Value="{DynamicResource TransparentAccentBrush}" />
             </Trigger>
 
             <Trigger SourceName="Popup" Property="AllowsTransparency" Value="True">
@@ -265,8 +263,7 @@
             </Trigger>
 
             <Trigger Property="IsEnabled" Value="False">
-                <Setter Property="Foreground" Value="{DynamicResource DisabledBrush}" />
-                <Setter Property="OpacityMask" Value="{DynamicResource DisabledOverlayBrush}" />
+                <Setter Property="OpacityMask" Value="{DynamicResource DisabledMaskBrush}" />
             </Trigger>
 
         </ControlTemplate.Triggers>
@@ -276,9 +273,11 @@
     <Style x:Key="DefaultMenuItemStyle" TargetType="{x:Type MenuItem}">
         <Setter Property="OverridesDefaultStyle" Value="True" />
 
-        <Setter Property="Background" Value="{DynamicResource LightBackgroundBrush}" />
-        <Setter Property="BorderBrush" Value="{DynamicResource LightBorderBrush}" />
+        <Setter Property="Background" Value="{DynamicResource MenuBackgroundBrush}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource MainBorderBrush}" />
         <Setter Property="BorderThickness" Value="1" />
+
+        <Setter Property="OpacityMask" Value="{DynamicResource NormalMaskBrush}" />
 
         <Style.Triggers>
 
@@ -299,6 +298,10 @@
                 <Setter Property="Template" Value="{StaticResource DefaultSubmenuItemTemplateKey}" />
             </Trigger>
 
+            <Trigger Property="IsMouseOver" Value="true">
+                <Setter Property="OpacityMask" Value="{DynamicResource HighlightMaskBrush}" />
+            </Trigger>
+
         </Style.Triggers>
     </Style>
 
@@ -308,8 +311,8 @@
         <Setter Property="OverridesDefaultStyle" Value="True" />
         <Setter Property="SnapsToDevicePixels" Value="True" />
 
-        <Setter Property="Background" Value="{DynamicResource LightBackgroundBrush}" />
-        <Setter Property="BorderBrush" Value="{DynamicResource LightBorderBrush}" />
+        <Setter Property="Background" Value="{DynamicResource MenuBackgroundBrush}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource MainBorderBrush}" />
         <Setter Property="BorderThickness" Value="1" />
 
         <Setter Property="Template">
@@ -341,8 +344,8 @@
         <Setter Property="Grid.IsSharedSizeScope" Value="true" />
         <Setter Property="HasDropShadow" Value="False" />
 
-        <Setter Property="Background" Value="{DynamicResource LightBackgroundBrush}" />
-        <Setter Property="BorderBrush" Value="{DynamicResource LightBorderBrush}" />
+        <Setter Property="Background" Value="{DynamicResource MenuBackgroundBrush}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource MainBorderBrush}" />
         <Setter Property="BorderThickness" Value="1" />
 
         <Setter Property="Template">

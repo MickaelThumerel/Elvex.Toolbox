@@ -2,7 +2,7 @@
 // The Elvexoft licenses this file to you under the MIT license.
 // Produce by Elvexoft & community
 
-namespace Democrite.Framework.Core.Security
+namespace Elvex.Toolbox.Security
 {
     using Elvex.Toolbox.Disposables;
 

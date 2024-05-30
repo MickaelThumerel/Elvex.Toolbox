@@ -9,6 +9,7 @@ using System.Windows.Markup;
 [assembly: XmlnsDefinition("http://elvex.toolbox.ui/", "Elvex.Toolbox.WPF.UI.Helpers")]
 [assembly: XmlnsDefinition("http://elvex.toolbox.ui/", "Elvex.Toolbox.WPF.UI.Converters")]
 [assembly: XmlnsDefinition("http://elvex.toolbox.ui/", "Elvex.Toolbox.WPF.UI.Resources")]
+[assembly: XmlnsDefinition("http://elvex.toolbox.ui/", "Elvex.Toolbox.WPF.UI.Behaviors")]
 
 [assembly: ThemeInfo(
     ResourceDictionaryLocation.None,            //where theme specific resource dictionaries are located

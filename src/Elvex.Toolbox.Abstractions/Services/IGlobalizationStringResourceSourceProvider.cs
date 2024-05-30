@@ -2,7 +2,7 @@
 // This file is licenses to you under the MIT license.
 // Produce by nexai, elvexoft & community (cf. docs/Teams.md)
 
-namespace Elvex.Toolbox.WPF.Abstractions.Services
+namespace Elvex.Toolbox.Abstractions.Services
 {
     using System.Globalization;
 
