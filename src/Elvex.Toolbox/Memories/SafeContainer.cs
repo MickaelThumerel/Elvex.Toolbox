@@ -124,6 +124,22 @@ namespace Elvex.Toolbox.Memories
         }
 
         /// <summary>
+        /// Gets the first existing identifier that match the filter
+        /// </summary>
+        public Guid? GetExistingId(Func<TItem, bool> filter)
+        {
+            ThrowIfDisposed();
+
+            lock (this._items)
+            {
+                var key = this._items.FirstOrDefault(kv => filter(kv.Value)).Key;
+                if (key == Guid.Empty)
+                    return null;
+                return key;
+            }
+        }
+
+        /// <summary>
         /// Gets a value indicating if the collection match predicate
         /// </summary>
         public bool Any(Func<TItem, bool>? filter = null)
