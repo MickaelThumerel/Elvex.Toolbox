@@ -23,6 +23,7 @@ namespace Elvex.Toolbox.Services
         #region Fields
 
         private static readonly JsonSerializerOptions s_defaultDeserializationOptions;
+        private readonly JsonSerializerOptions _deserializationOptions;
 
         #endregion
 
@@ -42,6 +43,23 @@ namespace Elvex.Toolbox.Services
             };
 
             Instance = new SystemJsonSerializer();
+            Default = (SystemJsonSerializer)Instance;
+            WithoutJsonEscapte = new SystemJsonSerializer(new JsonSerializerOptions()
+            {
+                Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
+                IncludeFields = true,
+                PropertyNameCaseInsensitive = false,
+                WriteIndented = Debugger.IsAttached,
+                NumberHandling = JsonNumberHandling.AllowReadingFromString,
+            });
+        }
+
+        /// <summary>
+        /// Prevents a default instance of the <see cref="SystemJsonSerializer"/> class from being created.
+        /// </summary>
+        public SystemJsonSerializer(JsonSerializerOptions? serializerOptions = null)
+        {
+            this._deserializationOptions = serializerOptions ?? s_defaultDeserializationOptions;
         }
 
         #endregion
@@ -53,6 +71,16 @@ namespace Elvex.Toolbox.Services
         /// </summary>
         public static IJsonSerializer Instance { get; }
 
+        /// <summary>
+        /// Gets the default.
+        /// </summary>
+        public static SystemJsonSerializer Default { get; }
+
+        /// <summary>
+        /// Gets the without json escapte.
+        /// </summary>
+        public static SystemJsonSerializer WithoutJsonEscapte { get; }
+
         #endregion
 
         #region Methods
@@ -60,43 +88,43 @@ namespace Elvex.Toolbox.Services
         /// <inheritdoc />
         public object? Deserialize(string json, Type returnType)
         {
-            return JsonSerializer.Deserialize(json, returnType, s_defaultDeserializationOptions);
+            return JsonSerializer.Deserialize(json, returnType, this._deserializationOptions);
         }
 
         /// <inheritdoc />
         public object? Deserialize(Stream stream, Type returnType)
         {
-            return JsonSerializer.Deserialize(stream, returnType, s_defaultDeserializationOptions);
+            return JsonSerializer.Deserialize(stream, returnType, this._deserializationOptions);
         }
 
         /// <inheritdoc />
         public TResult? Deserialize<TResult>(Stream stream)
         {
-            return JsonSerializer.Deserialize<TResult>(stream, s_defaultDeserializationOptions);
+            return JsonSerializer.Deserialize<TResult>(stream, this._deserializationOptions);
         }
 
         /// <inheritdoc />
         public TResult? Deserialize<TResult>(string json)
         {
-            return JsonSerializer.Deserialize<TResult>(json, s_defaultDeserializationOptions);
+            return JsonSerializer.Deserialize<TResult>(json, this._deserializationOptions);
         }
 
         /// <inheritdoc />
         public object? Deserialize(in ReadOnlySpan<byte> str, Type returnType)
         {
-            return JsonSerializer.Deserialize(str, returnType, s_defaultDeserializationOptions);
+            return JsonSerializer.Deserialize(str, returnType, this._deserializationOptions);
         }
 
         /// <inheritdoc />
         public TResult? Deserialize<TResult>(in ReadOnlySpan<byte> str)
         {
-            return JsonSerializer.Deserialize<TResult>(str, s_defaultDeserializationOptions);
+            return JsonSerializer.Deserialize<TResult>(str, this._deserializationOptions);
         }
 
         /// <inheritdoc />
         public byte[] Serialize<TObject>(TObject obj)
         {
-            var str = JsonSerializer.Serialize<TObject>(obj, s_defaultDeserializationOptions);
+            var str = JsonSerializer.Serialize<TObject>(obj, this._deserializationOptions);
             return Encoding.UTF8.GetBytes(str);
         }
 
