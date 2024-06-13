@@ -23,7 +23,7 @@ namespace Elvex.Toolbox.Communications
         private readonly CancellationTokenSource _serverWorkingCancellationTokenSource;
         private readonly SemaphoreSlim _locker;
 
-        private readonly List<ComClient> _clients;
+        private readonly Dictionary<Guid, ComClient> _clients;
         private readonly int _allowedClient;
         private readonly int _port;
 
@@ -44,7 +44,7 @@ namespace Elvex.Toolbox.Communications
             this._allowedClient = Math.Max(allowedClient, 1);
 
             this._serverWorkingCancellationTokenSource = new CancellationTokenSource();
-            this._clients = new List<ComClient>();
+            this._clients = new Dictionary<Guid, ComClient>();
             this._locker = new SemaphoreSlim(1);
             this._port = port;
         }
@@ -61,7 +61,26 @@ namespace Elvex.Toolbox.Communications
             this._locker.Wait();
             try
             {
-                return this._clients.Select(c => c.Proxy).ToArray();
+                return this._clients.Select(c => c.Value.Proxy).ToArray();
+            }
+            finally
+            {
+                this._locker.Release();
+            }
+        }
+
+        /// <summary>
+        /// Gets the client by uid.
+        /// </summary>
+        public ComClientProxy GetClientByUid(Guid id)
+        {
+            this._locker.Wait();
+            try
+            {
+                if (this._clients.TryGetValue(id, out var client))
+                    return client.Proxy;
+
+                throw new KeyNotFoundException("Client with id " + id + " is not founded");
             }
             finally
             {
@@ -130,31 +149,48 @@ namespace Elvex.Toolbox.Communications
         /// </summary>
         private async Task ManagedClientAsync()
         {
-            while (this._serverWorkingCancellationTokenSource.IsCancellationRequested == false)
+            try
             {
-                var client = await this._server!.AcceptTcpClientAsync(this._serverWorkingCancellationTokenSource.Token);
+                while (this._serverWorkingCancellationTokenSource.IsCancellationRequested == false)
+                {
+                    var client = await this._server!.AcceptTcpClientAsync(this._serverWorkingCancellationTokenSource.Token);
 
-                var comClient = new ComClient(client, this, this._serverWorkingCancellationTokenSource.Token);
-                comClient.ClientLeaveEvent += ComClient_ClientLeaveEvent;
+                    var comClient = new ComClient(client, this._serverWorkingCancellationTokenSource.Token);
+                    comClient.ClientLeaveEvent += ComClient_ClientLeaveEvent;
 
-                await this._locker.WaitAsync(this._serverWorkingCancellationTokenSource.Token);
+                    TaskCompletionSource<ComClientProxy>? waitingTask = null;
+
+                    await this._locker.WaitAsync(this._serverWorkingCancellationTokenSource.Token);
+                    try
+                    {
+                        this._clients.Add(comClient.Proxy.Uid, comClient);
+                        comClient.Start();
+
+                        if (this._nextClientWaitTask is not null)
+                        {
+                            waitingTask = this._nextClientWaitTask;
+                            this._nextClientWaitTask = null;
+                        }
+
+                        if (this._clients.Count >= this._allowedClient)
+                            break;
+                    }
+                    finally
+                    {
+                        this._locker.Release();
+                        waitingTask?.TrySetResult(comClient.Proxy);
+                    }
+                }
+            }
+            finally
+            {
+                this._locker.Wait();
                 try
                 {
-                    this._clients.Add(comClient);
-                    comClient.Start();
-
-                    if (this._nextClientWaitTask != null)
-                    {
-                        this._nextClientWaitTask.TrySetResult(comClient.Proxy);
-                        this._nextClientWaitTask = null;
-                    }
-
-                    if (this._clients.Count >= this._allowedClient)
-                        break;
+                    this._listenningTask = null;
                 }
                 finally
                 {
-                    this._listenningTask = null;
                     this._locker.Release();
                 }
             }
@@ -171,7 +207,7 @@ namespace Elvex.Toolbox.Communications
             this._locker.Wait();
             try
             {
-                this._clients.Remove(obj);
+                this._clients.Remove(obj.Proxy.Uid);
 
                 if (this._clients.Count < this._allowedClient && this._listenningTask == null)
                 {
@@ -200,7 +236,7 @@ namespace Elvex.Toolbox.Communications
             try
             {
                 foreach (var c in this._clients)
-                    await c.DisposeAsync();
+                    await c.Value.DisposeAsync();
             }
             catch
             {

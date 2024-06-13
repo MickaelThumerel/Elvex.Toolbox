@@ -15,9 +15,19 @@ namespace Elvex.Toolbox.Abstractions.Proxies
         #region Methods
 
         /// <summary>
+        /// Sends <paramref name="callback"/> to be execute by the dispatcher with waiting the execution
+        /// </summary>
+        void SendAndWait(Action callback);
+
+        /// <summary>
         /// Sends <paramref name="callback"/> to be execute by the dispatcher without waiting the execution
         /// </summary>
         void Send(Action callback);
+
+        /// <summary>
+        /// Sends <paramref name="callback"/> to be execute by the dispatcher and waiting the execution
+        /// </summary>
+        ValueTask SendAsync(Action callback);
 
         /// <summary>
         /// Relay exception through dispatch context.

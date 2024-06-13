@@ -8,6 +8,8 @@ namespace Elvex.Toolbox.Communications
     using Elvex.Toolbox.Helpers;
 
     using System.Diagnostics;
+    using System.Net;
+    using System.Net.NetworkInformation;
     using System.Reactive;
     using System.Reactive.Concurrency;
     using System.Reactive.Linq;
@@ -52,7 +54,12 @@ namespace Elvex.Toolbox.Communications
         internal ComClientProxy(ComClient comClient)
         {
             this._pendingResultTasks = new Dictionary<Guid, TaskCompletionSource<byte[]>>();
+
             this._comClient = comClient;
+
+            this._comClient.ClientLeaveEvent -= ComClient_ClientLeaveEvent;
+            this._comClient.ClientLeaveEvent += ComClient_ClientLeaveEvent;
+
             this.Uid = Guid.NewGuid();
 
             var observer = Observer.Create<byte[]>(OnMessageReceived, OnComplete);
@@ -75,10 +82,11 @@ namespace Elvex.Toolbox.Communications
         /// </summary>
         public enum MessageType : byte
         {
-            User,
-            System,
-            Ping,
-            Pong,
+            User = 0,
+            System = 1,
+            Ping = 2,
+            Pong = 3,
+            Error = byte.MaxValue,
         }
 
         public record UnmanagedMessage(MessageType Type, string MessageId, byte[] Message);
@@ -91,6 +99,23 @@ namespace Elvex.Toolbox.Communications
         /// Gets the client uid.
         /// </summary>
         public Guid Uid { get; }
+
+        /// <summary>
+        /// Gets the endpoint. (local or remote)
+        /// </summary>
+        public EndPoint? Endpoint
+        {
+            get { return this._comClient.Endpoint; }
+        }
+
+        #endregion
+
+        #region Events
+
+        /// <summary>
+        /// The client leave event
+        /// </summary>
+        public event Action<ComClientProxy>? ClientLeavedEvent;
 
         #endregion
 
@@ -106,7 +131,7 @@ namespace Elvex.Toolbox.Communications
                 using (var timeoutCancelToken = CancellationHelper.DisposableTimeout(TimeSpan.FromSeconds(5)))
                 using (var token = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, timeoutCancelToken.Content))
                 {
-                    var sendUid = SendImpl(MessageType.Ping, null, out var waitingResultTask, true, token.Token);
+                    var sendUid = SendImpl(MessageType.Ping, null, out var waitingResultTask, true, token.Token, null);
                     await Task.Factory.StartNew(async () => await waitingResultTask!.Task, token.Token);
                 }
             }
@@ -120,20 +145,53 @@ namespace Elvex.Toolbox.Communications
         /// <summary>
         /// Asks data
         /// </summary>
-        public async Task<string> AskAsync(string data, CancellationToken cancellationToken)
+        public async Task<byte[]> AskAsync(byte[] data, CancellationToken cancellationToken, Guid? forceMessageId = null)
         {
             using (var timeoutCancelToken = CancellationHelper.DisposableTimeout(TimeSpan.FromSeconds(Debugger.IsAttached ? 50000 : 5)))
             using (var token = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, timeoutCancelToken.Content))
             {
 
-                var sendUid = SendImpl(MessageType.User, Encoding.UTF8.GetBytes(data), out var waitingResultTask, true, token.Token);
+                var sendUid = SendImpl(MessageType.User, data, out var waitingResultTask, true, token.Token, forceMessageId);
                 await Task.Factory.StartNew(async () => await waitingResultTask!.Task, token.Token);
 
                 var results = waitingResultTask!.Task.Result;
                 if (results != null && results.Any())
-                    return Encoding.UTF8.GetString(results);
+                    return results;
 
-                return string.Empty;
+                return EnumerableHelper<byte>.ReadOnlyArray;
+            }
+        }
+
+        /// <summary>
+        /// Sends data without expecting answer
+        /// </summary>
+        public ValueTask<Guid> SendAsync(byte[] data, CancellationToken cancellationToken, Guid? forceMessageId = null)
+        {
+            using (var timeoutCancelToken = CancellationHelper.DisposableTimeout(TimeSpan.FromSeconds(Debugger.IsAttached ? 50000 : 5)))
+            using (var token = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, timeoutCancelToken.Content))
+            {
+                var sendUid = SendImpl(MessageType.User, data, out var _, false, token.Token, forceMessageId);
+                return ValueTask.FromResult(sendUid);
+            }
+        }
+
+        /// <summary>
+        /// Relay error
+        /// </summary>
+        public ValueTask<Guid> RelayErrorAsync(Exception ex, string? extraInfo, CancellationToken cancellationToken, Guid sourceMessageId)
+        {
+            using (var timeoutCancelToken = CancellationHelper.DisposableTimeout(TimeSpan.FromSeconds(Debugger.IsAttached ? 50000 : 5)))
+            using (var token = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, timeoutCancelToken.Content))
+            {
+                var fullStringError = "Remote source " + sourceMessageId + Environment.NewLine + "Message: " + ex.GetFullString();
+
+                if (!string.IsNullOrEmpty(extraInfo))
+                    fullStringError = extraInfo + Environment.NewLine + fullStringError;
+
+                var errorData = Encoding.UTF8.GetBytes(fullStringError);
+
+                var sendUid = SendImpl(MessageType.Error, errorData, out var _, false, token.Token, sourceMessageId);
+                return ValueTask.FromResult(sendUid);
             }
         }
 
@@ -144,6 +202,25 @@ namespace Elvex.Toolbox.Communications
         }
 
         #region Tools
+
+        /// <inheritdoc />
+        private void ComClient_ClientLeaveEvent(ComClient obj)
+        {
+            IReadOnlyCollection<TaskCompletionSource<byte[]>> pendings;
+
+            lock (this._pendingResultTasks)
+            {
+                pendings = this._pendingResultTasks.Values.ToArray();
+                this._pendingResultTasks.Clear();
+            }
+
+            var exception = new WebException("Connection losted Uid " + this.Uid + " Endpoint " + obj.Endpoint);
+
+            foreach (var task in pendings)
+                task.TrySetException(exception);
+
+            this.ClientLeavedEvent?.Invoke(this);
+        }
 
         /// <inheritdoc />
         private void OnMessageReceived(byte[] msg)
@@ -170,14 +247,17 @@ namespace Elvex.Toolbox.Communications
 
                 if (resultTask != null)
                 {
-                    resultTask.TrySetResult(msgRemains);
+                    if (type == MessageType.Error)
+                        resultTask.TrySetException(new Exception(Encoding.UTF8.GetString(msgRemains)));
+                    else
+                        resultTask.TrySetResult(msgRemains);
                     return;
                 }
             }
 
             if (type == MessageType.Ping)
             {
-                SendImpl(MessageType.Pong, null, out _, false, default);
+                SendImpl(MessageType.Pong, null, out _, false, default, null);
                 return;
             }
 
@@ -197,9 +277,10 @@ namespace Elvex.Toolbox.Communications
                               byte[]? messages,
                               out TaskCompletionSource<byte[]>? task,
                               bool createWaitTask,
-                              CancellationToken cancellationToken)
+                              CancellationToken cancellationToken,
+                              Guid? forceMessageId)
         {
-            var msg = FormatData(type, messages, out var msgId);
+            var msg = FormatData(type, messages, out var msgId, forceMessageId);
             task = null;
 
             if (createWaitTask)
@@ -220,9 +301,9 @@ namespace Elvex.Toolbox.Communications
         /// <summary>
         /// Formats the data.
         /// </summary>
-        private byte[] FormatData(MessageType ping, byte[]? messages, out Guid messageId)
+        private byte[] FormatData(MessageType ping, byte[]? messages, out Guid messageId, Guid? forceMessageId)
         {
-            messageId = Guid.NewGuid();
+            messageId = forceMessageId ?? Guid.NewGuid();
             var idArray = Encoding.UTF8.GetBytes(messageId.ToString());
 
             var data = new byte[(messages?.Length ?? 0) + 1 + s_guidSize];

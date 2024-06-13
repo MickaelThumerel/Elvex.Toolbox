@@ -8,6 +8,7 @@ namespace Elvex.Toolbox.Proxies
 
     using System;
     using System.Runtime.CompilerServices;
+    using System.Threading.Tasks;
 
     /// <summary>
     /// Proxy that apply direct call used to provide <see cref="IDispatcherProxy"/> when no dispatcher is provide or setup
@@ -49,6 +50,19 @@ namespace Elvex.Toolbox.Proxies
         public void Send(Action callback)
         {
             callback();
+        }
+
+        /// <inheritdoc />
+        public void SendAndWait(Action callback)
+        {
+            callback();
+        }
+
+        /// <inheritdoc />
+        public ValueTask SendAsync(Action callback)
+        {
+            callback();
+            return ValueTask.CompletedTask;
         }
 
         /// <inheritdoc />

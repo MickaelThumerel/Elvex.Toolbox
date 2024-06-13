@@ -1,0 +1,27 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+
+	<Import Project="..\..\..\SharedFrameworkAssemblyInfo.props" />
+
+	<PropertyGroup>
+		<IsPackable>false</IsPackable>
+		<IsTestProject>false</IsTestProject>
+	</PropertyGroup>
+
+	<PropertyGroup>
+		<OutputType>WinExe</OutputType>
+		<TargetFramework>net8.0-windows</TargetFramework>
+		<UseWPF>true</UseWPF>
+	</PropertyGroup>
+
+	<ItemGroup>
+	  <PackageReference Include="Microsoft.Extensions.Configuration" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\..\Elvex.Toolbox.WPF.UI\Elvex.Toolbox.WPF.UI.csproj" />
+	  <ProjectReference Include="..\..\Elvex.Toolbox.WPF\Elvex.Toolbox.WPF.csproj" />
+	  <ProjectReference Include="..\Elvex.Toolbox.ComServer.Abstraction.Test\Elvex.Toolbox.ComServer.Abstraction.Test.csproj" />
+	</ItemGroup>
+
+</Project>

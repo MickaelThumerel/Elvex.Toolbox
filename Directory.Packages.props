@@ -7,6 +7,7 @@
     <PackageVersion Include="BenchmarkDotNet.Core" Version="0.10.14" />
     <PackageVersion Include="Microsoft.Extensions.Configuration.Binder" Version="8.0.1" />
     <PackageVersion Include="Microsoft.Extensions.Configuration.Json" Version="8.0.0" />
+    <PackageVersion Include="Microsoft.Extensions.Logging.Console" Version="8.0.0" />
     <PackageVersion Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.77" />
     <PackageVersion Include="System.Reactive" Version="6.0.0" />
     <PackageVersion Include="Microsoft.Extensions.Options" Version="8.0.2" />

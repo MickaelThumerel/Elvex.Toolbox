@@ -9,6 +9,8 @@ namespace Elvex.Toolbox.Services
     using System;
     using System.Diagnostics;
     using System.IO;
+    using System.Net.Http.Headers;
+    using System.Text;
     using System.Text.Json;
     using System.Text.Json.Serialization;
 
@@ -38,7 +40,18 @@ namespace Elvex.Toolbox.Services
                 WriteIndented = Debugger.IsAttached,
                 NumberHandling = JsonNumberHandling.AllowReadingFromString,
             };
+
+            Instance = new SystemJsonSerializer();
         }
+
+        #endregion
+
+        #region Properties
+
+        /// <summary>
+        /// Gets the instance.
+        /// </summary>
+        public static IJsonSerializer Instance { get; }
 
         #endregion
 
@@ -69,9 +82,22 @@ namespace Elvex.Toolbox.Services
         }
 
         /// <inheritdoc />
-        public string Serialize<TObject>(TObject obj)
+        public object? Deserialize(in ReadOnlySpan<byte> str, Type returnType)
         {
-            return JsonSerializer.Serialize<TObject>(obj);
+            return JsonSerializer.Deserialize(str, returnType, s_defaultDeserializationOptions);
+        }
+
+        /// <inheritdoc />
+        public TResult? Deserialize<TResult>(in ReadOnlySpan<byte> str)
+        {
+            return JsonSerializer.Deserialize<TResult>(str, s_defaultDeserializationOptions);
+        }
+
+        /// <inheritdoc />
+        public byte[] Serialize<TObject>(TObject obj)
+        {
+            var str = JsonSerializer.Serialize<TObject>(obj, s_defaultDeserializationOptions);
+            return Encoding.UTF8.GetBytes(str);
         }
 
         #endregion

@@ -8,6 +8,7 @@ namespace Elvex.Toolbox.WPF.UI.Services
 
     using System;
     using System.Runtime.CompilerServices;
+    using System.Threading.Tasks;
     using System.Windows.Threading;
 
     /// <summary>
@@ -54,7 +55,25 @@ namespace Elvex.Toolbox.WPF.UI.Services
             if (this.IsCurrentThread)
                 callback();
             else
+                this._dispatcher.InvokeAsync(callback);
+        }
+
+        /// <inheritdoc />
+        public void SendAndWait(Action callback)
+        {
+            if (this.IsCurrentThread)
+                callback();
+            else
                 this._dispatcher.Invoke(callback);
+        }
+
+        /// <inheritdoc />
+        public async ValueTask SendAsync(Action callback)
+        {
+            if (this.IsCurrentThread)
+                callback();
+            else
+                await this._dispatcher.InvokeAsync(callback);
         }
 
         /// <inheritdoc />

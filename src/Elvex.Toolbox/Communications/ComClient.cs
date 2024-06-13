@@ -7,6 +7,7 @@ namespace Elvex.Toolbox.Communications
     using Elvex.Toolbox.Disposables;
 
     using System;
+    using System.Net;
     using System.Net.Sockets;
     using System.Reactive.Concurrency;
     using System.Reactive.Linq;
@@ -23,7 +24,6 @@ namespace Elvex.Toolbox.Communications
 
         private readonly CancellationToken _token;
 
-        private readonly ComServer _comServer;
         private readonly TcpClient _tcpClient;
         private readonly Subject<byte[]> _subject;
 
@@ -37,10 +37,8 @@ namespace Elvex.Toolbox.Communications
         /// Initializes a new instance of the <see cref="ComClient"/> class.
         /// </summary>
         public ComClient(TcpClient tcpClient,
-                         ComServer comServer,
                          CancellationToken token)
         {
-            this._comServer = comServer;
             this._tcpClient = tcpClient;
             this._token = token;
 
@@ -60,6 +58,14 @@ namespace Elvex.Toolbox.Communications
         /// Gets the proxy.
         /// </summary>
         public ComClientProxy Proxy { get; }
+
+        /// <summary>
+        /// Gets the endpoint. (local or remote)
+        /// </summary>
+        public EndPoint? Endpoint
+        {
+            get { return this._tcpClient.Client?.LocalEndPoint ?? this._tcpClient.Client?.RemoteEndPoint; }
+        }
 
         #endregion
 
@@ -102,6 +108,9 @@ namespace Elvex.Toolbox.Communications
             catch (IOException)
             {
                 ClientLeave();
+            }
+            catch (Exception)
+            {
             }
         }
 
