@@ -23,6 +23,11 @@ parameters:
     type: boolean
     default: true
 
+  - name: export_symbols
+    displayName: Define if symbole must be export or not
+    type: boolean
+    default: true
+
 variables:
   - group: ElvexToobox-frameworks-variables
 
@@ -36,6 +41,12 @@ variables:
     parameters:
       include_build_number : ${{ parameters.prerelease }}
       pre_release : ${{ parameters.prerelease }}
+
+  - name: pkg_push_filter
+    ${{ if parameters.export_symbols }}:
+      value: "*.symbols.nupkg"
+    ${{ else }}:
+      value: "*.nupkg"
 
 resources:
   repositories:
@@ -56,7 +67,8 @@ steps:
   - template: Templates/dotnet/nuget-steps.yaml@tpl
     parameters:
       package_version: $(FinalPkgVersion)
-      include_symbols: ${{ parameters.prerelease }}
+      include_symbols: ${{ parameters.export_symbols }}
       nuget_depo: $(nuget_depo)
+      nuget_package_filter: $(pkg_push_filter)
       secret_api_key: $(secret_api_key)
       solution_file_name : $(solution_file_name)
