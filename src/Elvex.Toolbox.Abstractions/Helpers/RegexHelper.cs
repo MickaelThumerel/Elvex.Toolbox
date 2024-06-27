@@ -19,6 +19,7 @@ namespace Elvex.Toolbox.Abstractions.Helpers
         static RegexHelper()
         {
             MultiSpace = new Regex(Pattern.MULTI_SPACE, RegexOptions.Compiled);
+            Base64 = new Regex(Pattern.BASE64, RegexOptions.Compiled);
         }
 
         #endregion
@@ -29,6 +30,11 @@ namespace Elvex.Toolbox.Abstractions.Helpers
         /// Gets the multi space.
         /// </summary>
         public static Regex MultiSpace { get; }
+
+        /// <summary>
+        /// Gets the base64 validation regex
+        /// </summary>
+        public static Regex Base64 { get; }
 
         #endregion
 
@@ -43,6 +49,14 @@ namespace Elvex.Toolbox.Abstractions.Helpers
             /// The unique identifier pattern
             /// </summary>
             public const string GUID = "[a-zA-Z0-9]{8}[-]?[a-zA-Z0-9]{4}[-]?[a-zA-Z0-9]{4}[-]?[a-zA-Z0-9]{4}[-]?[a-zA-Z0-9]{12}";
+
+            /// <summary>
+            /// Pattern to identify or validate a base64 string
+            /// </summary>
+            /// <remarks>
+            ///     Attention start and end flag '^$' are not inserted
+            /// </remarks>
+            public const string BASE64 = "(?:[A-Za-z0-9+\\/]{4})*(?:[A-Za-z0-9+\\/]{2}==|[A-Za-z0-9+\\/]{3}=|[A-Za-z0-9+\\/]{4})";
 
             /// <summary>
             /// The multi space
