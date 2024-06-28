@@ -73,8 +73,9 @@ namespace Elvex.Toolbox.Patterns.Pools
                                      .Select(_ =>
                                      {
                                          TItem? item = null;
-                                         if (this._items.Count > 0)
-                                             item = this._items.Dequeue();
+
+                                         if (this._items.TryDequeue(out var dequeueItem))
+                                             item = dequeueItem;
 
                                          return item ?? new TItem();
                                      })
@@ -171,12 +172,15 @@ namespace Elvex.Toolbox.Patterns.Pools
                 if (castItem is null)
                     Debug.WriteLine("");
 
-                this._items.Enqueue(castItem);
-                return;
+                if (castItem is not null)
+                {
+                    this._items.Enqueue(castItem);
+                    return;
+                }
             }
 
             Debug.Assert(item.InUse == true);
-            castItem.Dispose();
+            castItem?.Dispose();
             Debug.Assert(item.InUse == null);
         }
 
