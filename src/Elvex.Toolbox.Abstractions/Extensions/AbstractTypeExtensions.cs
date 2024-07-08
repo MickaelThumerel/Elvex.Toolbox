@@ -265,8 +265,27 @@ namespace System
                 method.IsGenericMethodDefinition &&
                 method.GetGenericArguments().Length == abstractMethod!.GenericArguments.Count)
             {
-                var specializedMethod = mth.MakeGenericMethod(abstractMethod!.GenericArguments.Select(g => g.ToType()).ToArray());
-                result = IsEqualTo(abstractMethod, specializedMethod, false);
+                var types = EnumerableHelper<Type>.ReadOnlyArray;
+                try
+                {
+                    types = abstractMethod!.GenericArguments.Select(g => g.ToType()).ToArray();
+                }
+                catch
+                {
+                    // generate types failed
+                    return false;
+                }
+
+                try
+                {
+                    var specializedMethod = mth.MakeGenericMethod(types);
+                    result = IsEqualTo(abstractMethod, specializedMethod, false);
+                }
+                catch
+                {
+                    // generate types failed
+                    return false;
+                }
             }
 
             return result;

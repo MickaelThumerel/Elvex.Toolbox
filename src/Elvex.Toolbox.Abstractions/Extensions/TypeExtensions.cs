@@ -166,8 +166,8 @@ namespace System
 
                 var isStatic = prop.GetMethod?.IsStatic ?? false;
 
-                return (isStatic || inst is not null) 
-                            ? prop.GetValue(inst) 
+                return (isStatic || inst is not null)
+                            ? prop.GetValue(inst)
                             : (object?)null;
             }
 
@@ -302,7 +302,7 @@ namespace System
 
             this.IsCSharpScalarType = CSharpTypeInfo.ScalarTypes.Contains(this.Trait);
 
-            this.Default = trait.IsValueType && !trait.IsAbstract && !trait.IsByRefLike && trait != typeof(void)
+            this.Default = trait.IsValueType && !trait.IsGenericParameter && !trait.IsAbstract && !trait.IsByRefLike && trait != typeof(void)
                                 ? Activator.CreateInstance(trait)
                                 : null;
             this.FullShortName = TypeInfoExtensionBuilder.FullShortName(this.Trait);
