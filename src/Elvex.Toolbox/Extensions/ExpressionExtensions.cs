@@ -753,8 +753,9 @@ namespace System.Linq.Expressions
                         var cstValue = context.Type.GetField(memberAccess.Member.Name)?.GetValue(context.Value);
                         return new ConditionValueDefinition(((FieldInfo)memberAccess.Member).FieldType.GetAbstractType(), cstValue);
                     }
-
-                    var instance = SerializeCallInstance(memberAccess.Expression, sourceInputExpressions);
+                    
+                    var instance = SerializeConditions(memberAccess.Expression, sourceInputExpressions);
+                    //var instance = SerializeCallInstance(memberAccess.Expression, sourceInputExpressions);
                     return new ConditionMemberAccessDefinition(instance, memberAccess.Member.Name);
 
                 case ExpressionType.Constant:

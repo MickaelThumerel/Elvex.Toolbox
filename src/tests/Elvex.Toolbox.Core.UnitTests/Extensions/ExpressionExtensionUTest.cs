@@ -118,10 +118,15 @@ namespace Elvex.Toolbox.UnitTests.Extensions
 
             public string Name { get; set; }
 
-            public object this[Guid uid]
+            public ComplexObj this[Guid uid]
             {
                 get { return this._complexObjs[uid]; }
             }
+        }
+
+        public class Root
+        {
+            public object Complex { get; set; }
         }
 
         public record struct ExpressioSimpleSampleObject(Guid uid, string name, bool value, StringComparison? StringComparison);
@@ -156,17 +161,17 @@ namespace Elvex.Toolbox.UnitTests.Extensions
             var sucessStr = "sucess";
             var failStr = "fail";
 
-            ConditionSerializationTest((ParentClass? item) => item as ParentClass != null && 
-                                                              ((ChildClassA)item).Name == "sucess", 
-                                                              
-                                       new ParentClass[] { new ChildClassA(sucessStr) }, 
+            ConditionSerializationTest((ParentClass? item) => item as ParentClass != null &&
+                                                              ((ChildClassA)item).Name == "sucess",
+
+                                       new ParentClass[] { new ChildClassA(sucessStr) },
                                        new ParentClass[] { new ChildClassA(failStr), new ChildClassB(string.Empty) });
 
-            ConditionSerializationTest((HierachyRootClass? item) => item != null && 
-                                                                    item.Child as ParentClass != null && 
-                                                                    ((ChildClassA)item.Child).Name == "sucess", 
-                                       
-                                       new[] { new HierachyRootClass(new ChildClassA(sucessStr)) }, 
+            ConditionSerializationTest((HierachyRootClass? item) => item != null &&
+                                                                    item.Child as ParentClass != null &&
+                                                                    ((ChildClassA)item.Child).Name == "sucess",
+
+                                       new[] { new HierachyRootClass(new ChildClassA(sucessStr)) },
                                        new[] { new HierachyRootClass(new ChildClassA(failStr)), new HierachyRootClass(null) });
         }
 
@@ -258,11 +263,38 @@ namespace Elvex.Toolbox.UnitTests.Extensions
                 })
             };
 
-            var t = typeof(ContainerComplex);
-
-            Expression<Func<ContainerComplex, bool>> filter = c => ((ComplexObj)c[id]).Name.StartsWith("S");
+            Expression<Func<ContainerComplex, bool>> filter = c => c[id].Name.StartsWith("S");
 
             ConditionSerializationTest<ContainerComplex>(filter, containers.Take(0).ToArray(), containers.Skip(1).ToArray());
+        }
+
+        [Fact]
+        public void Conditional_With_Index_Convert_Access()
+        {
+            var id = Guid.NewGuid();
+
+            var containers = new Root[]
+            {
+                new Root()
+                {
+                    Complex = new ContainerComplex(new []
+                    {
+                        new ComplexObj(id) { Name = "Success" }
+                    }),
+                },
+
+                new Root()
+                {
+                    Complex = new ContainerComplex(new []
+                    {
+                        new ComplexObj(id) { Name = "Failed" }
+                    })
+                }
+            };
+
+            Expression<Func<Root, bool>> filter = r => (((ContainerComplex)r.Complex)[id]).Name == "Success";
+
+            ConditionSerializationTest<Root>(filter, containers.Take(0).ToArray(), containers.Skip(1).ToArray());
         }
 
         /// <summary>
@@ -572,8 +604,8 @@ namespace Elvex.Toolbox.UnitTests.Extensions
                 uid = Guid.NewGuid(),
             };
 
-            Expression<Func<ExpressioSimpleSampleObject, ExpressionComplexSampleObject>> expr = input => new ExpressionComplexSampleObject(input.uid, 
-                                                                                                                                           nameValue, 
+            Expression<Func<ExpressioSimpleSampleObject, ExpressionComplexSampleObject>> expr = input => new ExpressionComplexSampleObject(input.uid,
+                                                                                                                                           nameValue,
                                                                                                                                            true,
                                                                                                                                            new ExpressioSimpleSampleObject()
                                                                                                                                            {
