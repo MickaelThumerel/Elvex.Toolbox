@@ -850,7 +850,7 @@ namespace System.Linq.Expressions
 
                 var callPart = call.MethodName.Split('.');
                 var typeName = string.Join('.', callPart.SkipLast(1));
-                var methodDeclarationType = Type.GetType(typeName) ?? throw new InvalidOperationException("Could not found type with following information '" + typeName + "'");
+                var methodDeclarationType = Type.GetType(typeName) ?? instance?.Type ?? throw new InvalidOperationException("Could not found type with following information '" + typeName + "'");
 
                 string methodName = callPart.Last();
 

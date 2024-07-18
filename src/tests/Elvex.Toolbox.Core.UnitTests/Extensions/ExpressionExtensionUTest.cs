@@ -106,6 +106,24 @@ namespace Elvex.Toolbox.UnitTests.Extensions
             }
         }
 
+        public class ContainerComplex
+        {
+            private readonly Dictionary<Guid, ComplexObj> _complexObjs;
+
+            public ContainerComplex(IEnumerable<ComplexObj> complexObjs)
+            {
+                this._complexObjs = complexObjs.GroupBy(c => c.Uid)
+                                               .ToDictionary(k => k.Key, v => v.First());
+            }
+
+            public string Name { get; set; }
+
+            public object this[Guid uid]
+            {
+                get { return this._complexObjs[uid]; }
+            }
+        }
+
         public record struct ExpressioSimpleSampleObject(Guid uid, string name, bool value, StringComparison? StringComparison);
         public record struct ExpressionComplexSampleObject(Guid uid, string name, bool value, ExpressioSimpleSampleObject nested);
 
@@ -220,6 +238,31 @@ namespace Elvex.Toolbox.UnitTests.Extensions
             Check.That(results[false]).Not.IsEmpty();
 
             ConditionSerializationTest<int>(expression, results[true], results[false]);
+        }
+
+        [Fact]
+        public void Conditional_With_Index_Access()
+        {
+            var id = Guid.NewGuid();
+
+            var containers = new ContainerComplex[]
+            {
+                new ContainerComplex(new []
+                {
+                    new ComplexObj(id) { Name = "Success" }
+                }),
+
+                new ContainerComplex(new []
+                {
+                    new ComplexObj(id) { Name = "Failed" }
+                })
+            };
+
+            var t = typeof(ContainerComplex);
+
+            Expression<Func<ContainerComplex, bool>> filter = c => ((ComplexObj)c[id]).Name.StartsWith("S");
+
+            ConditionSerializationTest<ContainerComplex>(filter, containers.Take(0).ToArray(), containers.Skip(1).ToArray());
         }
 
         /// <summary>

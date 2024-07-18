@@ -19,22 +19,6 @@ namespace Elvex.Toolbox.Helpers
         #region Fields
 
         private static readonly Regex s_indexProp = new Regex(@"^(?<prop>[a-zA-Z]+)\[(?<index>.*)\]$", RegexOptions.Compiled);
-        private static readonly IReadOnlyDictionary<Type, Func<string, object>> s_convertFromString;
-
-        #endregion
-
-        #region Ctor
-
-        /// <summary>
-        /// Initializes the <see cref="DynamicCallHelper"/> class.
-        /// </summary>
-        static DynamicCallHelper()
-        {
-            s_convertFromString = new Dictionary<Type, Func<string, object>>()
-            {
-                { typeof(Guid), s => Guid.Parse(s) }
-            };
-        }
 
         #endregion
 
@@ -202,7 +186,7 @@ namespace Elvex.Toolbox.Helpers
                 var mthd = info.PropertyType.GetMethod("get_Item");
                 if (mthd is not null && mthd.IsSpecialName)
                 {
-                    var convertValue = ConvertValueFromString(mthd.GetParameters()[0].ParameterType, indexProp);
+                    var convertValue = ConvertHelper.ConvertValueFromString(mthd.GetParameters()[0].ParameterType, indexProp);
                     resolvedValue = Expression.Call(resolvedValue, mthd, Expression.Constant(convertValue));
                 }
             }
@@ -211,13 +195,6 @@ namespace Elvex.Toolbox.Helpers
                 return CompileCallChainAccessImpl(resolvedValue, tail, containRoot: false, throwIfNotFounded);
 
             return resolvedValue!;
-        }
-
-        private static object ConvertValueFromString(Type type, string indexProp)
-        {
-            if (s_convertFromString.TryGetValue(type, out var builder))
-                return builder(indexProp);
-            return indexProp;
         }
 
         /// <summary>
@@ -307,7 +284,7 @@ namespace Elvex.Toolbox.Helpers
                 var mthd = type.GetMethod("get_Item");
                 if (mthd is not null)
                 {
-                    var convertValue = ConvertValueFromString(mthd.GetParameters()[0].ParameterType, indexProp);
+                    var convertValue = ConvertHelper.ConvertValueFromString(mthd.GetParameters()[0].ParameterType, indexProp);
                     resolvedValue = mthd.Invoke(resolvedValue, new[] { convertValue });
                 }
             }
