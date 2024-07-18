@@ -23,6 +23,8 @@ namespace Elvex.Toolbox.UnitTests.Helpers
 
         public class NestedLeaf
         {
+            public Guid Id { get; set; }
+
             public int Value { get; set; }
 
             public string? Name { get; set; }
@@ -33,6 +35,11 @@ namespace Elvex.Toolbox.UnitTests.Helpers
             public Guid Uid { get; set; }
 
             public NestedLeaf? NestedLeaf { get; set; }
+
+            public NestedLeaf? this[Guid id]
+            {
+                get { return this.NestedLeaf; }
+            }
         }
 
         public class Root
@@ -228,6 +235,38 @@ namespace Elvex.Toolbox.UnitTests.Helpers
 
             var dynamicIdValue = DynamicCallHelper.GetValueFrom(source, dynamicIdChainCall!, containRoot: true);
             Check.That(dynamicIdValue).IsNotNull().And.IsInstanceOf<Guid>().And.IsEqualTo(source.Leaf.Uid);
+        }
+
+        [Fact]
+        public void Call_Index()
+        {
+            var id = Guid.NewGuid();
+
+            Expression<Func<Root, string>> expr = r => r.Leaf[id].Name;
+            var str = DynamicCallHelper.GetCallChain(expr);
+
+            var rootTest = new Root()
+            {
+                Leaf = new Leaf()
+                {
+                    NestedLeaf = new NestedLeaf()
+                    {
+                        Name = Guid.NewGuid().ToString(),
+                    }
+                }
+            };
+
+            var accessExpr = DynamicCallHelper.CompileCallChainAccess<Root>(str, containRoot: true) as Expression<Func<Root, string>>;
+
+            Check.That(accessExpr).IsNotNull();
+
+            var func = accessExpr!.Compile();
+
+            Check.ThatCode(() => func(rootTest)).WhichResult().IsNotNull().And.IsEqualTo(rootTest.Leaf.NestedLeaf.Name);
+
+            var val = DynamicCallHelper.GetValueFrom(rootTest, str, containRoot: true);
+            Check.That(val).IsNotNull().And.IsInstanceOf<string>().And.IsEqualTo(rootTest.Leaf.NestedLeaf.Name);
+
         }
     }
 }

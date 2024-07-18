@@ -9,12 +9,37 @@ namespace Elvex.Toolbox.Helpers
     using System.Reflection;
     using System.Runtime.CompilerServices;
     using System.Text;
+    using System.Text.RegularExpressions;
 
     /// <summary>
     /// Helper used to perform runtime dynamic call
     /// </summary>
     public static class DynamicCallHelper
     {
+        #region Fields
+
+        private static readonly Regex s_indexProp = new Regex(@"^(?<prop>[a-zA-Z]+)\[(?<index>.*)\]$", RegexOptions.Compiled);
+        private static readonly IReadOnlyDictionary<Type, Func<string, object>> s_convertFromString;
+
+        #endregion
+
+        #region Ctor
+
+        /// <summary>
+        /// Initializes the <see cref="DynamicCallHelper"/> class.
+        /// </summary>
+        static DynamicCallHelper()
+        {
+            s_convertFromString = new Dictionary<Type, Func<string, object>>()
+            {
+                { typeof(Guid), s => Guid.Parse(s) }
+            };
+        }
+
+        #endregion
+
+        #region Methods
+
         /// <summary>
         /// Extract simple call chain from expression
         /// </summary>
@@ -50,6 +75,17 @@ namespace Elvex.Toolbox.Helpers
                 {
                     chain.Insert(0, parameter.Name);
                     break;
+                }
+                else if (currentChainPartExpression is MethodCallExpression method &&
+                         method.Method.IsSpecialName &&
+                         method.Method.Name == "get_Item" &&
+                         method.Arguments.Count == 1 &&
+                         method.Arguments[0] is MemberExpression arg)
+                {
+                    var val = ExpressionExtensions.ExtractConstantValue(arg, out var type);
+                    chain.Insert(0, "[" + val + "]");
+
+                    currentChainPartExpression = method.Object;
                 }
                 else
                 {
@@ -130,6 +166,21 @@ namespace Elvex.Toolbox.Helpers
                 return parameterExpression;
             }
 
+            var indexProp = string.Empty;
+            var match = s_indexProp.Match(prop.ToString());
+
+            if (match.Success)
+            {
+                var grpMatch = match.Groups["prop"];
+
+                if (grpMatch.Success)
+                    prop = grpMatch.Value;
+
+                var grpMatchIndx = match.Groups["index"];
+                if (grpMatchIndx.Success)
+                    indexProp = grpMatchIndx.Value;
+            }
+
             PropertyInfo? info = null;
 
             foreach (var property in trait.GetAllPropertyInfos(BindingFlags.Public | BindingFlags.Instance))
@@ -144,12 +195,29 @@ namespace Elvex.Toolbox.Helpers
             if (info == null && throwIfNotFounded)
                 throw new ArgumentException("Missing or null call chain  part '" + prop.ToString() + "'");
 
-            var resolvedValue = Expression.Property(parameterExpression, info!);
+            Expression resolvedValue = Expression.Property(parameterExpression, info!);
+
+            if (!string.IsNullOrEmpty(indexProp))
+            {
+                var mthd = info.PropertyType.GetMethod("get_Item");
+                if (mthd is not null && mthd.IsSpecialName)
+                {
+                    var convertValue = ConvertValueFromString(mthd.GetParameters()[0].ParameterType, indexProp);
+                    resolvedValue = Expression.Call(resolvedValue, mthd, Expression.Constant(convertValue));
+                }
+            }
 
             if (tail.Length > 0 && resolvedValue is not null)
                 return CompileCallChainAccessImpl(resolvedValue, tail, containRoot: false, throwIfNotFounded);
 
             return resolvedValue!;
+        }
+
+        private static object ConvertValueFromString(Type type, string indexProp)
+        {
+            if (s_convertFromString.TryGetValue(type, out var builder))
+                return builder(indexProp);
+            return indexProp;
         }
 
         /// <summary>
@@ -201,6 +269,21 @@ namespace Elvex.Toolbox.Helpers
                 return inst;
             }
 
+            var indexProp = string.Empty;
+            var match = s_indexProp.Match(prop.ToString());
+
+            if (match.Success)
+            {
+                var grpMatch = match.Groups["prop"];
+
+                if (grpMatch.Success)
+                    prop = grpMatch.Value;
+
+                var grpMatchIndx = match.Groups["index"];
+                if (grpMatchIndx.Success)
+                    indexProp = grpMatchIndx.Value;
+            }
+
             PropertyInfo? info = null;
 
             foreach (var property in trait.GetProperties(BindingFlags.Public | BindingFlags.Instance))
@@ -217,10 +300,24 @@ namespace Elvex.Toolbox.Helpers
 
             var resolvedValue = info?.GetValue(inst, null);
 
+            if (!string.IsNullOrEmpty(indexProp) && resolvedValue is not null)
+            {
+                var type = resolvedValue.GetType();
+
+                var mthd = type.GetMethod("get_Item");
+                if (mthd is not null)
+                {
+                    var convertValue = ConvertValueFromString(mthd.GetParameters()[0].ParameterType, indexProp);
+                    resolvedValue = mthd.Invoke(resolvedValue, new[] { convertValue });
+                }
+            }
+
             if (tail.Length > 0 && resolvedValue is not null)
                 return GetValueFrom(resolvedValue, tail, containRoot: false, throwIfNotFounded);
 
             return resolvedValue;
         }
+
+        #endregion
     }
 }
