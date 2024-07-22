@@ -104,6 +104,56 @@ namespace Elvex.Toolbox.Collections
         #region Methods
 
         /// <summary>
+        /// Manually inject an item
+        /// </summary>
+        public ValueTask<bool> ManualInject(TItem item, CancellationToken token = default)
+        {
+            return ManualInject(item, i => i, this._keyAccess);
+        }
+
+        /// <summary>
+        /// Manually inject an item
+        /// </summary>
+        public async ValueTask<bool> ManualInject<TOther>(TOther item, Func<TOther, TItem> converter, Func<TOther, TKey> otherKeyAccess, CancellationToken token = default)
+        {
+            var key = otherKeyAccess(item);
+            TItem? newItem = default;
+
+            await this._locker.WaitAsync(token);
+            try
+            {
+                if (this._indexedItems.TryGetValue(key, out var target))
+                {
+                    if (target is ISupportUpdateAsync<TOther> updateTargetAsync)
+                        await updateTargetAsync.UpdateAsync(item);
+                    else if (target is ISupportUpdate<TOther> updateTarget)
+                        updateTarget.Update(item);
+
+                    return true;
+                }
+
+                newItem = converter(item);
+
+                if (newItem is ISupportUpdateAsync<TOther> newItemUpdateAsync)
+                    await newItemUpdateAsync.UpdateAsync(item);
+                else if (newItem is ISupportUpdate<TOther> newItemUpdate)
+                    newItemUpdate.Update(item);
+
+                token.ThrowIfCancellationRequested();
+
+                this._indexedItems.Add(key, newItem);
+            }
+            finally
+            {
+                this._locker.Release();
+            }
+
+            this._dispatcherProxy.Send(() => this._observableCollection.Add(newItem));
+
+            return true;
+        }
+
+        /// <summary>
         /// Add or remove the expose collection to the one pass in arguments
         /// </summary>
         public ValueTask<bool> Synchronize(IReadOnlyCollection<TItem> items, CancellationToken token = default)
