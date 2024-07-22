@@ -78,6 +78,14 @@ namespace Elvex.Toolbox.Patterns.Messenger
                 await this._parent.SendAsync(message, token);
         }
 
+        /// <inheritdoc />
+        public string ToDebugDisplayName()
+        {
+            return "[Message: {0}] [Categeory: {1}]".WithArguments(typeof(TMessage).Name, this._subchannelCategory);
+        }
+
+        #region Tools
+
         /// <summary>
         /// Unsubscribes the specified unique identifier.
         /// </summary>
@@ -86,6 +94,8 @@ namespace Elvex.Toolbox.Patterns.Messenger
             this._messageQueueSubscriptions.Remove(subscriptionId);
         }
 
+        #endregion
+     
         #endregion
     }
 }

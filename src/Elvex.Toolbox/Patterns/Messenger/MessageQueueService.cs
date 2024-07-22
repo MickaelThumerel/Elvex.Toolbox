@@ -6,6 +6,7 @@ namespace Elvex.Toolbox.Patterns.Messenger
 {
     using Elvex.Toolbox.Abstractions.Patterns.Messenger;
     using Elvex.Toolbox.Abstractions.Proxies;
+    using Elvex.Toolbox.Disposables;
     using Elvex.Toolbox.Extensions;
 
     using Microsoft.Extensions.Logging;
@@ -19,7 +20,7 @@ namespace Elvex.Toolbox.Patterns.Messenger
     /// <summary>
     /// 
     /// </summary>
-    public sealed class MessageQueueService : IMessageQueueService
+    public sealed class MessageQueueService : SafeDisposable, IMessageQueueService
     {
         #region Fields
 
@@ -148,6 +149,52 @@ namespace Elvex.Toolbox.Patterns.Messenger
             {
                 this._locker.ExitWriteLock();
             }
+        }
+
+        /// <inheritdoc />
+        protected override void DisposeBegin()
+        {
+            IReadOnlyCollection<IMessageQueueChannel> channels;
+            this._locker.EnterWriteLock();
+            try
+            {
+                channels = this._channels.Values.ToArray();
+                this._channels.Clear();
+            }
+            finally
+            {
+                this._locker.ExitWriteLock();
+            }
+
+            foreach (var channel in channels)
+            {
+                try
+                {
+                    if (channel is IDisposable disposable)
+                        disposable.Dispose();
+                }
+                catch (ObjectDisposedException)
+                { }
+                catch (Exception ex)
+                {
+                    this._logger.OptiLog(LogLevel.Warning, "[Channel: {channel}] dispose failed {exception}", channel.ToDebugDisplayName(), ex);
+                }
+            }
+
+            base.DisposeBegin();
+        }
+
+        /// <inheritdoc />
+        protected override void DisposeEnd()
+        {
+            try
+            {
+                this._locker?.Dispose();
+            }
+            catch (ObjectDisposedException)
+            {
+            }
+            base.DisposeEnd();
         }
 
         #endregion

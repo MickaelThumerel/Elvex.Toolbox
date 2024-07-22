@@ -4,11 +4,13 @@
 
 namespace Elvex.Toolbox.Patterns.Messenger
 {
+    using Elvex.Toolbox.Abstractions.Supports;
+
     /// <summary>
     /// A channel is specialized in a type of message and can be extra specialized in a specific category
     /// It store the subscription and distribute the incomming message
     /// </summary>
-    internal interface IMessageQueueChannel
+    internal interface IMessageQueueChannel : ISupportDebugDisplayName
     {
     }
 }
