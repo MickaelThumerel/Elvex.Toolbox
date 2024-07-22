@@ -63,7 +63,13 @@ namespace Elvex.Toolbox.Supports
         /// <inheritdoc />
         protected override void DisposeBegin()
         {
-            this._impl.Dispose();
+            try
+            {
+                this._impl?.Dispose();
+            }
+            catch (ObjectDisposedException)
+            {
+            }
             base.DisposeBegin();
         }
 
@@ -127,7 +133,13 @@ namespace Elvex.Toolbox.Supports
         /// <inheritdoc />
         protected override void DisposeBegin()
         {
-            this._impl.Dispose();
+            try
+            {
+                this._impl?.Dispose();
+            }
+            catch (ObjectDisposedException)
+            {
+            }
             base.DisposeBegin();
         }
 
