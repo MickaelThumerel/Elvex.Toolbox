@@ -6,6 +6,8 @@
     <Color x:Key="ComplementColor">#DDDDDD</Color>
     <Color x:Key="SecondaryComplementColor">#AAAAAA</Color>
 
+    <Color x:Key="HighContrastColor">#252526</Color>
+
     <Color x:Key="AccentColor">#FF519ABA</Color>
     <Color x:Key="DisabledAccentColor">#4C519ABA</Color>
     <Color x:Key="ContrastAccentColor">#FFDE6325</Color>

@@ -17,6 +17,7 @@
     <SolidColorBrush x:Key="MenuBackgroundBrush" Color="{DynamicResource SecondaryColor}" />
     <SolidColorBrush x:Key="ComplementaryBackgroundBrush" Color="{DynamicResource ComplementColor}" />
     <SolidColorBrush x:Key="ContrastComplementaryBackgroundBrush" Color="{DynamicResource SecondaryComplementColor}" />
+    <SolidColorBrush x:Key="HighContrastBackgroundBrush" Color="{DynamicResource HighContrastColor}" />
 
     <SolidColorBrush x:Key="TransparentComplementaryBackgroundBrush" Color="{DynamicResource ComplementColor}" Opacity="0.3" />
 
@@ -38,11 +39,11 @@
     <SolidColorBrush x:Key="ForegroundOnContrastAccentBrush" Color="{DynamicResource ForegroundOnContrastAccentColor}" />
     <SolidColorBrush x:Key="DisabledForegroundBrush" Color="{DynamicResource DisabledForegroundColor}" />
     <SolidColorBrush x:Key="SelectedTabHeaderForegroundBrush" Color="{DynamicResource ForegroundColor}" />
+    <SolidColorBrush x:Key="HighContrastForegroundBrush" Color="{DynamicResource ForegroundOnContrastAccentColor}" />
 
     <!-- Mask -->
     <SolidColorBrush x:Key="HighlightMaskBrush" Color="{DynamicResource HighlightMaskColor}" />
     <SolidColorBrush x:Key="NormalMaskBrush" Color="{DynamicResource NormalMaskColor}" />
     <SolidColorBrush x:Key="DisabledMaskBrush" Color="{DynamicResource DisabledMaskColor}" />
-
 
 </ResourceDictionary>

@@ -18,5 +18,14 @@
     <cnv:OrderCollectionConverter x:Key="OrderCollectionConverter" />
 
     <cnv:InvertConverter x:Key="InvertConverter" />
+    <cnv:EnumEqualToBoolConverter x:Key="EnumEqualToBoolConverter" />
+
+    <cnv:NullOrEmptyToBoolConverter x:Key="NullOrEmptyToBoolConverter" />
+
+    <cnv:GroupConverter x:Key="NullOrEmptyToVisibilityConveter">
+        <cnv:NullOrEmptyToBoolConverter />
+        <cnv:InvertConverter />
+        <cnv:BoolToVisibilityConveter />
+    </cnv:GroupConverter>
 
 </ResourceDictionary>
