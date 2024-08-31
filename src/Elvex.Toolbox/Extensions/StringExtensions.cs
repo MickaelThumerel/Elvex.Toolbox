@@ -179,6 +179,42 @@ namespace System
             return OptiSplitImpl(str, includeSeparator, splitOptions, context);
         }
 
+        /// <summary>
+        /// Converts to lower case with <paramref name="separator"/> set before any old upper.
+        /// </summary>
+        public static string ToLowerWithSeparator(this string value, char separator)
+        {
+            return ToLowerWithSeparator((ReadOnlySpan<char>)value, separator);
+        }
+
+        /// <summary>
+        /// Converts to lower case with <paramref name="separator"/> set before any old upper.
+        /// </summary>
+        public static string ToLowerWithSeparator(this ReadOnlySpan<char> value, char separator)
+        {
+            Span<char> span = stackalloc char[value.Length * 2];
+            int index = 0;
+
+            foreach (char c in value)
+            {
+                var newChar = c;
+
+                if (char.IsUpper(c))
+                {
+                    if (index > 0)
+                    {
+                        span[index] = separator;
+                        index++;
+                    }
+                    newChar = char.ToLower(c);
+                }
+                span[index] = newChar;
+                index++;
+            }
+
+            return span.Slice(0, index).ToString();
+        }
+
         #region Tools
 
         /// <summary>

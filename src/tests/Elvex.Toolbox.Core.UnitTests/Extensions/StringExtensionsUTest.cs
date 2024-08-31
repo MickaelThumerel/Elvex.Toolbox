@@ -216,5 +216,28 @@ namespace Elvex.Toolbox.UnitTests.Extensions
                 Check.That(deep!.Value).IsEqualTo(s.Length);
             }
         }
+
+        [Theory]
+        [InlineData("ToLowerWithSeparator", "to_lower_with_separator", '_')]
+        [InlineData("ToLowerWithSeparator", "to-lower-with-separator", '-')]
+        [InlineData("     ToLowerWithSeparator", "     -to-lower-with-separator", '-')]
+        public void ToLowerWithSeparator(string source, string target, char separator)
+        {
+            var result = source.ToLowerWithSeparator(separator);
+
+            Check.That(result).IsNotNull().And.IsEqualTo(target);
+        }
+
+        [Theory]
+        [InlineData("     ToLowerWithSeparator", "to-lower-with-separator", '-')]
+        [InlineData("     ToLowerWithSeparator          ", "to-lower-with-separator", '-')]
+        [InlineData("ToLowerWithSeparator     ", "to_lower_with_separator", '_')]
+        [InlineData("     ToLowerWithSeparator     ", "to_lower_with_separator", '_')]
+        public void ToLowerWithSeparator_With_Trim(string source, string target, char separator)
+        {
+            var result = source.AsSpan().Trim().ToLowerWithSeparator(separator);
+
+            Check.That(result).IsNotNull().And.IsEqualTo(target);
+        }
     }
 }
