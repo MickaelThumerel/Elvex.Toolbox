@@ -2,6 +2,7 @@
 // The Elvexoft licenses this file to you under the MIT license.
 // Produce by Elvexoft & community
 
+// KEEP : System.Collections.Generic
 namespace System.Collections.Generic
 {
     using System;
@@ -190,6 +191,21 @@ namespace System.Collections.Generic
         public static IEnumerable<TData> NotNull<TData>(this IEnumerable<TData?> source)
         {
             return source.Where(s => s is not null).Select(s => s!);
+        }
+
+        /// <summary>
+        /// Inline TryGetValue return <typeparamref name="TData"/> is found otherwise default value or <paramref name="defaultData"/>
+        /// </summary>
+        public static TData? TryGetValueInline<TKey, TData>(this IReadOnlyDictionary<TKey, TData> th, TKey key, out bool success, TData? defaultData = default)
+        {
+            success = false;
+            if (th is not null && th.TryGetValue(key, out var data))
+            {
+                success = true;
+                return data;
+            }
+
+            return defaultData;
         }
     }
 }
