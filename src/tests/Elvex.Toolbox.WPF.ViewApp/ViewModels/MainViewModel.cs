@@ -10,6 +10,9 @@ namespace Elvex.Toolbox.WPF.ViewApp.ViewModels
     {
         public MainViewModel(IDispatcherProxy dispatcherProxy) : base(dispatcherProxy)
         {
+            this.Templates = Enum.GetValues<TemplateSelectorEnum>();
         }
+
+        public IReadOnlyCollection<TemplateSelectorEnum> Templates { get; }
     }
 }

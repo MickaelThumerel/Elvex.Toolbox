@@ -12,6 +12,7 @@ namespace Elvex.Toolbox.WPF
     using System.ComponentModel;
     using System.Runtime.CompilerServices;
     using System.Runtime.Serialization;
+    using System.Windows.Input;
 
     /// <summary>
     /// Base class to every view model with dynamic content between view and view model
@@ -111,6 +112,15 @@ namespace Elvex.Toolbox.WPF
             where TCommand : ICommandExt
         {
             this._commandExts.Add(command);
+        }
+
+        /// <summary>
+        /// Registers the command.
+        /// </summary>
+        protected void RegisterCommand(ICommand command)
+        {
+            if (command is ICommandExt commandExt)
+                this._commandExts.Add(commandExt);
         }
 
         /// <summary>

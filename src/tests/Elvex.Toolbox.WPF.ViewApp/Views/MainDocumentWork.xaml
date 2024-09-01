@@ -4,9 +4,33 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:Elvex.Toolbox.WPF.ViewApp.Views"
-             xmlns:elvex="http://elvex.toolbox.ui/"
+             xmlns:elvex="http://elvex.toolbox.ui/" 
+             xmlns:selectors="clr-namespace:Elvex.Toolbox.WPF.UI.Selectors;assembly=Elvex.Toolbox.WPF.UI"
+             xmlns:enum="clr-namespace:Elvex.Toolbox.WPF.ViewApp.ViewModels"
              mc:Ignorable="d" 
              d:DesignHeight="800" d:DesignWidth="800">
+
+    <UserControl.Resources>
+
+        <DataTemplate x:Key="MainIconTemplate">
+            <Path Data="{DynamicResource BuildIconSource}" />
+        </DataTemplate>
+
+        <DataTemplate x:Key="HighlightIconTemplate">
+            <Path Data="{DynamicResource LayerIconSource}" />
+        </DataTemplate>
+
+        <DataTemplate x:Key="DropIconTemplate">
+            <Path Data="{DynamicResource DeleteIconSource}" />
+        </DataTemplate>
+
+        <selectors:ConditionalDataTemplateSelector x:Key="IconSelector">
+            <selectors:PropertyConditonalTemplateSelector Binding="{Binding}" Value="{x:Static enum:TemplateSelectorEnum.Main}" Item="{StaticResource MainIconTemplate}" />
+            <selectors:PropertyConditonalTemplateSelector Binding="{Binding}" Value="{x:Static enum:TemplateSelectorEnum.Highlight}" Item="{StaticResource HighlightIconTemplate}" />
+            <selectors:PropertyConditonalTemplateSelector Binding="{Binding}" Value="{x:Static enum:TemplateSelectorEnum.Drop}" Item="{StaticResource DropIconTemplate}" />
+        </selectors:ConditionalDataTemplateSelector>
+    </UserControl.Resources>
+    
     <Grid Background="{DynamicResource ContrastMainBackgroundBrush}">
 
         <Grid.RowDefinitions>
@@ -68,8 +92,8 @@
                                     </Grid.RowDefinitions>
 
                                     <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="auto" />
-                                        <ColumnDefinition />
+                                        <ColumnDefinition Width="35*" />
+                                        <ColumnDefinition Width="243*" />
                                     </Grid.ColumnDefinitions>
 
                                     <TextBlock Text="Val 1" />
@@ -94,7 +118,23 @@
                         </Expander>
                     </ItemsControl>
                     <ListViewItem>
-                        <Expander Header="Header1" />
+                        <Expander Header="Header1">
+                            <ComboBox ItemsSource="{Binding Templates}">
+                                <ComboBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="auto" />
+                                                <ColumnDefinition />
+                                            </Grid.ColumnDefinitions>
+
+                                            <ContentControl ContentTemplateSelector="{StaticResource IconSelector}" Content="{Binding}" />
+                                            <TextBlock Grid.Column="1" Text="{Binding}" Margin="{DynamicResource DefaultMargin}" />
+                                        </Grid>
+                                    </DataTemplate>
+                                </ComboBox.ItemTemplate>
+                            </ComboBox>
+                        </Expander>
                     </ListViewItem>
                     <ListViewItem>
                         <Expander Header="Header1" />

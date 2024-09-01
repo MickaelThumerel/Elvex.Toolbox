@@ -90,7 +90,7 @@ namespace Elvex.Toolbox.Patterns.Pools
             {
                 foreach (var item in newItems)
                 {
-                    Debug.Assert(item.InUse == false);
+                    Debug.Assert(item.InUse == false || item.InUse == null);
                     item.Prepare(this);
                     Debug.Assert(item.InUse == true);
                 }

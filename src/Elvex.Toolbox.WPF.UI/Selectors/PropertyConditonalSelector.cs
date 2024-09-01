@@ -35,8 +35,15 @@ namespace Elvex.Toolbox.WPF.UI.Selectors
             if (this.Binding is null)
                 return false;
 
-            return ((dataContext is not null && object.Equals(BindingHelper.GetBindingResult(this.Binding, dataContext), this.Value)) ||
-                    (dependencyObject is not null && object.Equals(BindingHelper.GetBindingResult(this.Binding, dependencyObject), this.Value)));
+            object? compareValue = null;
+
+            if (dataContext is not null)
+                compareValue = BindingHelper.GetBindingResult(this.Binding, dataContext);
+            
+            if (dependencyObject is not null && compareValue is null)
+                compareValue = BindingHelper.GetBindingResult(this.Binding, dependencyObject);
+
+            return this.Value?.Equals(compareValue) ?? compareValue is null;
         }
 
         #endregion
