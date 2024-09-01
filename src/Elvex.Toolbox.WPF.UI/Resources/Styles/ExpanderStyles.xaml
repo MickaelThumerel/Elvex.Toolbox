@@ -42,12 +42,12 @@
                                               Height="32"
                                               Background="Transparent">
 
-                                            <Path Data="{DynamicResource AddIconSource}"
+                                            <Path Data="{DynamicResource RightIconSource}"
                                                   Fill="{DynamicResource AccentBrush}"
                                                   Style="{DynamicResource IconSmallPathStyle}"
                                                   x:Name="PlusPath" />
 
-                                            <Path Data="{DynamicResource MinusIconSource}"
+                                            <Path Data="{DynamicResource DownIconSource}"
                                                   Fill="{DynamicResource AccentBrush}"
                                                   Style="{DynamicResource IconSmallPathStyle}"
                                                   x:Name="MinusPath"

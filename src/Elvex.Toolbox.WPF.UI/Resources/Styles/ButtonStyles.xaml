@@ -199,12 +199,12 @@
 
                     <Grid Background="{TemplateBinding Background}">
 
-                        <Path Data="{DynamicResource AddIconSource}"
+                        <Path Data="{DynamicResource RightIconSource}"
                               Fill="{TemplateBinding Foreground}"
                               Style="{DynamicResource IconSmallestPathStyle}"
                               Visibility="{TemplateBinding IsChecked, Converter={StaticResource ButtonNotBoolToVisibilityConverter}}"/>
 
-                        <Path Data="{DynamicResource MinusIconSource}"
+                        <Path Data="{DynamicResource DownIconSource}"
                               Fill="{TemplateBinding Foreground}"
                               Style="{DynamicResource IconSmallestPathStyle}"
                               Visibility="{TemplateBinding IsChecked, Converter={StaticResource ButtonBoolToVisibilityConverter}}"/>
