@@ -5,6 +5,7 @@
 namespace Elvex.Toolbox.Models
 {
     using Elvex.Toolbox.Abstractions.Models;
+    using Elvex.Toolbox.Abstractions.Supports;
     using Elvex.Toolbox.Disposables;
 
     using System;
@@ -53,6 +54,18 @@ namespace Elvex.Toolbox.Models
         /// <inheritdoc />
         public bool TryConvert<TConvertedObject>(in object? source, out TConvertedObject? result)
         {
+            if (source is ISupportConvert<TConvertedObject> cnv)
+            {
+                result = cnv.Convert();
+                return true;
+            }
+
+            if (source is ISupportConvert tryCnv && tryCnv.TryConvert<TConvertedObject>(out var manuallyConverted))
+            {
+                result = manuallyConverted;
+                return true;
+            }
+
             if (TryConvert(source, typeof(TConvertedObject), out var resultObj))
             {
                 result = (TConvertedObject?)resultObj;
@@ -70,6 +83,12 @@ namespace Elvex.Toolbox.Models
 
             if (source is null)
                 return true;
+
+            if (source is ISupportConvert convert && convert.TryConvert(out var manualConvertion, targetType))
+            {
+                result = manualConvertion;
+                return true;
+            }
 
             var sourceType = source.GetType();
 
