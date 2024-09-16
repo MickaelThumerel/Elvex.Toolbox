@@ -52,6 +52,91 @@ namespace System
         #region Methods
 
         /// <summary>
+        /// Use parameter type to infer generic method types
+        /// </summary>
+        public static MethodInfo MakeGenericMethodFromParameters(this MethodInfo method, IReadOnlyList<Type> parameterTypes)
+        {
+            if (method.IsGenericMethod == false)
+                throw new InvalidDataException(method + " must be generic");
+
+            var parameters = method.GetParameters();
+            var genericArgs = method.GetGenericArguments();
+
+            var solvedGeneric = new List<Type>[genericArgs.Length];
+
+            foreach (var p in parameters)
+            {
+                var genericParamUsed = p.ParameterType.SearchInTree<Type>(t => t.IsGenericType ? t.GetGenericArguments() : EnumerableHelper<Type>.ReadOnlyArray,
+                                                                          t => t.IsGenericMethodParameter);
+                if (genericParamUsed.Any())
+                {
+                    var paramType = parameterTypes[p.Position];
+
+                    var implemenationCompleted = paramType;
+
+                    // Fullname is null only if the generic type does have a concret base
+                    if (p.ParameterType.IsGenericType)
+                    {
+                        var genericRoot = p.ParameterType.GetGenericTypeDefinition();
+                        var newImplemenationCompleted = paramType.GetTypeInfoExtension()
+                                                                 .GetAllCompatibleTypes()
+                                                                 .FirstOrDefault(p => p.IsGenericType && p.GetGenericTypeDefinition() == genericRoot);
+
+                        if (newImplemenationCompleted is not null)
+                            implemenationCompleted = newImplemenationCompleted;
+                    }
+
+                    foreach (var g in genericParamUsed)
+                    {
+                        var typeCollection = solvedGeneric[g.Node.GenericParameterPosition];
+                        if (typeCollection is null)
+                        {
+                            typeCollection = new List<Type>();
+                            solvedGeneric[g.Node.GenericParameterPosition] = typeCollection;
+                        }
+
+                        var typePart = g.Path.FoundNodeByPath(implemenationCompleted,
+                                                              t => t.IsGenericType ? t.GetGenericArguments() : EnumerableHelper<Type>.ReadOnlyArray,
+                                                              (source, current_indx, current, tester) => tester == current_indx);
+
+                        typeCollection.Add(typePart);
+                    }
+                }
+            }
+
+            var genericResolution = solvedGeneric.Select(FoundCommonType).ToArray();
+
+            var solveMethod = method.MakeGenericMethod(genericResolution);
+
+            return solveMethod;
+        }
+
+        /// <summary>
+        /// Found the common type between all the types
+        /// </summary>
+        public static Type FoundCommonType(this IEnumerable<Type> types)
+        {
+            var counts = types.Count();
+
+            if (counts == 1)
+                return types.First();
+
+            var commons = types.SelectMany(g => g.GetTypeInfoExtension().GetAllCompatibleTypes().Distinct())
+                             .GroupBy(g => g)
+                             .Select(grp => (Type: grp.Key, Count: grp.Count()))
+                             .OrderByDescending(d => d.Count).ThenByDescending(t => t.Type.IsGenericType ? t.Type.GetGenericArguments().Length : 0)
+                                                             .ThenByDescending(t => t.Type.Name?.Length ?? 42)
+                             .ToArray();
+
+            var common = commons.FirstOrDefault();
+
+            if (common.Count < counts)
+                throw new InvalidOperationException("Couldn't found a commont type for : " + string.Join(", ", types));
+
+            return common.Type;
+        }
+
+        /// <summary>
         /// Converts to method.
         /// </summary>
         public static MethodBase? ToMethod(this AbstractMethod method, Type type)

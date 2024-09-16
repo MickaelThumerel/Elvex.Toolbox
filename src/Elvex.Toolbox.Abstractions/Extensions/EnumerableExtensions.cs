@@ -5,9 +5,14 @@
 // KEEP : System.Collections.Generic
 namespace System.Collections.Generic
 {
+    using Elvex.Toolbox.Abstractions.Enums;
+    using Elvex.Toolbox.Abstractions.Extensions;
+    using Elvex.Toolbox.Abstractions.Supports;
+
     using System;
     using System.Collections.Immutable;
     using System.Collections.ObjectModel;
+    using System.Diagnostics;
     using System.Runtime.CompilerServices;
 
     public static class EnumerableExtensions
@@ -206,6 +211,100 @@ namespace System.Collections.Generic
             }
 
             return defaultData;
+        }
+
+        /// <summary>
+        /// Searches the in tree an produce a path to found the result
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static IReadOnlyCollection<(TNode Node, NavigationPath<TNode, ushort> Path)> SearchInTree<TNode>(this IEnumerable<TNode> roots,
+                                                                                                                Func<TNode, IEnumerable<TNode>> getChildren,
+                                                                                                                Predicate<TNode>? validator = null)
+        {
+            return SearchInTree<TNode, ushort>(roots, getChildren, (n, i) => i, validator);
+        }
+
+        /// <summary>
+        /// Searches the in tree an produce a path to found the result
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static IReadOnlyCollection<(TNode Node, NavigationPath<TNode, ushort> Path)> SearchInTree<TNode>(this TNode root,
+                                                                                                                Func<TNode, IEnumerable<TNode>> getChildren,
+                                                                                                                Predicate<TNode>? validator = null)
+        {
+            return SearchInTree<TNode, ushort>(root, getChildren, (n, i) => i, validator);
+        }
+
+        /// <summary>
+        /// Searches the in tree an produce a path to found the result
+        /// </summary>
+        public static IReadOnlyCollection<(TNode Node, NavigationPath<TNode, TNodePathPart> Path)> SearchInTree<TNode, TNodePathPart>(this IEnumerable<TNode> roots,
+                                                                                                                                      Func<TNode, IEnumerable<TNode>> getChildren,
+                                                                                                                                      Func<TNode, ushort, TNodePathPart> pathPartIdentifier,
+                                                                                                                                      Predicate<TNode>? validator = null)
+        {
+            return roots.SelectMany(r => SearchInTree<TNode, TNodePathPart>(r, getChildren, pathPartIdentifier, validator))
+                        .Distinct()
+                        .ToArray();
+        }
+
+        /// <summary>
+        /// Searches the in tree an produce a path to found the result
+        /// </summary>
+        public static IReadOnlyCollection<(TNode Node, NavigationPath<TNode, TNodePathPart> Path)> SearchInTree<TNode, TNodePathPart>(this TNode root,
+                                                                                                                                      Func<TNode, IEnumerable<TNode>> getChildren,
+                                                                                                                                      Func<TNode, ushort, TNodePathPart> pathPartIdentifier,
+                                                                                                                                      Predicate<TNode>? validator = null)
+        {
+            return SearchInTree<TNode, TNodePathPart>(root,
+                                                      0,
+                                                      NavigationPath<TNode, TNodePathPart>.Empty,
+                                                      getChildren,
+                                                      pathPartIdentifier,
+                                                      validator).ToReadOnly();
+        }
+
+        /// <summary>
+        /// Founds the node by path.
+        /// </summary>
+        public static TSourceNode FoundNodeByPath<TSourceNode>(this NavigationPath<TSourceNode, ushort> path,
+                                                               TSourceNode source,
+                                                               Func<TSourceNode, IEnumerable<TSourceNode>> getChildren)
+        {
+            return path.FoundNodeByPath(source, getChildren, (e, i, t, ii) => i == ii);
+        }
+
+        /// <summary>
+        /// Searches the in tree an produce a path to found the result
+        /// </summary>
+        private static IEnumerable<(TNode Node, NavigationPath<TNode, TNodePathPart> Path)> SearchInTree<TNode, TNodePathPart>(this TNode root,
+                                                                                                                               ushort parentIndex,
+                                                                                                                               NavigationPath<TNode, TNodePathPart> rootPath,
+                                                                                                                               Func<TNode, IEnumerable<TNode>> getChildren,
+                                                                                                                               Func<TNode, ushort, TNodePathPart> pathPartIdentifier,
+                                                                                                                               Predicate<TNode>? validator = null)
+        {
+            var newPath = rootPath.Parts.Append(pathPartIdentifier(root, parentIndex)).ToArray();
+            var currentPath = new NavigationPath<TNode, TNodePathPart>(newPath);
+
+            if (validator == null || validator.Invoke(root))
+            {
+                yield return (root, currentPath);
+            }
+
+            var children = getChildren(root);
+            if (children is null || !children.Any())
+                yield break;
+
+            ushort indx = 0;
+            foreach (var child in children)
+            {
+                var grdChildren = SearchInTree<TNode, TNodePathPart>(child, indx, currentPath, getChildren, pathPartIdentifier, validator);
+                indx++;
+
+                foreach (var gr in grdChildren)
+                    yield return gr;
+            }
         }
     }
 }
