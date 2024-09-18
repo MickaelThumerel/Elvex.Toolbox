@@ -23,6 +23,8 @@ namespace Elvex.Toolbox.Models.Converters
         private static readonly IReadOnlyDictionary<Tuple<Type, Type>, MethodInfo> s_convertMethod;
         private static readonly IReadOnlySet<Type> s_managedSourceTypes;
 
+        private static readonly Type s_stringType;
+
         #endregion
 
         #region Ctor
@@ -32,13 +34,16 @@ namespace Elvex.Toolbox.Models.Converters
         /// </summary>
         static ScalarDedicatedConverter()
         {
+            s_stringType = typeof(string);
             s_managedSourceTypes = CSharpTypeInfo.ScalarTypes;
 
             var convertMethod = typeof(Convert).GetMethods(BindingFlags.Public | BindingFlags.Static)
                                                .Where(m => m.ReturnType != typeof(object) &&
+                                                           s_managedSourceTypes.Contains(m.ReturnType) &&
                                                            m.GetParameters().Length == 1 &&
                                                            m.Name == "To" + m.ReturnType.Name &&
-                                                           m.GetParameters().First().ParameterType != typeof(object))
+                                                           m.GetParameters().First().ParameterType != typeof(object) &&
+                                                           s_managedSourceTypes.Contains(m.GetParameters().First().ParameterType))
                                                .GroupBy(m => (Param: m.GetParameters().First(), Return: m.ReturnType))
                                                .ToFrozenDictionary(k => Tuple.Create(k.Key.Param.ParameterType, k.Key.Return), k => k.OrderByDescending(m => m.Name.Length).First());
 
@@ -62,6 +67,12 @@ namespace Elvex.Toolbox.Models.Converters
             var objType = obj?.GetType();
             try
             {
+                if (targetType == s_stringType)
+                {
+                    result = obj.ToString();
+                    return true;
+                }
+
                 if (objType is not null && s_convertMethod.TryGetValue(Tuple.Create(objType, targetType), out var convMethod))
                 {
                     result = convMethod.Invoke(null, new[] { obj });
