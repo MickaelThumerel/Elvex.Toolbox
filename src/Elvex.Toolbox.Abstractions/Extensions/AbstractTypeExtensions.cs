@@ -190,34 +190,40 @@ namespace System
         /// <summary>
         /// Convert a <see cref="MethodBase"/> (Constructor or method classic) into serializable structure <see cref="AbstractMethod"/>
         /// </summary>
-        public static AbstractMethod GetAbstractMethod(this MethodBase methodInfo)
+        public static AbstractMethod GetAbstractMethod(this MethodBase methodInfo, bool useCache = true)
         {
             ArgumentNullException.ThrowIfNull(methodInfo);
 
-            s_abstractMethodCachedLocker.EnterReadLock();
-            try
+            if (useCache)
             {
-                if (s_abstractMethodCache.TryGetValue(methodInfo, out var abstractType))
-                    return abstractType;
-            }
-            finally
-            {
-                s_abstractMethodCachedLocker.ExitReadLock();
+                s_abstractMethodCachedLocker.EnterReadLock();
+                try
+                {
+                    if (s_abstractMethodCache.TryGetValue(methodInfo, out var abstractType))
+                        return abstractType;
+                }
+                finally
+                {
+                    s_abstractMethodCachedLocker.ExitReadLock();
+                }
             }
 
             var buildedMethodInfo = BuildAbstractMethod(methodInfo);
 
-            s_abstractMethodCachedLocker.EnterWriteLock();
-            try
+            if (useCache)
             {
-                if (s_abstractMethodCache.TryGetValue(methodInfo, out var abstractType))
-                    return abstractType;
+                s_abstractMethodCachedLocker.EnterWriteLock();
+                try
+                {
+                    if (s_abstractMethodCache.TryGetValue(methodInfo, out var abstractType))
+                        return abstractType;
 
-                s_abstractMethodCache.Add(methodInfo, buildedMethodInfo);
-            }
-            finally
-            {
-                s_abstractMethodCachedLocker.ExitWriteLock();
+                    s_abstractMethodCache.Add(methodInfo, buildedMethodInfo);
+                }
+                finally
+                {
+                    s_abstractMethodCachedLocker.ExitWriteLock();
+                }
             }
 
             return buildedMethodInfo!;
@@ -385,7 +391,18 @@ namespace System
         private static AbstractType BuildAbstractType(Type type)
         {
             var extendInfo = type.GetTypeInfoExtension();
-            if (type.IsGenericTypeDefinition || type.IsGenericTypeParameter)
+            if (type.IsGenericType && type.IsGenericTypeDefinition)
+            {
+                return new IncompleteType(extendInfo.FullShortName,
+                                          type.Namespace,
+                                          type.AssemblyQualifiedName!,
+                                          type.IsInterface,
+                                          type.GetGenericArguments()
+                                              .Select(x => GetThreadSafeAbstractType(x)));
+            }
+
+            // Is generic part of the type definition or method definition
+            if (type.IsGenericTypeParameter || type.IsGenericMethodParameter)
             {
                 return new GenericType(extendInfo.FullShortName,
                                        type.ContainsGenericParameters && type.IsGenericTypeParameter
@@ -410,7 +427,7 @@ namespace System
                                         .Select(x => GetThreadSafeAbstractType(x)));
         }
 
-        private static AbstractMethod BuildAbstractMethod(MethodBase methodInfo)
+        private static AbstractMethod BuildAbstractMethod(MethodBase methodInfo, bool useCache = true)
         {
             ArgumentNullException.ThrowIfNull(methodInfo);
 
@@ -432,7 +449,8 @@ namespace System
                                         .ToArray();
             }
 
-            var methodUniqueId = ReflectionExtensions.GetUniqueId(methodInfo);
+
+            var methodUniqueId = ReflectionExtensions.GetUniqueId(methodInfo, useCache: useCache);
             var methodDisplayName = ReflectionExtensions.GetDisplayName(methodInfo);
 
             return new AbstractMethod(methodDisplayName,
@@ -467,6 +485,7 @@ namespace System
 
             return buildedType!;
         }
+
         #endregion
 
         #endregion

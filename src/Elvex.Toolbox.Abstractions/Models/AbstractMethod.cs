@@ -45,6 +45,12 @@ namespace Elvex.Toolbox.Abstractions.Models
             this.GenericArguments = genericArguments?.ToArray() ?? Array.Empty<AbstractType>();
             this.HasGenericArguments = this.GenericArguments.Any();
             this.IsConstructor = isConstructor;
+            this.IsIncomplet = this.Arguments.Any(a => a.Category == AbstractTypeCategoryEnum.Incomplet || 
+                                                       a.Category == AbstractTypeCategoryEnum.Generic ||
+                                                       a.Category == AbstractTypeCategoryEnum.GenericRef) ||
+                               this.GenericArguments.Any(a => a.Category == AbstractTypeCategoryEnum.Incomplet ||
+                                                              a.Category == AbstractTypeCategoryEnum.Generic ||
+                                                              a.Category == AbstractTypeCategoryEnum.GenericRef);
         }
 
         #endregion
@@ -105,6 +111,12 @@ namespace Elvex.Toolbox.Abstractions.Models
         [DataMember]
         public bool IsConstructor { get; }
 
+        /// <summary>
+        /// Gets a value indicating whether this method type is incomplet.
+        /// </summary>
+        [DataMember]
+        public bool IsIncomplet { get; }
+
         #endregion
 
         #region Methods
@@ -126,6 +138,7 @@ namespace Elvex.Toolbox.Abstractions.Models
                    this.HasGenericArguments == other.HasGenericArguments &&
                    this.Arguments.SequenceEqual(other.Arguments) &&
                    this.IsConstructor == other.IsConstructor &&
+                   this.IsIncomplet == other.IsIncomplet && 
                    this.GenericArguments.SequenceEqual(other.GenericArguments);
         }
 
@@ -160,6 +173,7 @@ namespace Elvex.Toolbox.Abstractions.Models
                                                      this.HasArguments,
                                                      this.HasGenericArguments),
                                     this.IsConstructor,
+                                    this.IsIncomplet,
                                     this.GenericArguments?.Aggregate(0, (acc, i) => acc ^ i.GetHashCode()),
                                     this.Arguments?.Aggregate(0, (acc, i) => acc ^ i.GetHashCode()));
         }

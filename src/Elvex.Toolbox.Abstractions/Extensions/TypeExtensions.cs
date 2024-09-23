@@ -302,7 +302,7 @@ namespace System
 
             this.IsCSharpScalarType = CSharpTypeInfo.ScalarTypes.Contains(this.Trait);
 
-            this.Default = trait.IsValueType && !trait.IsGenericParameter && !trait.IsAbstract && !trait.IsByRefLike && trait != typeof(void)
+            this.Default = trait.IsValueType && !trait.IsGenericParameter && !trait.IsAbstract && !trait.IsByRefLike && trait != typeof(void) && trait.ContainsGenericParameters == false
                                 ? Activator.CreateInstance(trait)
                                 : null;
             this.FullShortName = TypeInfoExtensionBuilder.FullShortName(this.Trait);

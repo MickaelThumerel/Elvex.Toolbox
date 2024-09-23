@@ -10,6 +10,9 @@ namespace Elvex.Toolbox.Models
     using System.Linq;
     using System.Runtime.Serialization;
 
+    /// <summary>
+    /// Generic value
+    /// </summary>
     [DataContract]
     [Serializable]
     [ImmutableObject(true)]

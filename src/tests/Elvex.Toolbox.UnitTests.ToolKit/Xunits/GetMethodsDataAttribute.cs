@@ -30,9 +30,10 @@ namespace Elvex.Toolbox.UnitTests.ToolKit.Xunits
         /// </summary>
         public GetMethodsDataAttribute(BindingFlags flags = BindingFlags.Instance | BindingFlags.Public, params Type[] types)
         {
-            this._values = types.SelectMany(trait => trait.GetAllMethodInfos(flags))
+            this._values = types.SelectMany(trait => trait.GetAllMethodInfos(flags).Select(m => (Method: m, Type: trait)))
+                                .Where(o => o.Type != typeof(object) && o.Method.DeclaringType != typeof(object))
                                 .Distinct()
-                                .Select(v => new object[] { v })
+                                .Select(v => new object[] { v.Method.GetAbstractMethod(useCache: false).DisplayName, v.Type, v.Method.GetAbstractMethod(useCache: false).MethodUniqueId })
                                 .ToArray();
         }
 

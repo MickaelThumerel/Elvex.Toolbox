@@ -13,6 +13,7 @@ namespace Elvex.Toolbox.Models
         Concret,
         Collection,
         Generic,
-        GenericRef
+        GenericRef,
+        Incomplet,
     }
 }

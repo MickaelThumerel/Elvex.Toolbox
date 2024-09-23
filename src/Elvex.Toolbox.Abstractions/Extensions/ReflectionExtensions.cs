@@ -47,25 +47,28 @@ namespace System.Reflection
         ///     We use TypeFullName + MethodFUllName hash by MD5.
         ///     We use cache to guaranty it's unique if the Hash produce is the same a Guid is introduce to add hazard
         /// </remarks>
-        public static string GetUniqueId(this MethodBase methodInfo, bool raisedErrorIfDuplicate = false)
+        public static string GetUniqueId(this MethodBase methodInfo, bool raisedErrorIfDuplicate = false, bool useCache = true)
         {
-            s_methodUniqueIdLocker.EnterReadLock();
+            if (useCache)
+            {
+                s_methodUniqueIdLocker.EnterReadLock();
 
-            try
-            {
-                if (s_methodUniqueId.TryGetValue(methodInfo, out var uniqueKey))
-                    return uniqueKey;
-            }
-            finally
-            {
-                s_methodUniqueIdLocker.ExitReadLock();
+                try
+                {
+                    if (s_methodUniqueId.TryGetValue(methodInfo, out var uniqueKey))
+                        return uniqueKey;
+                }
+                finally
+                {
+                    s_methodUniqueIdLocker.ExitReadLock();
+                }
             }
 
             s_methodUniqueIdLocker.EnterWriteLock();
 
             try
             {
-                if (s_methodUniqueId.TryGetValue(methodInfo, out var uniqueKey))
+                if (useCache && s_methodUniqueId.TryGetValue(methodInfo, out var uniqueKey))
                     return uniqueKey;
 
                 string hashKey = string.Empty;
@@ -79,6 +82,9 @@ namespace System.Reflection
 
                     hashKey = BuildMethodUniqueId(methodInfo, randomKeyPart);
 
+                    if (useCache == false)
+                        break;
+
                     cacheContainsHash = s_methodUniqueIdHashset.Contains(hashKey);
 
                     if (raisedErrorIfDuplicate && cacheContainsHash)
@@ -86,8 +92,11 @@ namespace System.Reflection
                 }
                 while (string.IsNullOrEmpty(hashKey) || cacheContainsHash);
 
-                s_methodUniqueId.Add(methodInfo, hashKey);
-                s_methodUniqueIdHashset.Add(hashKey);
+                if (useCache)
+                {
+                    s_methodUniqueId.Add(methodInfo, hashKey);
+                    s_methodUniqueIdHashset.Add(hashKey);
+                }
 
                 return hashKey;
             }

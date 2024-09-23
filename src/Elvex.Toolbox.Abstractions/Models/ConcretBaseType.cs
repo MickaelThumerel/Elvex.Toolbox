@@ -4,6 +4,8 @@
 
 namespace Elvex.Toolbox.Models
 {
+    using Elvex.Toolbox.Abstractions.Models;
+
     using System;
     using System.ComponentModel;
     using System.Runtime.Serialization;
@@ -18,6 +20,7 @@ namespace Elvex.Toolbox.Models
 
     [KnownType(typeof(CollectionType))]
     [KnownType(typeof(ConcretType))]
+    [KnownType(typeof(IncompleteType))]
     public abstract class ConcretBaseType : AbstractType
     {
         #region Fields
@@ -74,8 +77,16 @@ namespace Elvex.Toolbox.Models
         public sealed override Type ToType()
         {
             if (this._cachedType == null)
-                this._cachedType = Type.GetType(this.AssemblyQualifiedName, true);
+                this._cachedType = OnTypeResolution();
             return this._cachedType!;
+        }
+
+        /// <summary>
+        /// Called when to resolved the <see cref="Type"/> based on local information.
+        /// </summary>
+        protected virtual Type OnTypeResolution()
+        {
+            return Type.GetType(this.AssemblyQualifiedName, true);
         }
 
         /// <inheritdoc />
