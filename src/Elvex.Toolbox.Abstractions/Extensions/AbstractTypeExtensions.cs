@@ -168,7 +168,7 @@ namespace System
 
                 if (mthd != null)
                 {
-                    if (mthd is MethodInfo info && mthd.IsGenericMethodDefinition && method.HasGenericArguments)
+                    if (mthd is MethodInfo info && mthd.IsGenericMethodDefinition && method.HasGenericArguments && method.IsIncomplet == false)
                     {
                         mthd = info.MakeGenericMethod(method.GenericArguments
                                                             .Select(g => g.ToType())

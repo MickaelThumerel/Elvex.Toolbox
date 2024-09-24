@@ -35,6 +35,23 @@ namespace Elvex.Toolbox.Abstractions.UnitTests.Extensions
         #region Methods
 
         [Fact]
+        public void Method_Abstract_Partial()
+        {
+            Expression<Func<TypeExtensionsUTest, string>> expr = e => e.MapFrom<Uri, string>(null!, null!);
+            var genMethod = ((MethodCallExpression)expr.Body).Method.GetGenericMethodDefinition();
+
+            var abstractMthd = genMethod.GetAbstractMethod();
+
+            Check.That(abstractMthd).IsNotNull();
+            Check.That(abstractMthd.IsIncomplet).IsTrue();
+            Check.That(abstractMthd.GenericArguments).IsNotNull().And.CountIs(2);
+
+            var restoredMethod = abstractMthd.ToMethod(typeof(TypeExtensionsUTest));
+
+            Check.That(restoredMethod).IsNotNull().And.IsEqualTo(genMethod);
+        }
+
+        [Fact]
         public void Method_Generic_Solved_By_Parameter()
         {
             Expression<Func<TypeExtensionsUTest, string>> expr = e => e.MapFrom<Uri, string>(null!, null!);
