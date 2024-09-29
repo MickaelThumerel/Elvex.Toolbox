@@ -51,6 +51,11 @@ namespace Elvex.Toolbox.Abstractions.Patterns.Strategy
         ValueTask<IReadOnlyCollection<T>> GetValuesAsync(Expression<Func<T, bool>> filterExpression, Func<T, bool> filter, CancellationToken token = default);
 
         /// <summary>
+        /// Gets the keys based on filter
+        /// </summary>
+        ValueTask<IReadOnlyCollection<TKey>> GetKeysAsync(Expression<Func<T, bool>> filterExpression, Func<T, bool> filter, CancellationToken token = default);
+
+        /// <summary>
         /// Gets the values keys
         /// </summary>
         ValueTask<IReadOnlyCollection<T>> GetValuesAsync(IEnumerable<TKey> keys, CancellationToken token = default);

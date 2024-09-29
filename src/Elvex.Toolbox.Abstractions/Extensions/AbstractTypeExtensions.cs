@@ -449,7 +449,6 @@ namespace System
                                         .ToArray();
             }
 
-
             var methodUniqueId = ReflectionExtensions.GetUniqueId(methodInfo, useCache: useCache);
             var methodDisplayName = ReflectionExtensions.GetDisplayName(methodInfo);
 

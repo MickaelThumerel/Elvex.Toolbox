@@ -29,36 +29,41 @@ namespace Elvex.Toolbox.Abstractions.Patterns.Strategy
         /// Gets all values corresponding to <paramref name="keys"/>
         /// </summary>
         ValueTask<IReadOnlyCollection<T>> GetAllValuesAsync(CancellationToken token);
-
-        /// <summary>
-        /// Gets all values corresponding to <paramref name="keys"/>
-        /// </summary>
-        ValueTask<IReadOnlyCollection<T>> GetValuesAsync(CancellationToken token, params TKey[] keys);
-
-        /// <summary>
-        /// Gets all values corresponding to <paramref name="keys"/>
-        /// </summary>
-        ValueTask<IReadOnlyCollection<T>> GetValuesAsync(IReadOnlyCollection<TKey> keys, CancellationToken token);
-
+        
         /// <summary>
         /// Gets all values corresponding match conditions
         /// </summary>
         ValueTask<IReadOnlyCollection<T>> GetValuesAsync(Expression<Func<T, bool>> filter, CancellationToken token);
 
         /// <summary>
-        /// Gets first value to correspond match conditions
+        /// Gets all values corresponding to <paramref name="keys"/>
         /// </summary>
-        ValueTask<T?> GetFirstValueAsync(Expression<Func<T, bool>> filter, CancellationToken token);
+        ValueTask<IReadOnlyCollection<T>> GetByKeyAsync(CancellationToken token, params TKey[] keys);
+
+        /// <summary>
+        /// Gets all values corresponding to <paramref name="keys"/>
+        /// </summary>
+        ValueTask<IReadOnlyCollection<T>> GetByKeyAsync(IReadOnlyCollection<TKey> keys, CancellationToken token);
+
+        /// <summary>
+        /// Gets all keys corresponding match conditions
+        /// </summary>
+        ValueTask<IReadOnlyCollection<TKey>> GetKeysAsync(Expression<Func<T, bool>> filter, CancellationToken token);
 
         /// <summary>
         /// Gets first value to correspond to <paramref name="key"/>
         /// </summary>
-        ValueTask<T?> GetFirstValueByIdAsync(TKey key, CancellationToken token);
+        ValueTask<T?> GetByKeyAsync(TKey key, CancellationToken token);
 
         /// <summary>
         /// Try get first value to correspond to <paramref name="key"/>
         /// </summary>
-        ValueTask<(bool Result, T? value)> TryGetFirstValueAsync(TKey key, CancellationToken token);
+        ValueTask<(bool Result, T? value)> TryGetByKeyAsync(TKey key, CancellationToken token);
+
+        /// <summary>
+        /// Gets first value to correspond match conditions
+        /// </summary>
+        ValueTask<T?> GetFirstValueAsync(Expression<Func<T, bool>> filter, CancellationToken token);
 
         /// <summary>
         /// Forces cache data to update

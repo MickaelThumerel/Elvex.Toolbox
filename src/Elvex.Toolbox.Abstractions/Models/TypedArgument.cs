@@ -217,7 +217,11 @@ namespace Elvex.Toolbox.Abstractions.Models
     [DataContract]
     [Serializable]
     [ImmutableObject(true)]
+#pragma warning disable CS0660 // Type defines operator == or operator != but does not override Object.Equals(object o)  MANAGED by parent class
+#pragma warning disable CS0661 // Type defines operator == or operator != but does not override Object.GetHashCode()
     public sealed class TypedArgument<TArg> : TypedArgument
+#pragma warning restore CS0661 // Type defines operator == or operator != but does not override Object.GetHashCode()
+#pragma warning restore CS0660 // Type defines operator == or operator != but does not override Object.Equals(object o)
     {
         #region Ctor
 

@@ -9,6 +9,7 @@ namespace Elvex.Toolbox.Patterns.Strategy
 
     using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Logging.Abstractions;
+    using Microsoft.Win32.SafeHandles;
 
     using System;
     using System.Collections.Generic;
@@ -26,7 +27,6 @@ namespace Elvex.Toolbox.Patterns.Strategy
     {
         #region Fields
 
-        private readonly IReadOnlyCollection<TSource> _providerSource;
         private readonly ILogger _logger;
 
         #endregion
@@ -40,14 +40,23 @@ namespace Elvex.Toolbox.Patterns.Strategy
                                     ILogger? logger)
         {
             this._logger = logger ?? NullLogger.Instance;
-            this._providerSource = providerSource?.ToArray() ?? EnumerableHelper<TSource>.ReadOnlyArray;
+            this.ProviderSource = providerSource?.ToArray() ?? EnumerableHelper<TSource>.ReadOnlyArray;
 
-            foreach (var provider in this._providerSource)
+            foreach (var provider in this.ProviderSource)
             {
                 provider.DataChanged -= Provider_DataChanged;
                 provider.DataChanged += Provider_DataChanged;
             }
         }
+
+        #endregion
+
+        #region Properties
+
+        /// <summary>
+        /// Gets the provider source.
+        /// </summary>
+        protected IReadOnlyCollection<TSource> ProviderSource { get; }
 
         #endregion
 
@@ -70,16 +79,16 @@ namespace Elvex.Toolbox.Patterns.Strategy
         /// <inheritdoc />
         public async ValueTask<IReadOnlyCollection<T>> GetAllValuesAsync(CancellationToken token)
         {
-            var tasks = this._providerSource.Select(source => source.GetAllValuesAsync(token).AsTask())
+            var tasks = this.ProviderSource.Select(source => source.GetAllValuesAsync(token).AsTask())
                                             .ToList();
 
             return await GetResults(tasks);
         }
 
         /// <inheritdoc />
-        public virtual async ValueTask<T?> GetFirstValueByIdAsync(TKey key, CancellationToken token)
+        public virtual async ValueTask<T?> GetByKeyAsync(TKey key, CancellationToken token)
         {
-            foreach (var source in this._providerSource)
+            foreach (var source in this.ProviderSource)
             {
                 var result = await source.TryGetDataAsync(key);
                 if (result.Success)
@@ -90,20 +99,20 @@ namespace Elvex.Toolbox.Patterns.Strategy
         }
 
         /// <inheritdoc />
-        public virtual ValueTask<IReadOnlyCollection<T>> GetValuesAsync(CancellationToken token, params TKey[] keys)
+        public virtual ValueTask<IReadOnlyCollection<T>> GetByKeyAsync(CancellationToken token, params TKey[] keys)
         {
             if (keys.Length == 0)
                 return ValueTask.FromResult(EnumerableHelper<T>.ReadOnly);
-            return GetValuesAsync((IReadOnlyCollection<TKey>)keys, token);
+            return GetByKeyAsync((IReadOnlyCollection<TKey>)keys, token);
         }
 
         /// <inheritdoc />
-        public async ValueTask<IReadOnlyCollection<T>> GetValuesAsync(IReadOnlyCollection<TKey> keys, CancellationToken token)
+        public async ValueTask<IReadOnlyCollection<T>> GetByKeyAsync(IReadOnlyCollection<TKey> keys, CancellationToken token)
         {
             if (keys.Count == 0)
                 return EnumerableHelper<T>.ReadOnly;
 
-            var tasks = this._providerSource.Select(source => source.GetValuesAsync(keys, token).AsTask())
+            var tasks = this.ProviderSource.Select(source => source.GetValuesAsync(keys, token).AsTask())
                                             .ToList();
 
             return await GetResults(tasks);
@@ -113,7 +122,7 @@ namespace Elvex.Toolbox.Patterns.Strategy
         public async ValueTask<IReadOnlyCollection<T>> GetValuesAsync(Expression<Func<T, bool>> filter, CancellationToken token)
         {
             var predicate = filter.Compile();
-            var tasks = this._providerSource.Select(source => source.GetValuesAsync(filter, predicate, token).AsTask())
+            var tasks = this.ProviderSource.Select(source => source.GetValuesAsync(filter, predicate, token).AsTask())
                                             .ToList();
 
             return await GetResults(tasks);
@@ -124,7 +133,7 @@ namespace Elvex.Toolbox.Patterns.Strategy
         {
             var predicate = filter.Compile();
 
-            foreach (var source in this._providerSource)
+            foreach (var source in this.ProviderSource)
             {
                 var result = await source.GetFirstValueAsync(filter, predicate, token);
                 if (!EqualityComparer<T>.Default.Equals(result, default))
@@ -135,9 +144,9 @@ namespace Elvex.Toolbox.Patterns.Strategy
         }
 
         /// <inheritdoc />
-        public virtual async ValueTask<(bool Result, T? value)> TryGetFirstValueAsync(TKey key, CancellationToken token)
+        public virtual async ValueTask<(bool Result, T? value)> TryGetByKeyAsync(TKey key, CancellationToken token)
         {
-            var value = await GetFirstValueByIdAsync(key, token);
+            var value = await GetByKeyAsync(key, token);
             return (value is not null, value);
         }
 
@@ -145,6 +154,16 @@ namespace Elvex.Toolbox.Patterns.Strategy
         public ValueTask ForceUpdateAsync(CancellationToken token)
         {
             throw new NotImplementedException();
+        }
+
+        /// <inheritdoc />
+        public async ValueTask<IReadOnlyCollection<TKey>> GetKeysAsync(Expression<Func<T, bool>> filter, CancellationToken token)
+        {
+            var predicate = filter.Compile();
+            var tasks = this.ProviderSource.Select(source => source.GetKeysAsync(filter, predicate, token).AsTask())
+                                            .ToList();
+
+            return await GetResults(tasks);
         }
 
         #region Tools
@@ -165,7 +184,7 @@ namespace Elvex.Toolbox.Patterns.Strategy
         /// <summary>
         /// Gets the results from tasks.
         /// </summary>
-        private async ValueTask<IReadOnlyCollection<T>> GetResults(IReadOnlyList<Task<IReadOnlyCollection<T>>> tasks)
+        private async ValueTask<IReadOnlyCollection<TTaskResult>> GetResults<TTaskResult>(IReadOnlyList<Task<IReadOnlyCollection<TTaskResult>>> tasks)
         {
             var tasksCollection = tasks.Where(t => t.IsCompleted == false);
 
@@ -183,7 +202,7 @@ namespace Elvex.Toolbox.Patterns.Strategy
                 }
             }
 
-            var results = new HashSet<T>(tasks.Count * 2);
+            var results = new HashSet<TTaskResult>(tasks.Count * 2);
             foreach (var task in tasks)
             {
                 if (task.IsCompletedSuccessfully)

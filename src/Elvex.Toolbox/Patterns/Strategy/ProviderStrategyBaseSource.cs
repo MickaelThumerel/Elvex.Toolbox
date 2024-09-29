@@ -187,6 +187,31 @@ namespace Elvex.Toolbox.Patterns.Strategy
         }
 
         /// <inheritdoc />
+        public virtual async ValueTask<IReadOnlyCollection<TKey>> GetKeysAsync(Expression<Func<TValue, bool>> filterExpression, Func<TValue, bool> filter, CancellationToken token = default)
+        {
+            await EnsureProviderIsInitialized();
+
+            return await ExecWithRetry<IReadOnlyCollection<TKey>>(() =>
+            {
+                this._dataCacheLock.EnterReadLock();
+                try
+                {
+                    var result = this._cachedData.Where(kv => filter(kv.Value))
+                                                 .Select(kv => kv.Key)
+                                                 .ToArray();
+
+                    return result;
+                }
+                finally
+                {
+                    this._dataCacheLock.ExitReadLock();
+                }
+            },
+            r => r is null || r.Count == 0,
+            token) ?? EnumerableHelper<TKey>.ReadOnlyArray;
+        }
+
+        /// <inheritdoc />
         public virtual async ValueTask<IReadOnlyCollection<TValue>> GetValuesAsync(IEnumerable<TKey> keys, CancellationToken token)
         {
             await EnsureProviderIsInitialized();

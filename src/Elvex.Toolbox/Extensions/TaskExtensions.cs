@@ -6,6 +6,10 @@
 namespace System.Threading.Tasks
 {
     using Elvex.Toolbox.Abstractions.Extensions.Types;
+    using Elvex.Toolbox.Extensions;
+
+    using Microsoft.Extensions.Logging;
+    using Microsoft.Extensions.Logging.Abstractions;
 
     using System;
     using System.Diagnostics;
@@ -138,6 +142,19 @@ namespace System.Threading.Tasks
         /// Safes wait all tasks to be completed
         /// </summary>
         /// <exception cref="AggregateException"></exception>
+        public static async Task<IReadOnlyCollection<TData>> SafeWhenAllWithResultsAsync<TData>(this IReadOnlyCollection<ValueTask<TData>> tasks, CancellationToken token = default, ILogger? logger = null)
+        {
+            logger ??= NullLogger.Instance;
+
+            await SafeWhenAllAsync(tasks.Select(t => t.AsTask()).ToReadOnly(), token);
+
+            return await AggregateResults<TData>(tasks, logger);
+        }
+
+        /// <summary>
+        /// Safes wait all tasks to be completed
+        /// </summary>
+        /// <exception cref="AggregateException"></exception>
         public static async Task SafeWhenAllAsync<TData>(this IReadOnlyCollection<ValueTask<TData>> tasks, CancellationToken token = default)
         {
             await SafeWhenAllAsync(tasks.Select(t => t.AsTask()).ToReadOnly(), token);
@@ -180,6 +197,172 @@ namespace System.Threading.Tasks
 
             token.ThrowIfCancellationRequested();
         }
+
+        /// <summary>
+        /// Gets the results from tasks.
+        /// </summary>
+        public static async ValueTask<IReadOnlyCollection<TTaskResult>> SafeWhenAllWithResultsAsync<TTaskResult>(this IReadOnlyCollection<Task<IReadOnlyCollection<TTaskResult>>> tasks, ILogger? logger = null)
+        {
+            logger ??= NullLogger.Instance;
+
+            var tasksCollection = tasks.Where(t => t.IsCompleted == false);
+
+            while (tasksCollection.Any())
+            {
+                try
+                {
+                    await Task.WhenAll(tasksCollection);
+                }
+                catch
+                {
+                }
+                finally
+                {
+                }
+            }
+
+            return await AggregateResults(tasks, logger);
+        }
+
+        /// <summary>
+        /// Gets the results from tasks.
+        /// </summary>
+        public static async ValueTask<IReadOnlyCollection<TTaskResult>> SafeWhenAllWithResultsAsync<TTaskResult>(this IReadOnlyCollection<ValueTask<IReadOnlyCollection<TTaskResult>>> tasks, ILogger? logger = null)
+        {
+            logger ??= NullLogger.Instance;
+
+            var tasksCollection = tasks.Where(t => t.IsCompleted == false);
+
+            while (tasksCollection.Any())
+            {
+                try
+                {
+                    await Task.WhenAll(tasksCollection.Select(t => t.AsTask()));
+                }
+                catch
+                {
+                }
+                finally
+                {
+                }
+            }
+
+            var results = new HashSet<TTaskResult>(tasks.Count * 2);
+            foreach (var task in tasks)
+            {
+                if (task.IsCompletedSuccessfully)
+                {
+                    foreach (var taskResult in task.Result)
+                        results.Add(taskResult);
+                }
+                else if (task.IsCanceled)
+                {
+                    continue;
+                }
+                else if (task.AsTask().Exception != null)
+                {
+                    logger.OptiLog(LogLevel.Error,
+                                   "Aggregate - exception : {exception}]",
+                                   task.AsTask().Exception);
+                }
+            }
+
+            return results;
+        }
+
+        /// <summary>
+        /// Aggregates the results.
+        /// </summary>
+        public static ValueTask<IReadOnlyCollection<TTaskResult>> AggregateResults<TTaskResult>(this IReadOnlyCollection<ValueTask<TTaskResult>> tasks, ILogger? logger = null)
+        {
+            return AggregateResultImpl(tasks, logger);
+        }
+
+        /// <summary>
+        /// Aggregates the results.
+        /// </summary>
+        public static async ValueTask<IReadOnlyCollection<TTaskResult>> AggregateResults<TTaskResult>(this IReadOnlyCollection<ValueTask<IReadOnlyCollection<TTaskResult>>> tasks, ILogger? logger = null)
+        {
+            var results = await AggregateResultImpl<IReadOnlyCollection<TTaskResult>>(tasks, logger);
+            return results.SelectMany(s => s)
+                          .Distinct()
+                          .ToArray();
+        }
+
+        /// <summary>
+        /// Aggregates the results.
+        /// </summary>
+        public static ValueTask<IReadOnlyCollection<TTaskResult>> AggregateResults<TTaskResult>(this IReadOnlyCollection<Task<TTaskResult>> tasks, ILogger? logger = null)
+        {
+            return AggregateResultImpl(tasks, logger);
+        }
+
+        /// <summary>
+        /// Aggregates the results.
+        /// </summary>
+        public static async ValueTask<IReadOnlyCollection<TTaskResult>> AggregateResults<TTaskResult>(this IReadOnlyCollection<Task<IReadOnlyCollection<TTaskResult>>> tasks, ILogger? logger = null)
+        {
+            var results = await AggregateResultImpl<IReadOnlyCollection<TTaskResult>>(tasks, logger);
+            return results.SelectMany(s => s)
+                          .Distinct()
+                          .ToArray();
+        }
+
+        #region Tools
+
+        private static ValueTask<IReadOnlyCollection<TTaskResult>> AggregateResultImpl<TTaskResult>(this IReadOnlyCollection<ValueTask<TTaskResult>> tasks, ILogger? logger = null)
+        {
+            logger ??= NullLogger.Instance;
+
+            var results = new HashSet<TTaskResult>(tasks.Count + 1);
+            foreach (var task in tasks)
+            {
+                if (task.IsCompletedSuccessfully)
+                {
+                    results.Add(task.Result);
+                }
+                else if (task.IsCanceled)
+                {
+                    continue;
+                }
+                else if (task.AsTask().Exception != null)
+                {
+                    logger.OptiLog(LogLevel.Error,
+                                   "Aggregate - exception : {exception}]",
+                                   task.AsTask().Exception);
+                }
+            }
+
+            return ValueTask.FromResult(results.ToReadOnly());
+        }
+
+        private static ValueTask<IReadOnlyCollection<TTaskResult>> AggregateResultImpl<TTaskResult>(this IReadOnlyCollection<Task<TTaskResult>> tasks, ILogger? logger = null)
+        {
+            logger ??= NullLogger.Instance;
+
+            var results = new HashSet<TTaskResult>(tasks.Count + 1);
+            foreach (var task in tasks)
+            {
+                if (task.IsCompletedSuccessfully)
+                {
+                    results.Add(task.Result);
+                }
+                else if (task.IsCanceled)
+                {
+                    continue;
+                }
+                else if (task.Exception != null)
+                {
+                    logger.OptiLog(LogLevel.Error,
+                                   "Aggregate - exception : {exception}]",
+                                   task.Exception);
+                }
+            }
+
+            return ValueTask.FromResult(results.ToReadOnly());
+        }
+
+        #endregion
 
         #endregion
     }

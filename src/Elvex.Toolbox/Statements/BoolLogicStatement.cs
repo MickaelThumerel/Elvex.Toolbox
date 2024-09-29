@@ -77,12 +77,6 @@ namespace Elvex.Toolbox.Statements
 
             var parts = new Queue<string>(expression.Entity.Length);
 
-#if NET8_0_OR_GREATER
-
-#warning Use SearchValue to locate operator in the expression
-#warning Use ReadOnlySpan<> extension method SPLIT
-
-#endif
             ReadOnlySpan<char> operators = LogicHelper.LogicOperatorString;
             ReadOnlySpan<char> entityStr = expression.Entity;
 

@@ -183,7 +183,7 @@ namespace Elvex.Toolbox.Helpers
 
             if (!string.IsNullOrEmpty(indexProp))
             {
-                var mthd = info.PropertyType.GetMethod("get_Item");
+                var mthd = info!.PropertyType.GetMethod("get_Item");
                 if (mthd is not null && mthd.IsSpecialName)
                 {
                     var convertValue = ConvertHelper.ConvertValueFromString(mthd.GetParameters()[0].ParameterType, indexProp);
